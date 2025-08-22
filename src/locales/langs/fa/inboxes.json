@@ -1,0 +1,16 @@
+{
+  "change agent bot successfully!": "عوض کردن ربات پاسخگو با موفقیت انجام شد",
+  "change agent bot failed!": "عوض کردن ربات پاسخگو با خطا مواجه شد",
+  "remove agent bot successfully!": "حذف ربات پاسخگو با موفقیت انجام شد",
+  "remove agent bot failed!": "حذف ربات پاسخگو با خطا مواجه شد",
+  "Inbox Name": "صندوق ورودی",
+  "Bots": "ربات ها",
+  "Add Bot": "اظافه کردن بات جدید",
+  "There are no records to display.": "رکوردی برای نمایش وجود ندارد",
+  "No record found": "رکوردی یافت نشد",
+  "Update": "به روز رسانی",
+  "Select an agent bot": "ربات پاسخ دهنده خود را انتخاب کنید",
+  "Disconnect Bot": "قطع ارتباط ربات",
+  "Loading...": "در حال بارگذاری..",
+  "Assign an Agent Bot to your inbox. They can handle initial conversations and transfer them to a live agent when necessary.": "یک Agent Bot را به صندوق ورودی خود اختصاص دهید. آنها می توانند مکالمات اولیه را انجام دهند و در صورت لزوم آنها را به یک نماینده زنده منتقل کنند."
+}

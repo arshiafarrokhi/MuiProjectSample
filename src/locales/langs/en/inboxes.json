@@ -1,0 +1,16 @@
+{
+  "change agent bot successfully!": "change agent bot successfully!",
+  "change agent bot failed!": "change agent bot failed!",
+  "remove agent bot successfully!": "remove agent bot successfully!",
+  "remove agent bot failed!": "remove agent bot failed!",
+  "Inbox Name": "Inbox Name",
+  "Update": "Update",
+  "Bots": "Bots",
+  "Add Bot": "Add Bot",
+  "There are no records to display.": "There are no records to display.",
+  "No record found": "No record found",
+  "Select an agent bot": "Select an agent bot",
+  "Disconnect Bot": "Disconnect Bot",
+  "Loading...": "Loading...",
+  "Assign an Agent Bot to your inbox. They can handle initial conversations and transfer them to a live agent when necessary.": "Assign an Agent Bot to your inbox. They can handle initial conversations and transfer them to a live agent when necessary."
+}
