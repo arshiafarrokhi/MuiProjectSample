@@ -26,18 +26,11 @@ export const paths = {
   dashboard: {
     root: `${ROOTS.DASHBOARD}/users`,
     users: `${ROOTS.DASHBOARD}/users`,
-    // AgentBots: `${ROOTS.DASHBOARD}/agentBots`,
-    // agentBots: {
-    //   root: `${ROOTS.DASHBOARD}/agentBots`,
-    //   new: `${ROOTS.DASHBOARD}/agentBots/new`,
-    //   edit: (botId: number, botName: string) =>
-    //     `${ROOTS.DASHBOARD}/agentBots/${botId}/${botName}/edit`,
-    // },
-    // KnowledgeBases: {
-    //   root: `${ROOTS.DASHBOARD}/knowledgeBases`,
-    //   new: `${ROOTS.DASHBOARD}/knowledgeBases/new`,
-    //   edit: (knowledgeBasesId: number, knowledgeBasesName: string) =>
-    //     `${ROOTS.DASHBOARD}/knowledgeBases/${knowledgeBasesId}/${knowledgeBasesName}/edit`,
+    // usersWallet: {
+    //   root: `${ROOTS.DASHBOARD}/usersWallet`,
+    //   new: `${ROOTS.DASHBOARD}/usersWallet/new`,
+    //   edit: (walletId: number) =>
+    //     `${ROOTS.DASHBOARD}/usersWallet/${walletId}/edit`,
     // },
   },
 };

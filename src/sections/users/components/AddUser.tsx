@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { toast } from 'sonner';
 import { prefixer } from 'stylis';
 import createCache from '@emotion/cache';
@@ -6,6 +7,7 @@ import rtlPlugin from 'stylis-plugin-rtl';
 import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState, useEffect } from 'react';
 
+import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
@@ -25,11 +27,9 @@ import {
   IconButton,
   Typography,
   DialogTitle,
-  createTheme,
   DialogContent,
   DialogActions,
   useMediaQuery,
-  ThemeProvider,
   InputAdornment,
   FormHelperText,
   CircularProgress,
@@ -65,11 +65,13 @@ export default function AddUserDialog({ openAddDialog, handleClose, onCreated }:
   const { setAgentBot } = createUserApi();
 
   // RTL theme & cache (scoped so it won’t affect the rest of app)
+
   const rtlCache = useMemo(
-    () => createCache({ key: 'mui-rtl-adduser', stylisPlugins: [prefixer, rtlPlugin] }),
+    () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const rtlTheme = useMemo(() => createTheme({ direction: 'rtl' }), []);
+  const outerTheme = useTheme();
+  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   useEffect(() => {
     let url: string | undefined;
@@ -183,10 +185,12 @@ export default function AddUserDialog({ openAddDialog, handleClose, onCreated }:
               maxWidth: 560,
               borderRadius: 3,
               overflow: 'hidden',
+              bgcolor: 'background.paper',
             },
           }}
         >
           <DialogTitle
+            component="div"
             id="add-user-title"
             sx={{
               display: 'flex',

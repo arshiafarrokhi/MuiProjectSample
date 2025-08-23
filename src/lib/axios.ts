@@ -48,6 +48,9 @@ export const endpoints = {
     delete: '/Users/RemoveUser',
     wallet: {
       get: '/UserWallet/GetWalletBalance',
+      transactions: '/UserWallet/GetWalletTransations',
+      creditIncrease: '/UserWallet/WalletCreditIncrease',
+      creditReduction: '/UserWallet/WalletCreditReduction',
     },
   },
 };

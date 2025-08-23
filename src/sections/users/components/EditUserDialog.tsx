@@ -1,5 +1,4 @@
 import { toast } from 'sonner';
-import { prefixer } from 'stylis';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { CacheProvider } from '@emotion/react';
@@ -9,6 +8,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { LoadingButton } from '@mui/lab';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
+import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
 import PhoneIphoneRoundedIcon from '@mui/icons-material/PhoneIphoneRounded';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
 import {
@@ -20,10 +20,8 @@ import {
   IconButton,
   Typography,
   DialogTitle,
-  createTheme,
   DialogContent,
   DialogActions,
-  ThemeProvider,
   InputAdornment,
   CircularProgress,
 } from '@mui/material';
@@ -64,11 +62,11 @@ export default function EditUserDialog({ open, onClose, user, onUpdated }: EditU
 
   // Scoped RTL theme/cache (remove if you already have global RTL)
   const rtlCache = useMemo(
-    () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [prefixer, rtlPlugin] }),
+    () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const rtlTheme = useMemo(() => createTheme({ direction: 'rtl' }), []);
-
+  const outerTheme = useTheme();
+  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
   const validate = () => {
     const next: Record<string, string> = {};
     if (!fName.trim()) next.fName = 'نام را وارد کنید.';
@@ -132,10 +130,17 @@ export default function EditUserDialog({ open, onClose, user, onUpdated }: EditU
           onClose={onClose}
           aria-labelledby="edit-user-title"
           PaperProps={{
-            sx: { width: '100%', maxWidth: 560, borderRadius: 3, overflow: 'hidden' },
+            sx: {
+              width: '100%',
+              maxWidth: 560,
+              borderRadius: 3,
+              overflow: 'hidden',
+              bgcolor: 'background.paper',
+            },
           }}
         >
           <DialogTitle
+            component="div"
             id="edit-user-title"
             sx={{
               display: 'flex',

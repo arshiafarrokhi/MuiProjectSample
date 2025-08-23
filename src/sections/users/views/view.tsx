@@ -20,9 +20,10 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import AddUserDialog from '../components/AddUser';
 import { deleteUserApi } from '../api/deleteUserApi';
-import WalletDialog from '../components/WalletDialog';
+import WalletDialog from '../components/EditUsersView';
 // import AddUserDialog from '../components/addUser';
 import EditUserDialog from '../components/EditUserDialog';
+import { useNavigate } from 'react-router';
 
 type Props = {
   sx?: SxProps<Theme>;
@@ -72,6 +73,8 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
   };
 
   const safeUsers = Array.isArray(users) ? users : [];
+
+  const nav = useNavigate();
 
   return (
     <DashboardContent maxWidth="xl">
@@ -183,14 +186,11 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
                 <AccountBalanceWalletRoundedIcon
                   color="primary"
                   sx={{ cursor: 'pointer', fontSize: 26 }}
-                  onClick={() => {
-                    setWalletUser({
-                      id: usersItem.id,
-                      fName: usersItem.fName ?? '',
-                      lName: usersItem.lName ?? '',
-                    });
-                    setOpenWalletDialog(true);
-                  }}
+                  onClick={() =>
+                    nav(`/dashboard/users/${usersItem.id}`, {
+                      state: { fName: usersItem.fName ?? '', lName: usersItem.lName ?? '' },
+                    })
+                  }
                   titleAccess="کیف‌پول"
                 />
               </Box>
@@ -212,12 +212,6 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
         onClose={() => setOpenEditDialog(false)}
         user={selectedUser}
         onUpdated={onRefetch} // if you have a refetch method, it will refresh the list post-update
-      />
-
-      <WalletDialog
-        open={openWalletDialog}
-        onClose={() => setOpenWalletDialog(false)}
-        user={walletUser}
       />
     </DashboardContent>
   );

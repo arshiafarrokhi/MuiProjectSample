@@ -9,11 +9,10 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 import ErrorBoundary from 'src/components/ErrorBoundary/ErrorBoundary';
 
-
 // ----------------------------------------------------------------------
 
-// const PageError = lazy(() => import('src/pages/error/404'));
-const Users = lazy(() => import('src/pages/dashboard/users'));
+const EditUsersPage = lazy(() => import('src/pages/dashboard/users/components/EditUsersPage'));
+const UsersPage = lazy(() => import('src/pages/dashboard/users'));
 
 // ----------------------------------------------------------------------
 
@@ -37,29 +36,14 @@ export const dashboardRoutes: RouteObject[] = [
       <DashboardRoutesLayout />
       // </AuthGuard>
     ),
-    // errorElement: <LoadingScreen />,
+    errorElement: <LoadingScreen />,
     children: [
-      { path: 'users', element: <Users /> },
-      // { path: 'agentBots', element: <AgentBots /> },
-      // {
-      //   path: 'agentBots/:botId/:botName/edit',
-      //   element: <EditBotPage />,
-      //   errorElement: <LoadingScreen />,
-      //   children: [
-      //     { path: 'model-settings', element: <EditBotModelSettingspage /> },
-      //     { path: '', element: <EditBotAssistantSettingspage /> },
-      //   ],
-      // },
-      // { path: 'knowledgeBases', element: <KnowledgeBases /> },
-      // {
-      //   path: 'knowledgeBases/:knId/:knName/edit',
-      //   element: <EditKnowledgeBasesPage />,
-      //   errorElement: <LoadingScreen />,
-      //   children: [
-      //     { path: 'dataset', element: <EditKnowledgeBasesDatasetSettingsPage /> },
-      //     { path: '', element: <EditKnowledgeBasesConfigurationSettingsPage /> },
-      //   ],
-      // },
+      { path: 'users', element: <UsersPage /> },
+      {
+        path: 'users/:userId',
+        element: <EditUsersPage />,
+        errorElement: <LoadingScreen />,
+      },
     ],
   },
 ];
