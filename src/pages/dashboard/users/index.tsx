@@ -7,10 +7,10 @@ import { CONFIG } from 'src/global-config';
 // import { LoadingScreen } from 'src/components/loading-screen';
 
 import { UsersView } from 'src/sections/users/views/view';
-import { GetAgentApi } from 'src/sections/users/api/getAgentsApi';
 import { GetUsersApi } from 'src/sections/users/api/usersApi';
 
 import { useAuthContext } from 'src/auth/hooks';
+import { LoadingScreen } from 'src/components/loading-screen/loading-screen';
 
 // ----------------------------------------------------------------------
 
@@ -21,13 +21,12 @@ export default function Page() {
 
   const [activeOnly, setActiveOnly] = useState(true);
 
-  // pass the activeOnly flag into the API hook so it fetches accordingly
-  const { users, usersError, usersLoading } = GetUsersApi(1, activeOnly);
+  const { users, usersError, usersLoading, refetchUsers } = GetUsersApi(1, activeOnly);
   console.log(users);
 
-  // if (usersLoading) {
-  //   return <LoadingScreen />;
-  // }
+  if (usersLoading) {
+    return <LoadingScreen />;
+  }
 
   // if (usersError) {
   //   return <Navigate to="/404" replace />;
@@ -39,7 +38,12 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <UsersView users={users} activeOnly={activeOnly} setActiveOnly={setActiveOnly} />
+      <UsersView
+        users={users}
+        activeOnly={activeOnly}
+        setActiveOnly={setActiveOnly}
+        onRefetch={() => refetchUsers(undefined, { revalidate: true })}
+      />
     </>
   );
 }

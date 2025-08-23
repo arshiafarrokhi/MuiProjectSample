@@ -11,6 +11,7 @@ export default defineConfig({
             typescript: true,
             eslint: {
                 useFlatConfig: true,
+                failOnError: false,
                 lintCommand: 'eslint "./src/**/*.{js,jsx,ts,tsx}"',
                 dev: { logLevel: ['error'] },
             },

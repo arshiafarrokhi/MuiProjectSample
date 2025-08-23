@@ -14,25 +14,7 @@ import { AuthGuard } from 'src/auth/guard';
 // ----------------------------------------------------------------------
 
 // const PageError = lazy(() => import('src/pages/error/404'));
-const Inboxes = lazy(() => import('src/pages/dashboard/users'));
-const AgentBots = lazy(() => import('src/pages/dashboard/agentBot'));
-const EditBotPage = lazy(() => import('src/pages/dashboard/agentBot/EditBotPage'));
-const KnowledgeBases = lazy(() => import('src/pages/dashboard/knowledgeBases'));
-const EditKnowledgeBasesDatasetSettingsPage = lazy(
-  () => import('src/pages/dashboard/knowledgeBases/EditKnowledgeBasesDatasetSettingsPage')
-);
-const EditKnowledgeBasesConfigurationSettingsPage = lazy(
-  () => import('src/pages/dashboard/knowledgeBases/EditKnowledgeBasesConfigurationSettingsPage')
-);
-const EditKnowledgeBasesPage = lazy(
-  () => import('src/pages/dashboard/knowledgeBases/EditKnowledgeBasesPage')
-);
-const EditBotModelSettingspage = lazy(
-  () => import('src/pages/dashboard/agentBot/EditBotModelSettingsPage')
-);
-const EditBotAssistantSettingspage = lazy(
-  () => import('src/pages/dashboard/agentBot/EditBotAssistantSettingspage')
-);
+const Users = lazy(() => import('src/pages/dashboard/users'));
 
 // ----------------------------------------------------------------------
 
@@ -58,7 +40,7 @@ export const dashboardRoutes: RouteObject[] = [
     ),
     // errorElement: <LoadingScreen />,
     children: [
-      { path: 'users', element: <Inboxes /> },
+      { path: 'users', element: <Users /> },
       // { path: 'agentBots', element: <AgentBots /> },
       // {
       //   path: 'agentBots/:botId/:botName/edit',

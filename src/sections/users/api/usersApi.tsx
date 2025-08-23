@@ -13,15 +13,16 @@ import { fetcher, endpoints } from 'src/lib/axios';
 export function GetUsersApi(pageIndex = 1, activeUsers = true) {
   const url = `${endpoints.users.get}GetUsers?Pagination.PageIndex=${pageIndex}&ActiveUsers=${activeUsers}`;
 
-  const { data, isLoading, error, isValidating } = useSWR<any>(url, fetcher, swrOptions);
+  const { data, isLoading, error, isValidating, mutate } = useSWR<any>(url, fetcher, swrOptions);
   const memoizedValue = useMemo(
     () => ({
       users: data?.result.users,
       usersLoading: isLoading,
       usersError: error,
       usersValidating: isValidating,
+      refetchUsers: mutate,
     }),
-    [data, error, isLoading, isValidating]
+    [data, error, isLoading, isValidating, mutate]
   );
 
   return memoizedValue;
