@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router';
 import { Helmet } from 'react-helmet-async';
+import { useState } from 'react';
 
 import { CONFIG } from 'src/global-config';
 
@@ -18,7 +19,11 @@ const metadata = { title: `users Page | Dashboard - ${CONFIG.appName}` };
 export default function Page() {
   const { user } = useAuthContext();
 
-  const { users, usersError, usersLoading } = GetUsersApi(1, true);
+  const [activeOnly, setActiveOnly] = useState(true);
+
+  // pass the activeOnly flag into the API hook so it fetches accordingly
+  const { users, usersError, usersLoading } = GetUsersApi(1, activeOnly);
+  console.log(users);
 
   // if (usersLoading) {
   //   return <LoadingScreen />;
@@ -34,7 +39,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <UsersView users={users} />
+      <UsersView users={users} activeOnly={activeOnly} setActiveOnly={setActiveOnly} />
     </>
   );
 }
