@@ -11,8 +11,9 @@ const swrOptions: SWRConfiguration = {
 import { fetcher, endpoints } from 'src/lib/axios';
 
 export function GetUsersApi(pageIndex = 1, activeUsers = true) {
-  const url = `https://api.admin.arianamohajer.ir/api/Users/GetUsers?Pagination.PageIndex=${pageIndex}&ActiveUsers=${activeUsers}`;
+  const url = `${endpoints.users.get}GetUsers?Pagination.PageIndex=${pageIndex}&ActiveUsers=${activeUsers}`;
 
+  console.log(endpoints.users.get);
   const { data, isLoading, error, isValidating } = useSWR<any>(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(

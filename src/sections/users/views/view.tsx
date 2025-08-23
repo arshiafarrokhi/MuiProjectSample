@@ -107,7 +107,7 @@ export function UsersView({ sx, users }: Props) {
 
   return (
     <DashboardContent maxWidth="xl">
-      <Typography variant="h4"> {authTrans.t('Users')} </Typography>
+      <Typography variant="h4"> کاربران </Typography>
       {renderContent()}
     </DashboardContent>
   );

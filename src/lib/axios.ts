@@ -42,7 +42,7 @@ export const endpoints = {
     signUp: '/auth/sign-up/',
   },
   users: {
-    get: '/Users/GetUsers?Pagination.PageIndex=1&ActiveUsers=true',
+    get: 'Users/',
     // getAgents: 'accounts/{account_id}/agent_bots/',
     // setAgents: 'accounts/{account_id}/inboxes/{inbox_id}/set_agent_bot',
     // getDefaultAgents: 'accounts/{account_id}/inboxes/{inbox_id}/agent_bot',
