@@ -107,7 +107,8 @@ export function UsersView({ sx, inboxes }: Props) {
 
   return (
     <DashboardContent maxWidth="xl">
-      <Typography variant="h4"> {authTrans.t('Inboxes')} </Typography>
+      s
+      <Typography variant="h4"> {authTrans.t('Users')} </Typography>
       {inboxes.length === 0 ? <ListNotFoundView /> : renderContent()}
     </DashboardContent>
   );
