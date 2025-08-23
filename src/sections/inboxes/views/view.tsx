@@ -25,7 +25,7 @@ type Props = {
   inboxes: inboxesType[];
 };
 
-export function InboxesView({ sx, inboxes }: Props) {
+export function UsersView({ sx, inboxes }: Props) {
   const authTrans = useTranslate('pages , common');
 
   const { user } = useAuthContext();

@@ -70,12 +70,12 @@ export function navDataFunc(t: TFunction<any, any>) {
       subheader: t('overview'),
       items: [
         {
-          title: t('Inboxes'),
-          path: paths.dashboard.inboxes,
+          title: t('users'),
+          path: paths.dashboard.users,
           icon: ICONS.dashboard,
         },
-        { title: t('Agent Bots'), path: paths.dashboard.agentBots.root, icon: ICONS.ecommerce },
-        { title: t('Knowledge Bases'), path: paths.dashboard.KnowledgeBases.root, icon: ICONS.analytics },
+        // { title: t('Agent Bots'), path: paths.dashboard.agentBots.root, icon: ICONS.ecommerce },
+        // { title: t('Knowledge Bases'), path: paths.dashboard.KnowledgeBases.root, icon: ICONS.analytics },
       ],
     },
   ];

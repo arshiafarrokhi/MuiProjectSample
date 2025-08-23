@@ -94,7 +94,7 @@ export function JwtSignInView() {
       toast(authTrans.t('Login is successful!'));
 
       setTimeout(() => {
-        router.push(paths.dashboard.inboxes);
+        router.push(paths.dashboard.users);
       }, 5000);
     } catch (error) {
       toast(authTrans.t('username or password is wrong!'));

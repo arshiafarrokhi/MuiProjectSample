@@ -26,9 +26,9 @@ export default function Page() {
     mutateKnowledgeBaseDS,
   } = GetKnowledgeBaseDSApi(user?.account_id, knId);
 
-  if (knowledgeBaseDSError) {
-    return <Navigate to="/404" replace />;
-  }
+  // if (knowledgeBaseDSError) {
+  //   return <Navigate to="/404" replace />;
+  // }
   return (
     <>
       <Helmet>

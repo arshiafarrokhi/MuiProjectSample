@@ -24,9 +24,9 @@ export default function Page() {
     return <LoadingScreen />;
   }
 
-  if (botsError) {
-    return <Navigate to="/404" replace />;
-  }
+  // if (botsError) {
+  //   return <Navigate to="/404" replace />;
+  // }
   return (
     <>
       <Helmet>

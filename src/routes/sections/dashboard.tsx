@@ -14,7 +14,7 @@ import { AuthGuard } from 'src/auth/guard';
 // ----------------------------------------------------------------------
 
 // const PageError = lazy(() => import('src/pages/error/404'));
-const Inboxes = lazy(() => import('src/pages/dashboard/inboxes'));
+const Inboxes = lazy(() => import('src/pages/dashboard/users'));
 const AgentBots = lazy(() => import('src/pages/dashboard/agentBot'));
 const EditBotPage = lazy(() => import('src/pages/dashboard/agentBot/EditBotPage'));
 const KnowledgeBases = lazy(() => import('src/pages/dashboard/knowledgeBases'));
@@ -58,27 +58,27 @@ export const dashboardRoutes: RouteObject[] = [
     ),
     // errorElement: <LoadingScreen />,
     children: [
-      { path: 'inboxes', element: <Inboxes /> },
-      { path: 'agentBots', element: <AgentBots /> },
-      {
-        path: 'agentBots/:botId/:botName/edit',
-        element: <EditBotPage />,
-        errorElement: <LoadingScreen />,
-        children: [
-          { path: 'model-settings', element: <EditBotModelSettingspage /> },
-          { path: '', element: <EditBotAssistantSettingspage /> },
-        ],
-      },
-      { path: 'knowledgeBases', element: <KnowledgeBases /> },
-      {
-        path: 'knowledgeBases/:knId/:knName/edit',
-        element: <EditKnowledgeBasesPage />,
-        errorElement: <LoadingScreen />,
-        children: [
-          { path: 'dataset', element: <EditKnowledgeBasesDatasetSettingsPage /> },
-          { path: '', element: <EditKnowledgeBasesConfigurationSettingsPage /> },
-        ],
-      },
+      { path: 'users', element: <Inboxes /> },
+      // { path: 'agentBots', element: <AgentBots /> },
+      // {
+      //   path: 'agentBots/:botId/:botName/edit',
+      //   element: <EditBotPage />,
+      //   errorElement: <LoadingScreen />,
+      //   children: [
+      //     { path: 'model-settings', element: <EditBotModelSettingspage /> },
+      //     { path: '', element: <EditBotAssistantSettingspage /> },
+      //   ],
+      // },
+      // { path: 'knowledgeBases', element: <KnowledgeBases /> },
+      // {
+      //   path: 'knowledgeBases/:knId/:knName/edit',
+      //   element: <EditKnowledgeBasesPage />,
+      //   errorElement: <LoadingScreen />,
+      //   children: [
+      //     { path: 'dataset', element: <EditKnowledgeBasesDatasetSettingsPage /> },
+      //     { path: '', element: <EditKnowledgeBasesConfigurationSettingsPage /> },
+      //   ],
+      // },
     ],
   },
 ];

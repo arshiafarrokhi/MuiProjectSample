@@ -13,7 +13,7 @@ import { fetcher, endpoints } from 'src/lib/axios';
 export function GetDefaultAgentsApi(account_id: string, inbox_id: string) {
   const url =
     account_id && inbox_id
-      ? endpoints.inboxes.getDefaultAgents
+      ? endpoints.users.get
           .replace('{account_id}', account_id)
           .replace('{inbox_id}', inbox_id)
       : null;

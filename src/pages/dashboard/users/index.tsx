@@ -5,7 +5,7 @@ import { CONFIG } from 'src/global-config';
 
 import { LoadingScreen } from 'src/components/loading-screen';
 
-import { InboxesView } from 'src/sections/inboxes/views/view';
+import { UsersView } from 'src/sections/inboxes/views/view';
 import { GetAgentApi } from 'src/sections/inboxes/api/getAgentsApi';
 import { GetInboxesApi } from 'src/sections/inboxes/api/inboxesApi';
 
@@ -24,9 +24,9 @@ export default function Page() {
     return <LoadingScreen />;
   }
 
-  if (inboxesError) {
-    return <Navigate to="/404" replace />;
-  }
+  // if (inboxesError) {
+  //   return <Navigate to="/404" replace />;
+  // }
 
   return (
     <>
@@ -34,7 +34,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      <InboxesView inboxes={inboxes} />
+      <UsersView inboxes={inboxes} />
     </>
   );
 }

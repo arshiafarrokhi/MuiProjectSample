@@ -22,13 +22,13 @@ export default function Page() {
   const { DefaultEditBot, DefaultEditBotLoading, DefaultEditBotError, DefaultEditBotValidating } =
     GetDefaultEditBot(user?.account_id, botId);
 
-  if (!DefaultEditBot || DefaultEditBotLoading || DefaultEditBotValidating || DefaultEditBotError) {
-    return <LoadingScreen />;
-  }
+  // if (!DefaultEditBot || DefaultEditBotLoading || DefaultEditBotValidating || DefaultEditBotError) {
+  //   return <LoadingScreen />;
+  // }
 
-  if (DefaultEditBotError) {
-    return <Navigate to="/404" replace />;
-  }
+  // if (DefaultEditBotError) {
+  //   return <Navigate to="/404" replace />;
+  // }
   return (
     <>
       <Helmet>

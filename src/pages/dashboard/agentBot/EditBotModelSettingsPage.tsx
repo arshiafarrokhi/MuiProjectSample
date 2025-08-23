@@ -36,9 +36,9 @@ export default function Page() {
     return <LoadingScreen />;
   }
 
-  if (DefaultEditBotError || LlmsError) {
-    return <Navigate to="/404" replace />;
-  }
+  // if (DefaultEditBotError || LlmsError) {
+  //   return <Navigate to="/404" replace />;
+  // }
   return (
     <>
       <Helmet>

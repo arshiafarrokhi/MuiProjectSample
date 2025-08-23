@@ -39,9 +39,9 @@ export default function Page() {
     return <LoadingScreen />;
   }
 
-  if (DefaultEditKnowledgeBasesError) {
-    return <Navigate to="/404" replace />;
-  }
+  // if (DefaultEditKnowledgeBasesError) {
+  //   return <Navigate to="/404" replace />;
+  // }
   return (
     <>
       <Helmet>

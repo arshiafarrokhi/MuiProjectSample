@@ -15,7 +15,7 @@ async function updateAgentBot(url: string, { arg }: { arg: any }) {
 export function useSetAgentBot(account_id: string, inbox_id: string) {
   const url =
     account_id && inbox_id
-      ? endpoints.inboxes.setAgents
+      ? endpoints.users.get
           .replace('{account_id}', account_id)
           .replace('{inbox_id}', inbox_id)
       : null;

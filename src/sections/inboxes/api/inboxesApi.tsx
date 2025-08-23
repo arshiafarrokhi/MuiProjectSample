@@ -11,7 +11,7 @@ const swrOptions: SWRConfiguration = {
 import { fetcher, endpoints } from 'src/lib/axios';
 
 export function GetInboxesApi(account_id: string) {
-  const url = endpoints.inboxes.get.replace('{account_id}', account_id);
+  const url = endpoints.users.get.replace('{account_id}', account_id);
 
   const { data, isLoading, error, isValidating } = useSWR<any>(url, fetcher, swrOptions);
 
