@@ -80,61 +80,69 @@ const unusedImportsRules = () => ({
  * from 'eslint-plugin-perfectionist'.
  */
 const sortImportsRules = () => {
+  const customGroups = {
+    mui: ['custom-mui'],
+    auth: ['custom-auth'],
+    hooks: ['custom-hooks'],
+    utils: ['custom-utils'],
+    types: ['custom-types'],
+    routes: ['custom-routes'],
+    sections: ['custom-sections'],
+    components: ['custom-components'],
+  };
+
   return {
     'perfectionist/sort-named-imports': [1, { type: 'line-length', order: 'asc' }],
     'perfectionist/sort-named-exports': [1, { type: 'line-length', order: 'asc' }],
     'perfectionist/sort-exports': [
       1,
-      { order: 'asc', type: 'line-length', groupKind: 'values-first' },
+      {
+        order: 'asc',
+        type: 'line-length',
+        groupKind: 'values-first',
+      },
     ],
     'perfectionist/sort-imports': [
       2,
       {
-        // روش مرتب‌سازی
-        type: 'line-length',
         order: 'asc',
         ignoreCase: true,
-
-        // ⚠️ در Perfectionist باید عدد باشد، نه 'always'
-        newlinesBetween: 1,
-
-        // اگر از tsconfig-paths/alias استفاده می‌کنی
-        tsconfig: { rootDir: '.' },
-
-        // الگوی internal
+        type: 'line-length',
+        environment: 'node',
+        maxLineLength: undefined,
+        newlinesBetween: 'always',
         internalPattern: ['^src/.+'],
-
-        // گروه‌ها (نام گروه‌های سفارشی را هم اینجا استفاده کن)
         groups: [
           'style',
           'side-effect',
           'type',
           ['builtin', 'external'],
-          'custom-mui',
-          'custom-routes',
-          'custom-hooks',
-          'custom-utils',
+          customGroups.mui,
+          customGroups.routes,
+          customGroups.hooks,
+          customGroups.utils,
           'internal',
-          'custom-components',
-          'custom-sections',
-          'custom-auth',
-          'custom-types',
+          customGroups.components,
+          customGroups.sections,
+          customGroups.auth,
+          customGroups.types,
           ['parent', 'sibling', 'index'],
           ['parent-type', 'sibling-type', 'index-type'],
+          'object',
           'unknown',
         ],
-
-        // ✅ فرمت جدید customGroups (آرایه از تعاریف)
-        customGroups: [
-          { groupName: 'custom-mui',        elementNamePattern: '^@mui/.+' },
-          { groupName: 'custom-auth',       elementNamePattern: '^src/auth/.+' },
-          { groupName: 'custom-hooks',      elementNamePattern: '^src/hooks/.+' },
-          { groupName: 'custom-utils',      elementNamePattern: '^src/utils/.+' },
-          { groupName: 'custom-types',      elementNamePattern: '^src/types/.+' },
-          { groupName: 'custom-routes',     elementNamePattern: '^src/routes/.+' },
-          { groupName: 'custom-sections',   elementNamePattern: '^src/sections/.+' },
-          { groupName: 'custom-components', elementNamePattern: '^src/components/.+' },
-        ],
+        customGroups: {
+          value: {
+            [customGroups.mui]: ['^@mui/.+'],
+            [customGroups.auth]: ['^src/auth/.+'],
+            [customGroups.hooks]: ['^src/hooks/.+'],
+            [customGroups.utils]: ['^src/utils/.+'],
+            [customGroups.types]: ['^src/types/.+'],
+            [customGroups.routes]: ['^src/routes/.+'],
+            [customGroups.sections]: ['^src/sections/.+'],
+            [customGroups.components]: ['^src/components/.+'],
+          },
+        },
       },
     ],
   };

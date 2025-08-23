@@ -1,6 +1,7 @@
 // Static token for development/testing
 export const STATIC_TOKEN =
   'eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwidHlwIjoiSldUIiwiY3R5IjoiSldUIn0.qZY6QrT8LqUSwe_cDsc1aL2kBpG1XkkqkgLIbohhwzlTTz1OD0b9mw.A_sW2i0EyX1-BGaCQZcTwQ.qwLpIdxIFomG5rupKAvKYS-1WTevS6u2UtiKol4iXJ_KEaAvILYWHJBkJ1Ozcf8uO8nRXzbvBLN4dXjwaXV60ljMzur-1A_totj2Ch8raETs814DHEz0-FmUZVkUgPhV3D3_Sg4pMUhXkMsO3EWAEf38jBeFSP9aHfUjCYJSipBCcJ1SSyvcWSnKODbXNdJenkliyC0DYNfXptjJYz7AGPaJYVeRGL7RO4wnMINi1mNfsvOa8EjbVah46kLwNwXAufu7fSeyJaHbMRuqA96HuUoN9C2J9bJBNUg4Vl6rbtDFxjSpGS9lTgnn19vKs8mBm25h0ok4-fyl0IZRa3g6JO_2SVppf34blY8cBOTniGcZoHsFy5bdF-ShvUHrV9S4N-JSB-qDAabvvyOvazMkJVs-FCIMEnr88tpXAWMLljWrA9xbPH9508or0MLOHOD-vj605B-jEvys3DB6AkHX8RgSMPLFs09hMkRvLAxQyFrhjjLm2MU7s7bAnm4b_CVg_SYBbli4Rj42n4iVMzthPeiW5ujo5zpAsiGF8iwWi4A.IABq-1dQPRf4FITfVPwtGQ';
+import { useSetState } from 'minimal-shared/hooks';
 import { useMemo, useEffect, useCallback } from 'react';
 
 import axios, { endpoints } from 'src/lib/axios';
@@ -10,7 +11,6 @@ import { JWT_STORAGE_KEY } from './constant';
 import { AuthContext } from '../auth-context';
 
 import type { AuthState } from '../../types';
-import { useSetState } from 'minimal-shared/hooks';
 
 type Props = {
   children: React.ReactNode;

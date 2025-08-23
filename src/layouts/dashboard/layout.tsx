@@ -9,7 +9,6 @@ import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { iconButtonClasses } from '@mui/material/IconButton';
 
-import { _notifications } from 'src/_mock';
 import { allLangs, useTranslate } from 'src/locales';
 
 import { Logo } from 'src/components/logo';
@@ -31,7 +30,6 @@ import { ModeToggler } from '../components/mode-toggler';
 import { AccountDrawer } from '../components/account-drawer';
 import { LanguagePopover } from '../components/language-popover';
 import { dashboardLayoutVars, dashboardNavColorVars } from './css-vars';
-import { NotificationsDrawer } from '../components/notifications-drawer';
 
 import type { MainSectionProps } from '../core/main-section';
 import type { HeaderSectionProps } from '../core/header-section';

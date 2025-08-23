@@ -9,7 +9,6 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 import ErrorBoundary from 'src/components/ErrorBoundary/ErrorBoundary';
 
-import { AuthGuard } from 'src/auth/guard';
 
 // ----------------------------------------------------------------------
 

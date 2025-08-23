@@ -1,28 +1,28 @@
 // src/sections/users/views/UsersView.tsx
 import type { Theme, SxProps } from '@mui/material/styles';
+
+import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { varAlpha } from 'minimal-shared/utils';
 
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import SettingsIcon from '@mui/icons-material/Settings';
-import AddIcon from '@mui/icons-material/Add';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import Typography from '@mui/material/Typography';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+// Added wallet icon import
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import EditIcon from '@mui/icons-material/Edit';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'; // Added wallet icon import
+import AddUserDialog from '../components/AddUser';
+import { deleteUserApi } from '../api/deleteUserApi';
+import WalletDialog from '../components/WalletDialog';
 // import AddUserDialog from '../components/addUser';
 import EditUserDialog from '../components/EditUserDialog';
-import { deleteUserApi } from '../api/deleteUserApi';
-import { toast } from 'sonner';
-import WalletDialog from '../components/WalletDialog';
-import AddUserDialog from '../components/AddUser';
 
 type Props = {
   sx?: SxProps<Theme>;

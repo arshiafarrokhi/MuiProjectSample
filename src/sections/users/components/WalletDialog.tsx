@@ -1,33 +1,32 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import { prefixer } from 'stylis';
+import createCache from '@emotion/cache';
+import rtlPlugin from 'stylis-plugin-rtl';
+import { CacheProvider } from '@emotion/react';
+import React, { useMemo, useState, useEffect } from 'react';
+
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded';
+import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
 import {
   Box,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Typography,
-  Divider,
-  CircularProgress,
-  Alert,
   Card,
+  Alert,
+  Dialog,
+  Button,
+  Divider,
+  Typography,
+  DialogTitle,
   CardContent,
   createTheme,
+  DialogContent,
+  DialogActions,
   ThemeProvider,
+  CircularProgress,
 } from '@mui/material';
 
-import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
-import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded';
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-
-import { CacheProvider } from '@emotion/react';
-import createCache from '@emotion/cache';
-import { prefixer } from 'stylis';
-import rtlPlugin from 'stylis-plugin-rtl';
-
 import { userWalletApi } from '../api/userWalletApi';
-import { toast } from 'sonner';
 
 type WalletDialogProps = {
   open: boolean;

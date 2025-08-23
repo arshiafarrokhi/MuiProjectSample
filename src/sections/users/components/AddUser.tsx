@@ -1,40 +1,39 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { prefixer } from 'stylis';
+import createCache from '@emotion/cache';
+import rtlPlugin from 'stylis-plugin-rtl';
+// RTL support (scoped to this dialog)
+import { CacheProvider } from '@emotion/react';
+import React, { useMemo, useState, useEffect } from 'react';
 
+import { LoadingButton } from '@mui/lab';
+import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
+import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
+import PhoneIphoneRoundedIcon from '@mui/icons-material/PhoneIphoneRounded';
+import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
 // MUI
 import {
   Box,
   Dialog,
+  Button,
+  Avatar,
+  Divider,
+  Tooltip,
+  TextField,
+  IconButton,
+  Typography,
   DialogTitle,
+  createTheme,
   DialogContent,
   DialogActions,
-  TextField,
-  Button,
-  IconButton,
-  InputAdornment,
-  Avatar,
-  Typography,
-  FormHelperText,
-  Divider,
   useMediaQuery,
-  Tooltip,
-  CircularProgress,
-  createTheme,
   ThemeProvider,
+  InputAdornment,
+  FormHelperText,
+  CircularProgress,
 } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
-import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
-import PhoneIphoneRoundedIcon from '@mui/icons-material/PhoneIphoneRounded';
-import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
-import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
-
-// RTL support (scoped to this dialog)
-import { CacheProvider } from '@emotion/react';
-import createCache from '@emotion/cache';
-import { prefixer } from 'stylis';
-import rtlPlugin from 'stylis-plugin-rtl';
 
 // api
 import { createUserApi } from '../api/createUserApi';
@@ -73,13 +72,17 @@ export default function AddUserDialog({ openAddDialog, handleClose, onCreated }:
   const rtlTheme = useMemo(() => createTheme({ direction: 'rtl' }), []);
 
   useEffect(() => {
-    if (!avatarFile) {
+    let url: string | undefined;
+
+    if (avatarFile) {
+      url = URL.createObjectURL(avatarFile);
+      setAvatarPreview(url);
+    } else {
       setAvatarPreview(null);
-      return;
     }
-    const url = URL.createObjectURL(avatarFile);
-    setAvatarPreview(url);
-    return () => URL.revokeObjectURL(url);
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
   }, [avatarFile]);
 
   const validate = () => {

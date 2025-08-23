@@ -1,16 +1,15 @@
-import { Navigate } from 'react-router';
-import { Helmet } from 'react-helmet-async';
 import { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 
 import { CONFIG } from 'src/global-config';
 
 // import { LoadingScreen } from 'src/components/loading-screen';
+import { LoadingScreen } from 'src/components/loading-screen/loading-screen';
 
 import { UsersView } from 'src/sections/users/views/view';
 import { GetUsersApi } from 'src/sections/users/api/usersApi';
 
 import { useAuthContext } from 'src/auth/hooks';
-import { LoadingScreen } from 'src/components/loading-screen/loading-screen';
 
 // ----------------------------------------------------------------------
 
