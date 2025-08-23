@@ -10,17 +10,17 @@ const swrOptions: SWRConfiguration = {
 };
 import { fetcher, endpoints } from 'src/lib/axios';
 
-export function GetInboxesApi(account_id: string) {
-  const url = endpoints.users.get.replace('{account_id}', account_id);
+export function GetUsersApi(pageIndex = 1, activeUsers = true) {
+  const url = `https://api.admin.arianamohajer.ir/api/Users/GetUsers?Pagination.PageIndex=${pageIndex}&ActiveUsers=${activeUsers}`;
 
   const { data, isLoading, error, isValidating } = useSWR<any>(url, fetcher, swrOptions);
 
   const memoizedValue = useMemo(
     () => ({
-      inboxes: data?.payload,
-      inboxesLoading: isLoading,
-      inboxesError: error,
-      inboxesValidating: isValidating,
+      users: data?.payload,
+      usersLoading: isLoading,
+      usersError: error,
+      usersValidating: isValidating,
     }),
     [data?.payload, error, isLoading, isValidating]
   );

@@ -5,9 +5,9 @@ import { CONFIG } from 'src/global-config';
 
 // import { LoadingScreen } from 'src/components/loading-screen';
 
-import { UsersView } from 'src/sections/inboxes/views/view';
-import { GetAgentApi } from 'src/sections/inboxes/api/getAgentsApi';
-import { GetInboxesApi } from 'src/sections/inboxes/api/inboxesApi';
+import { UsersView } from 'src/sections/users/views/view';
+import { GetAgentApi } from 'src/sections/users/api/getAgentsApi';
+import { GetUsersApi } from 'src/sections/users/api/usersApi';
 
 import { useAuthContext } from 'src/auth/hooks';
 
@@ -18,13 +18,13 @@ const metadata = { title: `users Page | Dashboard - ${CONFIG.appName}` };
 export default function Page() {
   const { user } = useAuthContext();
 
-  const { inboxes, inboxesError, inboxesLoading } = GetInboxesApi(user?.account_id);
+  const { users, usersError, usersLoading } = GetUsersApi(1, true);
 
-  // if (inboxesLoading) {
+  // if (usersLoading) {
   //   return <LoadingScreen />;
   // }
 
-  // if (inboxesError) {
+  // if (usersError) {
   //   return <Navigate to="/404" replace />;
   // }
 
@@ -34,7 +34,7 @@ export default function Page() {
         <title> {metadata.title}</title>
       </Helmet>
 
-      {/* <UsersView inboxes={inboxes} /> */}
+      <UsersView users={users} />
     </>
   );
 }

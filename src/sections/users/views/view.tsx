@@ -22,10 +22,10 @@ import type { inboxesType } from '../types';
 
 type Props = {
   sx?: SxProps<Theme>;
-  inboxes: inboxesType[];
+  users: any[];
 };
 
-export function UsersView({ sx, inboxes }: Props) {
+export function UsersView({ sx, users }: Props) {
   const authTrans = useTranslate('pages , common');
 
   const { user } = useAuthContext();
@@ -60,7 +60,7 @@ export function UsersView({ sx, inboxes }: Props) {
           gap: 2,
         }}
       >
-        {inboxes.map((inboxesItem: inboxesType) => (
+        {/* {inboxes.map((inboxesItem: inboxesType) => (
           <Box
             sx={[
               (theme) => ({
@@ -90,9 +90,9 @@ export function UsersView({ sx, inboxes }: Props) {
               <SettingsIcon color="action" />
             </div>
           </Box>
-        ))}
+        ))} */}
         {/* select agenDialog */}
-        <AgentDialog
+        {/* <AgentDialog
           agents={agents}
           agentsError={agentsError}
           agentsLoading={agentsLoading}
@@ -100,16 +100,15 @@ export function UsersView({ sx, inboxes }: Props) {
           setSelectedInbox={setSelectedInbox}
           open={open}
           setOpen={setOpen}
-        />
+        /> */}
       </Box>
     </Box>
   );
 
   return (
     <DashboardContent maxWidth="xl">
-      s
       <Typography variant="h4"> {authTrans.t('Users')} </Typography>
-      {inboxes.length === 0 ? <ListNotFoundView /> : renderContent()}
+      {renderContent()}
     </DashboardContent>
   );
 }
