@@ -54,10 +54,17 @@ export const endpoints = {
     },
   },
   products: {
-    get: 'Products',
-    list: 'Products/GetProducts',
-    create: '/Product/AddNewProduct',
+    list: '/Product/GetProducts',
+    getOne: '/Product/GetProduct',
+    add: '/Product/AddNewProduct',
     update: '/Product/UpdateProduct',
+    addImage: '/Product/AddProductImages',
+    removeImage: '/Product/RemoveProductImage',
     delete: '/Product/RemoveProduct',
+    categories: {
+      list: '/Product/GetCategories',
+      add: '/Product/AddNewCategory',
+      remove: '/Product/RemoveCategory',
+    },
   },
 };

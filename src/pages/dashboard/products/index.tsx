@@ -1,24 +1,41 @@
-import { useState } from 'react';
 // src/pages/dashboard/products/index.tsx
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-
+import { useLocation, useNavigate } from 'react-router';
 import { CONFIG } from 'src/global-config';
-
 import { LoadingScreen } from 'src/components/loading-screen/loading-screen';
-
 import { ProductsView } from 'src/sections/products/views/view';
 import { GetProductsApi } from 'src/sections/products/api/productsApi';
+
+import { Box, Tabs, Tab } from '@mui/material';
+import CategoriesTab from 'src/sections/products/views/CategoriesTab';
 
 const metadata = { title: `Products | Dashboard - ${CONFIG.appName}` };
 
 export default function ProductsPage() {
-  const [activeOnly, setActiveOnly] = useState(true);
-  const { products, productsLoading, productsError, refetchProducts } = GetProductsApi(
-    1,
-    activeOnly
+  const [categoryIdFilter, setCategoryIdFilter] = useState<number | null>(null);
+  const { products, currency, productsLoading, refetchProducts } = GetProductsApi(
+    0,
+    categoryIdFilter ?? undefined
   );
 
-  if (productsLoading) return <LoadingScreen />;
+  const location = useLocation();
+  const nav = useNavigate();
+
+  // بازگشت از صفحه‌ی ادیت → رفرش
+  useEffect(() => {
+    if ((location.state as any)?.refetch) {
+      if (refetchProducts) refetchProducts(undefined, { revalidate: true });
+      nav(location.pathname, { replace: true, state: null });
+    }
+  }, [location.state, refetchProducts, nav, location.pathname]);
+
+  // مدیریت تب‌ها
+  const [tab, setTab] = useState<number>(0); // 0: محصولات، 1: دسته‌بندی‌ها
+
+  if (productsLoading && tab === 0) {
+    return <LoadingScreen />;
+  }
 
   return (
     <>
@@ -26,12 +43,22 @@ export default function ProductsPage() {
         <title>{metadata.title}</title>
       </Helmet>
 
-      <ProductsView
-        products={products}
-        activeOnly={activeOnly}
-        setActiveOnly={setActiveOnly}
-        onRefetch={() => refetchProducts(undefined, { revalidate: true })}
-      />
+      <Box sx={{ px: { xs: 2, md: 3 }, pt: 2 }}>
+        <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
+          <Tab label="محصولات" />
+          <Tab label="دسته‌بندی‌ها" />
+        </Tabs>
+
+        {tab === 0 && (
+          <ProductsView
+            products={products}
+            currency={currency}
+            onRefetch={() => refetchProducts?.(undefined, { revalidate: true })}
+          />
+        )}
+
+        {tab === 1 && <CategoriesTab />}
+      </Box>
     </>
   );
 }

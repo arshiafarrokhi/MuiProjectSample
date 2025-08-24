@@ -2,25 +2,23 @@ import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { CacheProvider } from '@emotion/react';
-import React, { useMemo, useState, useEffect } from 'react';
+// src/sections/products/components/AddProductDialog.tsx
+import React, { useMemo, useState } from 'react';
 
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
 import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Stack,
   Dialog,
   Button,
-  Avatar,
+  Switch,
   TextField,
-  IconButton,
   DialogTitle,
   DialogContent,
   DialogActions,
-  InputAdornment,
+  FormControlLabel,
 } from '@mui/material';
 
-import { createProductApi } from '../api/productsApi';
+import { createProductJson } from '../api/productsApi';
 
 type Props = {
   open: boolean;
@@ -29,16 +27,14 @@ type Props = {
 };
 
 export default function AddProductDialog({ open, onClose, onCreated }: Props) {
-  const [title, setTitle] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [price, setPrice] = useState<number | ''>('');
-  const [sku, setSku] = useState('');
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [categoryId, setCategoryId] = useState<number | ''>('');
+  const [isPublish, setIsPublish] = useState(true);
   const [loading, setLoading] = useState(false);
 
-  const { createProduct } = createProductApi();
-
-  // ✅ Your preferred RTL setup
+  // RTL (الگوی مورد علاقه شما)
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
@@ -46,49 +42,41 @@ export default function AddProductDialog({ open, onClose, onCreated }: Props) {
   const outerTheme = useTheme();
   const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
-  useEffect(() => {
-    if (!image) {
-      setPreview(null);
-      return undefined; // ✅ fix: consistent-return
-    }
-    const url = URL.createObjectURL(image);
-    setPreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [image]);
-
   const reset = () => {
-    setTitle('');
+    setName('');
+    setDescription('');
     setPrice('');
-    setSku('');
-    setImage(null);
-    setPreview(null);
+    setCategoryId('');
+    setIsPublish(true);
   };
 
   const handleSubmit = async () => {
-    if (!title.trim()) {
-      toast.error('عنوان محصول را وارد کنید.');
+    if (!name.trim() || price === '' || categoryId === '') {
+      toast.error('نام، قیمت و دسته را کامل وارد کنید.');
       return;
     }
     setLoading(true);
     try {
-      const res = await createProduct({
-        title: title.trim(),
-        price: price === '' ? undefined : Number(price),
-        sku: sku.trim() || undefined,
-        image,
+      const res = await createProductJson({
+        name: name.trim(),
+        description: description.trim(),
+        price: Number(price),
+        isPublish,
+        status: 1,
+        categoryId: Number(categoryId),
       });
       const ok = res?.success ?? true;
-      const msg = res?.message || (ok ? 'محصول با موفقیت اضافه شد.' : 'افزودن محصول ناموفق بود.');
+      const msg = res?.message || (ok ? 'محصول ایجاد شد.' : 'ایجاد محصول ناموفق بود.');
       if (ok) {
         toast.success(msg);
-        if (onCreated) onCreated(); // ✅ fix: no-unused-expressions
+        if (onCreated) onCreated();
         onClose();
         reset();
       } else {
         toast.error(msg);
       }
     } catch (e: any) {
-      toast.error(e?.message || 'خطا در افزودن محصول');
+      toast.error(e?.message || 'خطا در ایجاد محصول');
     } finally {
       setLoading(false);
     }
@@ -103,47 +91,39 @@ export default function AddProductDialog({ open, onClose, onCreated }: Props) {
           onClose={onClose}
           PaperProps={{ sx: { borderRadius: 3, width: '100%', maxWidth: 560 } }}
         >
-          <DialogTitle
-            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-          >
-            افزودن محصول
-            <IconButton onClick={onClose}>
-              <CloseRoundedIcon />
-            </IconButton>
-          </DialogTitle>
+          <DialogTitle>افزودن محصول</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Avatar src={preview ?? undefined} sx={{ width: 64, height: 64 }} />
-                <Button component="label" startIcon={<UploadRoundedIcon />} variant="outlined">
-                  انتخاب تصویر
-                  <input
-                    hidden
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-                  />
-                </Button>
-              </Stack>
               <TextField
-                label="عنوان"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                label="نام"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
+              />
+              <TextField
+                label="توضیحات"
+                multiline
+                minRows={2}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
               <TextField
                 label="قیمت"
                 type="number"
                 value={price}
                 onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">ریال</InputAdornment>,
-                }}
               />
               <TextField
-                label="شناسه کالا (SKU)"
-                value={sku}
-                onChange={(e) => setSku(e.target.value)}
+                label="شناسه دسته (CategoryId)"
+                type="number"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value === '' ? '' : Number(e.target.value))}
+              />
+              <FormControlLabel
+                control={
+                  <Switch checked={isPublish} onChange={(e) => setIsPublish(e.target.checked)} />
+                }
+                label="انتشار"
               />
             </Stack>
           </DialogContent>

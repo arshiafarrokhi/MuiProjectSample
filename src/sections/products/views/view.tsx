@@ -1,66 +1,124 @@
+// src/sections/products/views/view.tsx
 import type { Theme, SxProps } from '@mui/material/styles';
-
-import { toast } from 'sonner';
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { varAlpha } from 'minimal-shared/utils';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router';
 
-import Box from '@mui/material/Box';
-import Switch from '@mui/material/Switch';
-import Button from '@mui/material/Button';
+import {
+  Box,
+  Button,
+  Typography,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+  Stack,
+  Tooltip,
+  Chip,
+  IconButton,
+  Collapse,
+  Grid,
+  Divider,
+  TableContainer,
+} from '@mui/material';
+
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined';
+import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
+import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import { deleteProductApi } from '../api/productsApi';
 import AddProductDialog from '../components/AddProductDialog';
 import EditProductDialog from '../components/EditProductDialog';
+import { removeProduct } from '../api/productsApi';
 
 type Props = {
   sx?: SxProps<Theme>;
   products?: any[];
-  activeOnly?: boolean;
-  setActiveOnly?: (v: boolean) => void;
+  currency?: string;
   onRefetch?: () => void;
 };
 
-export function ProductsView({ sx, products, activeOnly, setActiveOnly, onRefetch }: Props) {
+// ---------- helpers ----------
+const isPrimitive = (v: any) => ['string', 'number', 'boolean'].includes(typeof v) || v == null;
+
+const renderCategory = (category: any, categoryId: any) => {
+  if (category == null) return categoryId ?? '—';
+  if (isPrimitive(category)) return String(category);
+  return category.name ?? category.title ?? category.id ?? categoryId ?? '—';
+};
+
+const getCount = (v: any) => {
+  if (Array.isArray(v)) return v.length;
+  if (v && typeof v === 'object') return Object.keys(v).length || 1;
+  if (typeof v === 'number') return v;
+  return 0;
+};
+
+const toFaDigits = (val: any) =>
+  (val ?? '—').toString().replace(/\d/g, (d: string) => '۰۱۲۳۴۵۶۷۸۹'[+d]);
+
+const formatFaDate = (iso?: string | null) => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  try {
+    return new Intl.DateTimeFormat('fa-IR-u-ca-persian', {
+      year: '2-digit',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Tehran',
+    }).format(d);
+  } catch {
+    return d.toLocaleString('fa-IR');
+  }
+};
+
+const clamp2Lines = {
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical' as const,
+  overflow: 'hidden',
+};
+
+// ---------- component ----------
+export function ProductsView({ sx, products, currency, onRefetch }: Props) {
+  const nav = useNavigate();
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
-  const [localActiveOnly, setLocalActiveOnly] = useState<boolean>(activeOnly ?? true);
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
-  useEffect(() => {
-    if (typeof activeOnly === 'boolean') setLocalActiveOnly(activeOnly);
-  }, [activeOnly]);
+  const safeProducts = useMemo(() => (Array.isArray(products) ? products : []), [products]);
 
-  const { deleteProduct } = deleteProductApi();
-
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (productId: string) => {
     try {
-      const res = await deleteProduct(id);
-      const ok = res && typeof res.success !== 'undefined' ? !!res.success : true;
-      const message = res?.message || (ok ? 'محصول حذف شد.' : 'حذف محصول ناموفق بود.');
+      const res = await removeProduct(productId);
+      const ok = res?.success ?? true;
+      const msg = res?.message || (ok ? 'محصول حذف شد.' : 'حذف محصول ناموفق بود.');
       if (ok) {
-        toast.success(message);
-        if (onRefetch) onRefetch(); // ✅ fix: no-unused-expressions
+        toast.success(msg);
+        if (onRefetch) onRefetch();
       } else {
-        toast.error(message);
+        toast.error(msg);
       }
-    } catch (err: any) {
-      toast.error(err?.message || 'خطا در حذف محصول');
+    } catch (e: any) {
+      toast.error(e?.message || 'خطا در حذف محصول');
     }
   };
 
-  const handleToggleActive = (value: boolean) => {
-    setLocalActiveOnly(value);
-    if (typeof setActiveOnly === 'function') setActiveOnly(value);
-  };
-
-  const safeProducts = Array.isArray(products) ? products : [];
+  const toggleExpand = (id: string) => setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
     <DashboardContent maxWidth="xl">
@@ -75,111 +133,269 @@ export function ProductsView({ sx, products, activeOnly, setActiveOnly, onRefetc
             border: `dashed 1px ${theme.vars.palette.divider}`,
             bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.04),
           }),
-          ...(Array.isArray(sx) ? sx : sx ? [sx] : []), // ✅ robust handling if sx is undefined
+          ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
         ]}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 1 }}>
-          <Button startIcon={<AddIcon />} onClick={() => setOpenAddDialog(true)} color="primary">
+        <Stack
+          direction="row"
+          spacing={1}
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ mb: 2 }}
+        >
+          <Button
+            startIcon={<AddIcon />}
+            onClick={() => setOpenAddDialog(true)}
+            // color="primary"
+            variant="contained"
+          >
             افزودن محصول
           </Button>
-        </Box>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <InfoOutlinedIcon fontSize="small" />
+            <Typography variant="body2" color="text.secondary">
+              واحد پول: {currency || 'IRT'}
+            </Typography>
+          </Stack>
+        </Stack>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={!!localActiveOnly}
-                  onChange={(e) => handleToggleActive(e.target.checked)}
-                  color="primary"
-                />
-              }
-              label="محصول فعال"
-            />
-          </Box>
+        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+          <TableContainer
+            sx={{
+              width: '100%',
+              // اسکرول عمودی و افقی
+              overflowY: 'auto',
+              overflowX: 'auto',
+              // ارتفاع واکنش‌گرا؛ با توجه به هدر/پدینگ‌ها قابل تنظیمه
+              maxHeight: {
+                xs: 'calc(100dvh - 240px)', // موبایل: ارتفاع ویوپورت داینامیک
+                sm: 'calc(100dvh - 260px)',
+                md: 'calc(100dvh - 300px)',
+                lg: 'calc(100dvh - 340px)',
+              },
+              borderRadius: 1.5,
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Table size="small" aria-label="products">
+              <TableHead>
+                <TableRow>
+                  <TableCell width={56} />
+                  <TableCell width={56}>ویرایش</TableCell>
+                  <TableCell sx={{ minWidth: 160 }}>نام</TableCell>
+                  <TableCell sx={{ minWidth: 260, maxWidth: 360 }}>توضیحات</TableCell>
+                  <TableCell sx={{ width: 120 }}>قیمت</TableCell>
+                  <TableCell sx={{ width: 100 }}>انتشار</TableCell>
+                  <TableCell sx={{ minWidth: 120 }}>دسته</TableCell>
+                  <TableCell sx={{ width: 140 }}>ایجاد</TableCell>
+                  <TableCell sx={{ width: 140 }}>بروزرسانی</TableCell>
+                  <TableCell align="center" width={72}>
+                    حذف
+                  </TableCell>
+                </TableRow>
+              </TableHead>
 
-          {safeProducts.map((item: any) => (
-            <Box
-              key={item.id}
-              sx={[
-                (theme) => ({
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 2,
-                  paddingX: '15px',
-                  paddingY: '15px',
-                  borderRadius: '12px',
-                  overflow: 'hidden',
-                  bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.08),
-                }),
-                ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
-              ]}
-            >
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  minWidth: 90,
-                }}
-              >
-                <img
-                  src={item.image}
-                  alt={item.title || item.name}
-                  width={70}
-                  style={{
-                    borderRadius: 12,
-                    objectFit: 'cover',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-                  }}
-                />
-              </Box>
+              <TableBody>
+                {safeProducts.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={10} align="center" sx={{ py: 3 }}>
+                      محصولی یافت نشد.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  safeProducts.map((p: any) => {
+                    const imgCount = getCount(p.images);
+                    const cmtCount = getCount(p.comments);
+                    const qaCount = getCount(p.questions);
+                    const expandedRow = !!expanded[p.id];
 
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  {item.title ?? item.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {item.sku ? `SKU: ${item.sku}` : '—'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {item.price != null
-                    ? `قیمت: ${Number(item.price).toLocaleString('fa-IR')} ریال`
-                    : 'قیمت: —'}
-                </Typography>
-              </Box>
+                    return (
+                      <>
+                        <TableRow
+                          hover
+                          sx={{ cursor: 'pointer' }}
+                          onClick={(e) => {
+                            // کلیک روی سلول‌های قابل توقف، ناوبری نکند
+                            const stopper = (e.target as HTMLElement).closest('[data-stop]');
+                            if (stopper) return;
+                            nav(`/dashboard/products/${p.id}`, { state: { name: p.name } });
+                          }}
+                        >
+                          <TableCell data-stop width={56}>
+                            <IconButton size="small" onClick={() => toggleExpand(p.id)}>
+                              {expandedRow ? <ExpandMoreIcon /> : <ChevronRightIcon />}
+                            </IconButton>
+                          </TableCell>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                <EditIcon
-                  color="action"
-                  sx={{ cursor: 'pointer', fontSize: 28 }}
-                  onClick={() => {
-                    setSelectedProduct({
-                      id: item.id,
-                      title: item.title ?? item.name ?? '',
-                      price: item.price ?? '',
-                      sku: item.sku ?? '',
-                      image: item.image ?? '',
-                    });
-                    setOpenEditDialog(true);
-                  }}
-                  titleAccess="ویرایش محصول"
-                />
-                <DeleteOutlineRoundedIcon
-                  color="error"
-                  sx={{ cursor: 'pointer', fontSize: 26 }}
-                  onClick={() => {
-                    if (confirm('آیا از حذف این محصول مطمئن هستید؟')) {
-                      handleDelete(item.id);
-                    }
-                  }}
-                  titleAccess="حذف محصول"
-                />
-              </Box>
-            </Box>
-          ))}
-        </Box>
+                          <TableCell data-stop width={56}>
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                setSelectedProduct({
+                                  id: p.id,
+                                  name: p.name ?? '',
+                                  description: p.description ?? '',
+                                  price: p.price ?? 0,
+                                  categoryId: p.categoryId ?? null,
+                                  isPublish: p.isPublish ?? true,
+                                });
+
+                                setOpenEditDialog(true);
+                              }}
+                              title="ویرایش"
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </TableCell>
+
+                          <TableCell sx={{ maxWidth: 240 }}>
+                            <Tooltip title={p.name || ''}>
+                              <Typography noWrap fontWeight={600}>
+                                {p.name ?? '—'}
+                              </Typography>
+                            </Tooltip>
+                            <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+                              <Chip
+                                size="small"
+                                variant={p.isPublish ? 'filled' : 'outlined'}
+                                color={p.isPublish ? 'success' : 'default'}
+                                label={p.isPublish ? 'منتشر' : 'پیش‌نویس'}
+                              />
+                              {p.isRemoved && (
+                                <Chip
+                                  size="small"
+                                  color="warning"
+                                  variant="outlined"
+                                  label="حذف‌شده"
+                                />
+                              )}
+                            </Stack>
+                          </TableCell>
+
+                          <TableCell sx={{ minWidth: 260, maxWidth: 360 }}>
+                            {p.description ? (
+                              <Tooltip title={p.description}>
+                                <Typography variant="body2" sx={clamp2Lines}>
+                                  {p.description}
+                                </Typography>
+                              </Tooltip>
+                            ) : (
+                              '—'
+                            )}
+                          </TableCell>
+
+                          <TableCell sx={{ width: 120 }}>
+                            {isPrimitive(p.price) ? toFaDigits(p.price) : '—'}
+                          </TableCell>
+
+                          <TableCell sx={{ width: 100 }}>{p.isPublish ? 'بله' : 'خیر'}</TableCell>
+
+                          <TableCell sx={{ minWidth: 120 }}>
+                            <Tooltip
+                              title={
+                                isPrimitive(p.category)
+                                  ? String(p.category ?? p.categoryId ?? '—')
+                                  : (p.category?.name ?? p.category?.title ?? p.category?.id ?? '—')
+                              }
+                            >
+                              <Typography noWrap>
+                                {renderCategory(p.category, p.categoryId)}
+                              </Typography>
+                            </Tooltip>
+                          </TableCell>
+
+                          <TableCell sx={{ width: 140 }}>
+                            <Typography variant="body2">{formatFaDate(p.inserTime)}</Typography>
+                          </TableCell>
+
+                          <TableCell sx={{ width: 140 }}>
+                            <Typography variant="body2">
+                              {p.lastUpdate ? formatFaDate(p.lastUpdate) : '—'}
+                            </Typography>
+                          </TableCell>
+
+                          <TableCell data-stop align="center" width={72}>
+                            <IconButton
+                              color="error"
+                              size="small"
+                              onClick={() => {
+                                if (confirm('محصول حذف شود؟')) handleDelete(p.id);
+                              }}
+                              title="حذف محصول"
+                            >
+                              <DeleteOutlineRoundedIcon fontSize="small" />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+
+                        {/* جزئیات جمع‌شونده */}
+                        <TableRow>
+                          <TableCell colSpan={10} sx={{ p: 0, bgcolor: 'background.default' }}>
+                            <Collapse in={expandedRow} timeout="auto" unmountOnExit>
+                              <Box sx={{ px: 2.5, pt: 1.5, pb: 2 }}>
+                                <Grid container spacing={2}>
+                                  <Grid item xs={12} md={6}>
+                                    <Stack direction="row" spacing={1} alignItems="center">
+                                      <Typography variant="body2" color="text.secondary">
+                                        GUID:
+                                      </Typography>
+                                      <Tooltip title={p.guid ?? '—'}>
+                                        <Typography variant="body2" sx={{ maxWidth: 360 }} noWrap>
+                                          {isPrimitive(p.guid) ? p.guid || '—' : '—'}
+                                        </Typography>
+                                      </Tooltip>
+                                    </Stack>
+                                  </Grid>
+                                  <Grid item xs={12} md={6}>
+                                    <Stack direction="row" spacing={1} alignItems="center">
+                                      <Typography variant="body2" color="text.secondary">
+                                        واحد پول:
+                                      </Typography>
+                                      <Typography variant="body2">{currency ?? 'IRT'}</Typography>
+                                    </Stack>
+                                  </Grid>
+
+                                  <Grid item xs={12}>
+                                    <Divider sx={{ my: 0.5 }} />
+                                  </Grid>
+
+                                  <Grid item xs={12} md={4}>
+                                    <Chip
+                                      icon={<PhotoLibraryOutlinedIcon />}
+                                      label={`تصاویر: ${toFaDigits(imgCount)}`}
+                                      variant="outlined"
+                                      size="small"
+                                    />
+                                  </Grid>
+                                  <Grid item xs={12} md={4}>
+                                    <Chip
+                                      icon={<CommentOutlinedIcon />}
+                                      label={`نظرات: ${toFaDigits(cmtCount)}`}
+                                      variant="outlined"
+                                      size="small"
+                                    />
+                                  </Grid>
+                                  <Grid item xs={12} md={4}>
+                                    <Chip
+                                      icon={<QuestionAnswerOutlinedIcon />}
+                                      label={`سوالات: ${toFaDigits(qaCount)}`}
+                                      variant="outlined"
+                                      size="small"
+                                    />
+                                  </Grid>
+                                </Grid>
+                              </Box>
+                            </Collapse>
+                          </TableCell>
+                        </TableRow>
+                      </>
+                    );
+                  })
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
       </Box>
 
       <AddProductDialog
@@ -187,6 +403,7 @@ export function ProductsView({ sx, products, activeOnly, setActiveOnly, onRefetc
         onClose={() => setOpenAddDialog(false)}
         onCreated={onRefetch}
       />
+
       <EditProductDialog
         open={openEditDialog}
         onClose={() => setOpenEditDialog(false)}

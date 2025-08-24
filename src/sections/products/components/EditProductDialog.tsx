@@ -2,59 +2,55 @@ import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { CacheProvider } from '@emotion/react';
+// src/sections/products/components/EditProductDialog.tsx
 import React, { useMemo, useState, useEffect } from 'react';
 
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
 import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Stack,
   Dialog,
   Button,
-  Avatar,
+  Switch,
   TextField,
-  IconButton,
   DialogTitle,
   DialogContent,
   DialogActions,
-  InputAdornment,
+  FormControlLabel,
 } from '@mui/material';
 
-import { updateProductApi } from '../api/productsApi';
+import { updateProductJson } from '../api/productsApi';
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  product?: { id: string; title?: string; price?: number; sku?: string; image?: string } | null;
+  product?: {
+    id: string;
+    name?: string;
+    description?: string;
+    price?: number;
+    categoryId?: number;
+    isPublish?: boolean;
+  } | null;
   onUpdated?: () => void;
 };
 
 export default function EditProductDialog({ open, onClose, product, onUpdated }: Props) {
-  const [title, setTitle] = useState(product?.title ?? '');
+  const [name, setName] = useState(product?.name ?? '');
+  const [description, setDescription] = useState(product?.description ?? '');
   const [price, setPrice] = useState<number | ''>(product?.price ?? '');
-  const [sku, setSku] = useState(product?.sku ?? '');
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(product?.image ?? null);
+  const [categoryId, setCategoryId] = useState<number | ''>(product?.categoryId ?? '');
+  const [isPublish, setIsPublish] = useState<boolean>(product?.isPublish ?? true);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setTitle(product?.title ?? '');
+    setName(product?.name ?? '');
+    setDescription(product?.description ?? '');
     setPrice(product?.price ?? '');
-    setSku(product?.sku ?? '');
-    setPreview(product?.image ?? null);
-    setImage(null);
+    setCategoryId(product?.categoryId ?? '');
+    setIsPublish(product?.isPublish ?? true);
   }, [product, open]);
 
-  useEffect(() => {
-    if (!image) return undefined; // ✅ fix: consistent-return
-    const url = URL.createObjectURL(image);
-    setPreview(url);
-    return () => URL.revokeObjectURL(url);
-  }, [image]);
-
-  const { updateProduct } = updateProductApi();
-
-  // ✅ Your preferred RTL setup
+  // RTL
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
@@ -67,24 +63,25 @@ export default function EditProductDialog({ open, onClose, product, onUpdated }:
       toast.error('شناسه محصول نامعتبر است.');
       return;
     }
-    if (!title.trim()) {
-      toast.error('عنوان محصول را وارد کنید.');
+    if (!name.trim() || price === '' || categoryId === '') {
+      toast.error('نام، قیمت و دسته را کامل وارد کنید.');
       return;
     }
     setLoading(true);
     try {
-      const res = await updateProduct({
+      const res = await updateProductJson({
         productId: product.id,
-        title: title.trim(),
-        price: price === '' ? undefined : Number(price),
-        sku: sku.trim() || undefined,
-        image,
+        name: name.trim(),
+        description: description.trim(),
+        categoryId: Number(categoryId),
+        price: Number(price),
+        status: 1,
       });
       const ok = res?.success ?? true;
       const msg = res?.message || (ok ? 'محصول بروزرسانی شد.' : 'بروزرسانی ناموفق بود.');
       if (ok) {
         toast.success(msg);
-        if (onUpdated) onUpdated(); // ✅ fix: no-unused-expressions
+        if (onUpdated) onUpdated();
         onClose();
       } else {
         toast.error(msg);
@@ -105,47 +102,39 @@ export default function EditProductDialog({ open, onClose, product, onUpdated }:
           onClose={onClose}
           PaperProps={{ sx: { borderRadius: 3, width: '100%', maxWidth: 560 } }}
         >
-          <DialogTitle
-            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-          >
-            ویرایش محصول
-            <IconButton onClick={onClose}>
-              <CloseRoundedIcon />
-            </IconButton>
-          </DialogTitle>
+          <DialogTitle>ویرایش محصول</DialogTitle>
           <DialogContent>
             <Stack spacing={2} sx={{ mt: 1 }}>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <Avatar src={preview ?? undefined} sx={{ width: 64, height: 64 }} />
-                <Button component="label" startIcon={<UploadRoundedIcon />} variant="outlined">
-                  انتخاب تصویر
-                  <input
-                    hidden
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => setImage(e.target.files?.[0] ?? null)}
-                  />
-                </Button>
-              </Stack>
               <TextField
-                label="عنوان"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                label="نام"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
+              />
+              <TextField
+                label="توضیحات"
+                multiline
+                minRows={2}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
               <TextField
                 label="قیمت"
                 type="number"
                 value={price}
                 onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">ریال</InputAdornment>,
-                }}
               />
               <TextField
-                label="شناسه کالا (SKU)"
-                value={sku}
-                onChange={(e) => setSku(e.target.value)}
+                label="شناسه دسته (CategoryId)"
+                type="number"
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value === '' ? '' : Number(e.target.value))}
+              />
+              <FormControlLabel
+                control={
+                  <Switch checked={isPublish} onChange={(e) => setIsPublish(e.target.checked)} />
+                }
+                label="انتشار (نمایشی)"
               />
             </Stack>
           </DialogContent>
