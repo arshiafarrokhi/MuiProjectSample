@@ -1,41 +1,39 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
-import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
+import createCache from '@emotion/cache';
+import rtlPlugin from 'stylis-plugin-rtl';
+import { CacheProvider } from '@emotion/react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { useParams, useLocation, useNavigate } from 'react-router';
 
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded';
+import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
 import {
   Box,
   Grid,
   Card,
-  CardContent,
-  CardHeader,
-  Typography,
-  Button,
-  TextField,
-  InputAdornment,
-  Divider,
-  CircularProgress,
   Table,
+  Paper,
+  Stack,
+  Button,
+  Divider,
+  TableRow,
+  TextField,
   TableBody,
   TableCell,
   TableHead,
-  TableRow,
-  Paper,
-  Stack,
+  CardHeader,
+  Typography,
+  CardContent,
+  InputAdornment,
+  CircularProgress,
 } from '@mui/material';
 
-import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
-import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
-import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded';
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
-
-import { CacheProvider } from '@emotion/react';
-import createCache from '@emotion/cache';
-import { prefixer } from 'stylis';
-import rtlPlugin from 'stylis-plugin-rtl';
+import { formatFaDate } from 'src/utils/formatDate';
 
 import { userWalletApi } from 'src/sections/users/api/userWalletApi';
-import { formatFaDate } from 'src/utils/formatDate';
 
 const toFaDigits = (val: string | number | undefined | null) =>
   (val ?? '').toString().replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d]);
@@ -145,7 +143,11 @@ export default function EditUsersPage() {
       const ok = res && typeof res.success !== 'undefined' ? !!res.success : true;
       const msg =
         res?.message || (ok ? 'افزایش اعتبار با موفقیت انجام شد.' : 'افزایش اعتبار ناموفق بود.');
-      ok ? toast.success(msg) : toast.error(msg);
+      if (ok) {
+        toast.success(msg);
+      } else {
+        toast.error(msg);
+      }
       if (ok) {
         setIncAmount('');
         setIncDesc('');
@@ -173,7 +175,11 @@ export default function EditUsersPage() {
       const ok = res && typeof res.success !== 'undefined' ? !!res.success : true;
       const msg =
         res?.message || (ok ? 'کاهش اعتبار با موفقیت انجام شد.' : 'کاهش اعتبار ناموفق بود.');
-      ok ? toast.success(msg) : toast.error(msg);
+      if (ok) {
+        toast.success(msg);
+      } else {
+        toast.error(msg);
+      }
       if (ok) {
         setDecAmount('');
         setDecDesc('');

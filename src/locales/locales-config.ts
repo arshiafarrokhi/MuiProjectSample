@@ -53,4 +53,3 @@ export const changeLangMessages: Record<
     loading: 'در حال بارگذاری...',
   },
 };
-

@@ -1,8 +1,6 @@
-// src/sections/users/views/UsersView.tsx
 import type { Theme, SxProps } from '@mui/material/styles';
 
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router';
 import { useState, useEffect } from 'react';
 import { varAlpha } from 'minimal-shared/utils';
 
@@ -14,55 +12,46 @@ import EditIcon from '@mui/icons-material/Edit';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-// Added wallet icon import
-import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import AddUserDialog from '../components/AddUser';
-import { deleteUserApi } from '../api/deleteUserApi';
-// import AddUserDialog from '../components/addUser';
-import EditUserDialog from '../components/EditUserDialog';
+import { deleteProductApi } from '../api/productsApi';
+import AddProductDialog from '../components/AddProductDialog';
+import EditProductDialog from '../components/EditProductDialog';
 
 type Props = {
   sx?: SxProps<Theme>;
-  users?: any[];
+  products?: any[];
   activeOnly?: boolean;
   setActiveOnly?: (v: boolean) => void;
-  // Optional: you can pass a refetch method if you have one
   onRefetch?: () => void;
 };
 
-export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: Props) {
+export function ProductsView({ sx, products, activeOnly, setActiveOnly, onRefetch }: Props) {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any | null>(null);
-
-  const [openWalletDialog, setOpenWalletDialog] = useState(false);
-  const [walletUser, setWalletUser] = useState<any | null>(null);
-
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [localActiveOnly, setLocalActiveOnly] = useState<boolean>(activeOnly ?? true);
 
   useEffect(() => {
     if (typeof activeOnly === 'boolean') setLocalActiveOnly(activeOnly);
   }, [activeOnly]);
 
-  const { deleteUser } = deleteUserApi();
+  const { deleteProduct } = deleteProductApi();
 
   const handleDelete = async (id: string) => {
     try {
-      const res = await deleteUser(id);
+      const res = await deleteProduct(id);
       const ok = res && typeof res.success !== 'undefined' ? !!res.success : true;
-      const message = res?.message || (ok ? 'کاربر حذف شد.' : 'حذف کاربر ناموفق بود.');
-
+      const message = res?.message || (ok ? 'محصول حذف شد.' : 'حذف محصول ناموفق بود.');
       if (ok) {
         toast.success(message);
-        onRefetch?.();
+        if (onRefetch) onRefetch(); // ✅ fix: no-unused-expressions
       } else {
         toast.error(message);
       }
     } catch (err: any) {
-      toast.error(err?.message || 'خطا در حذف کاربر');
+      toast.error(err?.message || 'خطا در حذف محصول');
     }
   };
 
@@ -71,13 +60,11 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
     if (typeof setActiveOnly === 'function') setActiveOnly(value);
   };
 
-  const safeUsers = Array.isArray(users) ? users : [];
-
-  const nav = useNavigate();
+  const safeProducts = Array.isArray(products) ? products : [];
 
   return (
     <DashboardContent maxWidth="xl">
-      <Typography variant="h4">کاربران</Typography>
+      <Typography variant="h4">محصولات</Typography>
 
       <Box
         sx={[
@@ -88,12 +75,12 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
             border: `dashed 1px ${theme.vars.palette.divider}`,
             bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.04),
           }),
-          ...(Array.isArray(sx) ? sx : [sx]),
+          ...(Array.isArray(sx) ? sx : sx ? [sx] : []), // ✅ robust handling if sx is undefined
         ]}
       >
         <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 1 }}>
           <Button startIcon={<AddIcon />} onClick={() => setOpenAddDialog(true)} color="primary">
-            اضافه کردن کاربر
+            افزودن محصول
           </Button>
         </Box>
 
@@ -107,13 +94,13 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
                   color="primary"
                 />
               }
-              label="کاربر فعال"
+              label="محصول فعال"
             />
           </Box>
 
-          {safeUsers.map((usersItem: any) => (
+          {safeProducts.map((item: any) => (
             <Box
-              key={usersItem.id}
+              key={item.id}
               sx={[
                 (theme) => ({
                   display: 'flex',
@@ -126,7 +113,7 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
                   overflow: 'hidden',
                   bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.08),
                 }),
-                ...(Array.isArray(sx) ? sx : [sx]),
+                ...(Array.isArray(sx) ? sx : sx ? [sx] : []),
               ]}
             >
               <Box
@@ -138,59 +125,56 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
                 }}
               >
                 <img
-                  src={usersItem.avatar}
-                  alt={usersItem.fName + ' ' + usersItem.lName}
+                  src={item.image}
+                  alt={item.title || item.name}
                   width={70}
-                  style={{ borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+                  style={{
+                    borderRadius: 12,
+                    objectFit: 'cover',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                  }}
                 />
               </Box>
 
               <Box sx={{ flex: 1 }}>
                 <Typography variant="subtitle1" fontWeight={600} gutterBottom>
-                  {usersItem.fName} {usersItem.lName}
+                  {item.title ?? item.name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {usersItem.phone}
+                  {item.sku ? `SKU: ${item.sku}` : '—'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {item.price != null
+                    ? `قیمت: ${Number(item.price).toLocaleString('fa-IR')} ریال`
+                    : 'قیمت: —'}
                 </Typography>
               </Box>
 
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                {/* Edit button */}
                 <EditIcon
                   color="action"
                   sx={{ cursor: 'pointer', fontSize: 28 }}
                   onClick={() => {
-                    setSelectedUser({
-                      id: usersItem.id, // <-- used as userId in API
-                      fName: usersItem.fName ?? '',
-                      lName: usersItem.lName ?? '',
-                      phone: usersItem.phone ?? '',
+                    setSelectedProduct({
+                      id: item.id,
+                      title: item.title ?? item.name ?? '',
+                      price: item.price ?? '',
+                      sku: item.sku ?? '',
+                      image: item.image ?? '',
                     });
                     setOpenEditDialog(true);
                   }}
-                  titleAccess="ویرایش کاربر"
+                  titleAccess="ویرایش محصول"
                 />
-                {/* Delete button */}
                 <DeleteOutlineRoundedIcon
                   color="error"
                   sx={{ cursor: 'pointer', fontSize: 26 }}
                   onClick={() => {
-                    if (confirm('آیا مطمئن هستید که می‌خواهید این کاربر را حذف کنید؟')) {
-                      handleDelete(usersItem.id);
+                    if (confirm('آیا از حذف این محصول مطمئن هستید؟')) {
+                      handleDelete(item.id);
                     }
                   }}
-                  titleAccess="حذف کاربر"
-                />
-                {/* wallet button */}
-                <AccountBalanceWalletRoundedIcon
-                  color="primary"
-                  sx={{ cursor: 'pointer', fontSize: 26 }}
-                  onClick={() =>
-                    nav(`/dashboard/users/${usersItem.id}`, {
-                      state: { fName: usersItem.fName ?? '', lName: usersItem.lName ?? '' },
-                    })
-                  }
-                  titleAccess="کیف‌پول"
+                  titleAccess="حذف محصول"
                 />
               </Box>
             </Box>
@@ -198,19 +182,16 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
         </Box>
       </Box>
 
-      {/* Add User */}
-      <AddUserDialog
-        handleClose={() => setOpenAddDialog(false)}
-        openAddDialog={openAddDialog}
+      <AddProductDialog
+        open={openAddDialog}
+        onClose={() => setOpenAddDialog(false)}
         onCreated={onRefetch}
       />
-
-      {/* Edit User */}
-      <EditUserDialog
+      <EditProductDialog
         open={openEditDialog}
         onClose={() => setOpenEditDialog(false)}
-        user={selectedUser}
-        onUpdated={onRefetch} // if you have a refetch method, it will refresh the list post-update
+        product={selectedProduct}
+        onUpdated={onRefetch}
       />
     </DashboardContent>
   );

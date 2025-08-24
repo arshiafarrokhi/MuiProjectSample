@@ -1,4 +1,3 @@
-
 import { Iconify } from 'src/components/iconify';
 
 import type { AccountDrawerProps } from './components/account-drawer';

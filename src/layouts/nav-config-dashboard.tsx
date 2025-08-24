@@ -72,7 +72,7 @@ export function navDataFunc(t: TFunction<any, any>) {
           path: paths.dashboard.users,
           icon: ICONS.dashboard,
         },
-        // { title: t('Agent Bots'), path: paths.dashboard.agentBots.root, icon: ICONS.ecommerce },
+        { title: 'محصولات', path: paths.dashboard.products, icon: ICONS.ecommerce },
         // { title: t('Knowledge Bases'), path: paths.dashboard.KnowledgeBases.root, icon: ICONS.analytics },
       ],
     },

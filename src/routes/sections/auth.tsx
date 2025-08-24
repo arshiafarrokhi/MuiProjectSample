@@ -27,9 +27,9 @@ const authJwt = {
       element: (
         <GuestGuard>
           <AuthSplitLayout
-            // slotProps={{
-            //   section: { title: 'لکسی چت' },
-            // }}
+          // slotProps={{
+          //   section: { title: 'لکسی چت' },
+          // }}
           >
             <Jwt.SignInPage />
           </AuthSplitLayout>

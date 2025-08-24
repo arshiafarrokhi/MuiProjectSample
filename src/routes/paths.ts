@@ -26,11 +26,6 @@ export const paths = {
   dashboard: {
     root: `${ROOTS.DASHBOARD}/users`,
     users: `${ROOTS.DASHBOARD}/users`,
-    // usersWallet: {
-    //   root: `${ROOTS.DASHBOARD}/usersWallet`,
-    //   new: `${ROOTS.DASHBOARD}/usersWallet/new`,
-    //   edit: (walletId: number) =>
-    //     `${ROOTS.DASHBOARD}/usersWallet/${walletId}/edit`,
-    // },
+    products: `${ROOTS.DASHBOARD}/products`,
   },
 };

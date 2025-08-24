@@ -13,6 +13,7 @@ import ErrorBoundary from 'src/components/ErrorBoundary/ErrorBoundary';
 
 const EditUsersPage = lazy(() => import('src/pages/dashboard/users/components/EditUsersPage'));
 const UsersPage = lazy(() => import('src/pages/dashboard/users'));
+const ProductsPage = lazy(() => import('src/pages/dashboard/products'));
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +45,7 @@ export const dashboardRoutes: RouteObject[] = [
         element: <EditUsersPage />,
         errorElement: <LoadingScreen />,
       },
+      { path: 'products', element: <ProductsPage /> },
     ],
   },
 ];

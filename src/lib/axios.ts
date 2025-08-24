@@ -53,4 +53,11 @@ export const endpoints = {
       creditReduction: '/UserWallet/WalletCreditReduction',
     },
   },
+  products: {
+    get: 'Products',
+    list: 'Products/GetProducts',
+    create: '/Product/AddNewProduct',
+    update: '/Product/UpdateProduct',
+    delete: '/Product/RemoveProduct',
+  },
 };

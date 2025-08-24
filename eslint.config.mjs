@@ -103,7 +103,7 @@ const sortImportsRules = () => {
       },
     ],
     'perfectionist/sort-imports': [
-      2,
+      1,
       {
         order: 'asc',
         ignoreCase: true,
