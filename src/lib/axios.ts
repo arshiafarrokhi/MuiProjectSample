@@ -51,6 +51,11 @@ export const endpoints = {
       transactions: '/UserWallet/GetWalletTransations',
       creditIncrease: '/UserWallet/WalletCreditIncrease',
       creditReduction: '/UserWallet/WalletCreditReduction',
+      requests: {
+        list: '/UserWallet/GetCreditIncreaseRequests',
+        getOne: '/UserWallet/GetCreditIncreaseRequest',
+        updateState: '/UserWallet/UpdateCreditIncreaseRequestState',
+      },
     },
   },
   products: {
