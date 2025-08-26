@@ -100,7 +100,15 @@ export function ProductsView({ sx, products, currency, onRefetch }: Props) {
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
-  const safeProducts = useMemo(() => (Array.isArray(products) ? products : []), [products]);
+  // مرتب‌سازی محصولات از جدیدترین به قدیمی‌ترین بر اساس inserTime
+  const safeProducts = useMemo(() => {
+    if (!Array.isArray(products)) return [];
+    return [...products].sort((a, b) => {
+      const dateA = new Date(a.inserTime).getTime();
+      const dateB = new Date(b.inserTime).getTime();
+      return dateB - dateA; // جدیدترین اول
+    });
+  }, [products]);
 
   const handleDelete = async (productId: string) => {
     try {
@@ -146,7 +154,6 @@ export function ProductsView({ sx, products, currency, onRefetch }: Props) {
           <Button
             startIcon={<AddIcon />}
             onClick={() => setOpenAddDialog(true)}
-            // color="primary"
             variant="contained"
           >
             افزودن محصول

@@ -73,7 +73,7 @@ export function navDataFunc(t: TFunction<any, any>) {
           icon: ICONS.dashboard,
         },
         { title: 'محصولات', path: paths.dashboard.products, icon: ICONS.ecommerce },
-        // { title: t('Knowledge Bases'), path: paths.dashboard.KnowledgeBases.root, icon: ICONS.analytics },
+        { title: 'محصولات سیم کارت', path: paths.dashboard.productSim, icon: ICONS.analytics },
       ],
     },
   ];

@@ -48,7 +48,7 @@ export const endpoints = {
     delete: '/Users/RemoveUser',
     wallet: {
       get: '/UserWallet/GetWalletBalance',
-      transactions: '/UserWallet/GetWalletTransations',
+      transactions: '/UserWallet/GetWalletTransactions',
       creditIncrease: '/UserWallet/WalletCreditIncrease',
       creditReduction: '/UserWallet/WalletCreditReduction',
       requests: {
@@ -71,5 +71,18 @@ export const endpoints = {
       add: '/Product/AddNewCategory',
       remove: '/Product/RemoveCategory',
     },
+    comment: {
+      get: '/Product/GetProductComments',
+      edit: '/Product/ChangeProductCommentStatus',
+    },
+  },
+  productSim: {
+    list: '/Product/GetProducts',
+    getOne: '/Product/GetProduct',
+    add: '/Product/AddNewProduct',
+    update: '/Product/UpdateProduct',
+    addImage: '/Product/AddProductImages',
+    removeImage: '/Product/RemoveProductImage',
+    delete: '/Product/RemoveProduct',
   },
 };

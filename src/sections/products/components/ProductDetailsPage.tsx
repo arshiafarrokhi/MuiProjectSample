@@ -38,6 +38,13 @@ import {
   addProductImage,
   removeProductImage,
 } from 'src/sections/products/api/productsApi';
+import {
+  getProductComments,
+  changeProductCommentStatus,
+} from 'src/sections/products/api/productsApi';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import AutorenewIcon from '@mui/icons-material/Autorenew';
 
 // --- helpers ---
 const formatFaDate = (iso?: string | null) => {
@@ -172,6 +179,37 @@ export default function ProductDetailsPage() {
   };
 
   const title = state?.name || prod?.name || 'محصول';
+
+  const [comments, setComments] = useState<any[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentFilters, setCommentFilters] = useState({ status: false, isRemoved: false });
+
+  const loadComments = async () => {
+    if (!productId) return;
+    setCommentsLoading(true);
+    try {
+      const res = await getProductComments({
+        productId,
+        status: commentFilters.status,
+        isRemoved: commentFilters.isRemoved,
+        pageIndex: 0,
+      });
+      if (res?.success) {
+        setComments(res.result.productComments || []);
+      } else {
+        toast.error(res?.message || 'خطا در دریافت نظرات');
+      }
+    } catch (e: any) {
+      toast.error(e?.message || 'خطا در دریافت نظرات');
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadComments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productId, commentFilters]);
 
   return (
     <CacheProvider value={rtlCache}>
@@ -375,9 +413,75 @@ export default function ProductDetailsPage() {
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
               <CardHeader title="نظرات محصول" />
               <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                  این بخش جای‌گذاری شد. APIهای مربوط به نظرات را بده تا تکمیل شود.
-                </Typography>
+                <Stack spacing={2}>
+                  {/* فیلترها */}
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Button
+                      variant={commentFilters.status ? 'contained' : 'outlined'}
+                      onClick={() =>
+                        setCommentFilters((prev) => ({ ...prev, status: !prev.status }))
+                      }
+                    >
+                      منتشر شده
+                    </Button>
+                    <Button
+                      variant={commentFilters.isRemoved ? 'contained' : 'outlined'}
+                      onClick={() =>
+                        setCommentFilters((prev) => ({ ...prev, isRemoved: !prev.isRemoved }))
+                      }
+                    >
+                      حذف شده
+                    </Button>
+                  </Stack>
+
+                  {/* لیست کامنت‌ها */}
+                  {commentsLoading ? (
+                    <Typography>در حال بارگذاری...</Typography>
+                  ) : comments.length === 0 ? (
+                    <Typography>هیچ نظری وجود ندارد.</Typography>
+                  ) : (
+                    comments.map((c) => (
+                      <Card key={c.commentId} variant="outlined" sx={{ borderRadius: 2 }}>
+                        <CardContent>
+                          <Stack direction="row" spacing={2} alignItems="center">
+                            <Box flex={1}>
+                              <Typography fontWeight={600}>{c.userName}</Typography>
+                              <Typography>{c.text}</Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                ثبت شده در: {formatFaDate(c.insertTime)}
+                              </Typography>
+                            </Box>
+                            <Stack direction="row" spacing={1}>
+                              <Button
+                                size="small"
+                                color={c.status ? 'success' : 'warning'}
+                                startIcon={c.status ? <CheckIcon /> : <CloseIcon />}
+                                onClick={async () => {
+                                  try {
+                                    const res = await changeProductCommentStatus({
+                                      commentId: c.commentId,
+                                      status: !c.status,
+                                    });
+                                    if (res.success) {
+                                      toast.success(res.message || 'تغییر وضعیت انجام شد');
+                                      loadComments();
+                                    } else {
+                                      toast.error(res.message || 'خطا در تغییر وضعیت');
+                                    }
+                                  } catch (e: any) {
+                                    toast.error(e?.message || 'خطا در تغییر وضعیت');
+                                  }
+                                }}
+                              >
+                                {c.status ? 'منتشر شده' : 'منتشر نشده'}
+                              </Button>
+                            </Stack>
+                          </Stack>
+                        </CardContent>
+                      </Card>
+                    ))
+                  )}
+                </Stack>
               </CardContent>
             </Card>
           )}

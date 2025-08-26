@@ -152,3 +152,33 @@ export async function removeProductImage(payload: { productId: string; imageId: 
   return res.data;
 }
 
+// ---------- get product comments ----------
+export async function getProductComments(params: {
+  productId: string;
+  status?: boolean;
+  isRemoved?: boolean;
+  pageIndex?: number;
+}) {
+  const url = endpoints.products.comment.get; // فرض: 'Product/GetProductComments'
+  const res = await axiosInstance.get(url, {
+    params: {
+      'CommentFilters.ProductId': params.productId,
+      'CommentFilters.Status': params.status ?? false,
+      'CommentFilters.IsRemoved': params.isRemoved ?? false,
+      'Pagination.PageIndex': params.pageIndex ?? 0,
+    },
+  });
+  return res.data;
+}
+
+// ---------- change comment status ----------
+export async function changeProductCommentStatus(params: { commentId: string; status: boolean }) {
+  const url = endpoints.products.comment.edit; // فرض: 'Product/ChangeProductCommentStatus'
+  const res = await axiosInstance.post(url, null, {
+    params: {
+      CommentId: params.commentId,
+      Status: params.status,
+    },
+  });
+  return res.data;
+}
