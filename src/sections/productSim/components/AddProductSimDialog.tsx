@@ -227,7 +227,6 @@ export default function AddProductSimDialog({ open, onClose, onCreated }: Props)
                 </Button>
                 {imageFile && (
                   <Box sx={{ width: 64, height: 64, borderRadius: 1, overflow: 'hidden' }}>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={URL.createObjectURL(imageFile)}
                       alt="preview"

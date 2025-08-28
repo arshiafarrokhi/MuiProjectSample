@@ -145,7 +145,6 @@ export default function EditProductSimDialog({ open, productId, onClose, onUpdat
 
                   {imageFile ? (
                     <Box sx={{ width: 64, height: 64, borderRadius: 1, overflow: 'hidden' }}>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={URL.createObjectURL(imageFile)}
                         alt="preview"

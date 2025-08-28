@@ -98,7 +98,10 @@ export default function WalletRequestsTab({ userId }: Props) {
     try {
       const res = await getCreditIncreaseRequest(id);
       const ok = res?.success ?? true;
-      if (!ok) return toast.error(res?.message || 'عدم دریافت جزئیات');
+      if (!ok) {
+        toast.error(res?.message || 'عدم دریافت جزئیات');
+        return;
+      }
       setReqDetail(res?.result || null);
       setActionNote('');
       setOpen(true);
