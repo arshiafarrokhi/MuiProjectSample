@@ -74,6 +74,7 @@ export function navDataFunc(t: TFunction<any, any>) {
         },
         { title: 'محصولات', path: paths.dashboard.products, icon: ICONS.ecommerce },
         { title: 'محصولات سیم کارت', path: paths.dashboard.productSim, icon: ICONS.analytics },
+        { title: 'ادمین', path: paths.dashboard.admin, icon: ICONS.analytics },
       ],
     },
   ];

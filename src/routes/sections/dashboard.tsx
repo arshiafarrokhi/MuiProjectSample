@@ -17,6 +17,7 @@ const EditUsersPage = lazy(() => import('src/pages/dashboard/users/components/Ed
 const UsersPage = lazy(() => import('src/pages/dashboard/users'));
 const ProductsPage = lazy(() => import('src/pages/dashboard/products/index'));
 const ProductSimPage = lazy(() => import('src/pages/dashboard/productSim'));
+const AdminPage = lazy(() => import('src/pages/dashboard/adminPage'));
 const ProductDetailsPage = lazy(
   () => import('src/sections/products/components/ProductDetailsPage')
 );
@@ -58,6 +59,7 @@ export const dashboardRoutes: RouteObject[] = [
         // errorElement: <LoadingScreen />,
       },
       { path: 'productSim', element: <ProductSimPage /> },
+      { path: 'admin', element: <AdminPage /> },
     ],
   },
 ];
