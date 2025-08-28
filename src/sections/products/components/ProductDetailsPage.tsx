@@ -34,12 +34,11 @@ import {
 import {
   getProduct,
   addProductImage,
-
   updateProductJson,
   getProductComments,
   removeProductImage,
-  changeProductCommentStatus} from 'src/sections/products/api/productsApi';
-
+  changeProductCommentStatus,
+} from 'src/sections/products/api/productsApi';
 
 // --- helpers ---
 const formatFaDate = (iso?: string | null) => {
@@ -232,7 +231,7 @@ export default function ProductDetailsPage() {
             <Tab label="نمای کلی" />
             <Tab label="تصاویر" />
             <Tab label="دسته‌بندی" />
-            <Tab label="سوال و جواب" />
+            {/* <Tab label="سوال و جواب" /> */}
             <Tab label="نظرات" />
           </Tabs>
 
@@ -392,19 +391,9 @@ export default function ProductDetailsPage() {
           )}
 
           {/* Q&A */}
-          {tab === 3 && (
-            <Card variant="outlined" sx={{ borderRadius: 2 }}>
-              <CardHeader title="سوال و جواب محصول" />
-              <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                  این بخش جای‌گذاری شد. APIهای مربوط به Q&A را بده تا پیاده‌سازی کنم.
-                </Typography>
-              </CardContent>
-            </Card>
-          )}
 
           {/* Comments */}
-          {tab === 4 && (
+          {tab === 3 && (
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
               <CardHeader title="نظرات محصول" />
               <CardContent>

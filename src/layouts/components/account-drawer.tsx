@@ -72,7 +72,7 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
       ]}
     >
       {data.map((option) => {
-        const rootLabel = pathname.includes('/dashboard') ? 'Home' : 'Dashboard';
+        const rootLabel = pathname.includes('/dashboard') ? 'تب اول' : 'Dashboard';
         const rootHref = pathname.includes('/dashboard') ? '/' : paths.dashboard.root;
 
         return (
@@ -159,10 +159,10 @@ export function AccountDrawer({ data = [], sx, ...other }: AccountDrawerProps) {
             <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, mb: 2 }} noWrap>
               {user?.email}
             </Typography>
-
+            {/* 
             <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }} noWrap>
               Role : {user?.role}
-            </Typography>
+            </Typography> */}
           </Box>
 
           {/* <Box
