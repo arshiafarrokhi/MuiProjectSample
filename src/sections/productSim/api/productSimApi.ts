@@ -104,8 +104,7 @@ export async function updateProductSim(payload: {
 export async function removeProductSim(productId: string) {
   const url = endpoints.productSim?.delete;
   const res = await axiosInstance.delete(url, {
-    data: { ProductId: productId },
-    headers: { 'Content-Type': 'application/json' },
+    params: { ProductId: productId },
   });
   return res.data;
 }

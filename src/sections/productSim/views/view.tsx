@@ -35,18 +35,24 @@ export function ProductSimView({ sx, onRefetch }: Props) {
 
   const { productSims, productSimsLoading, refetchProductSims } = GetProductSimsApi(0);
 
-  const rows = useMemo(() => (Array.isArray(productSims) ? productSims : []), [productSims]);
+  const rows = useMemo(() => {
+    if (!Array.isArray(productSims)) return [];
+    return [...productSims].sort((a: any, b: any) => {
+      const ta = a?.insertTime ? new Date(a.insertTime).getTime() : 0;
+      const tb = b?.insertTime ? new Date(b.insertTime).getTime() : 0;
+      return tb - ta;
+    });
+  }, [productSims]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('محصول حذف شود؟')) return;
     try {
       const res = await removeProductSim(id);
+      refetchProductSims();
       const ok = res?.success ?? true;
       const msg = res?.message || (ok ? 'محصول حذف شد.' : 'حذف ناموفق بود.');
       if (ok) {
         toast.success(msg);
-        if (refetchProductSims) refetchProductSims();
-        if (onRefetch) onRefetch();
       } else {
         toast.error(msg);
       }

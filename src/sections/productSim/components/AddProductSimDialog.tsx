@@ -13,6 +13,7 @@ import {
   Select,
   MenuItem,
   Box,
+  Typography,
 } from '@mui/material';
 import { toast } from 'sonner';
 
@@ -136,6 +137,17 @@ export default function AddProductSimDialog({ open, onClose, onCreated }: Props)
     }
   };
 
+  const [selectedOperator, setSelectedOperator] = useState<any | null>(null);
+
+  useEffect(() => {
+    if (!operatorId) {
+      setSelectedOperator(null);
+      return;
+    }
+    const op = operators.find((o) => o.id === operatorId);
+    setSelectedOperator(op || null);
+  }, [operatorId, operators]);
+
   return (
     <CacheProvider value={rtlCache}>
       <ThemeProvider theme={rtlTheme}>
@@ -156,6 +168,12 @@ export default function AddProductSimDialog({ open, onClose, onCreated }: Props)
                 fullWidth
                 inputProps={{ inputMode: 'numeric' }}
               />
+              {selectedOperator && (
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, ml: 1 }}>
+                  حداقل: {selectedOperator.min ?? '—'} | حداکثر:{' '}
+                  {selectedOperator.max ?? '—'}
+                </Typography>
+              )}
               <TextField
                 label="توضیحات"
                 value={description}
