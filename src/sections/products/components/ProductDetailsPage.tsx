@@ -1,50 +1,45 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router';
 import { toast } from 'sonner';
-
-import {
-  Box,
-  Tabs,
-  Tab,
-  Card,
-  CardHeader,
-  CardContent,
-  Grid,
-  Button,
-  TextField,
-  Stack,
-  Typography,
-  Divider,
-  IconButton,
-  Chip,
-  ImageList,
-  ImageListItem,
-  ImageListItemBar,
-  Tooltip,
-} from '@mui/material';
-
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
-import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
-
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
-import { CacheProvider } from '@emotion/react';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
+import { CacheProvider } from '@emotion/react';
+import React, { useMemo, useState, useEffect } from 'react';
+import { useParams, useLocation, useNavigate } from 'react-router';
+
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
+import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
+import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import {
+  Box,
+  Tab,
+  Tabs,
+  Card,
+  Grid,
+  Chip,
+  Stack,
+  Button,
+  Divider,
+  TextField,
+  ImageList,
+  CardHeader,
+  Typography,
+  IconButton,
+  CardContent,
+  ImageListItem,
+  ImageListItemBar,
+} from '@mui/material';
 
 import {
   getProduct,
-  updateProductJson,
   addProductImage,
-  removeProductImage,
-} from 'src/sections/products/api/productsApi';
-import {
+
+  updateProductJson,
   getProductComments,
-  changeProductCommentStatus,
-} from 'src/sections/products/api/productsApi';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import AutorenewIcon from '@mui/icons-material/Autorenew';
+  removeProductImage,
+  changeProductCommentStatus} from 'src/sections/products/api/productsApi';
+
 
 // --- helpers ---
 const formatFaDate = (iso?: string | null) => {

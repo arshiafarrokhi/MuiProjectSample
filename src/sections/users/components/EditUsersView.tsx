@@ -13,8 +13,10 @@ import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded';
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
 import {
   Box,
+  Tab,
   Grid,
   Card,
+  Tabs,
   Table,
   Paper,
   Stack,
@@ -30,11 +32,10 @@ import {
   CardContent,
   InputAdornment,
   CircularProgress,
-  Tabs,
-  Tab,
 } from '@mui/material';
 
 import { formatFaDate } from 'src/utils/formatDate';
+
 import { userWalletApi } from 'src/sections/users/api/userWalletApi';
 import WalletRequestsTab from 'src/sections/users/components/WalletRequestsTab';
 

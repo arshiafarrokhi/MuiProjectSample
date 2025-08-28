@@ -1,45 +1,45 @@
 // src/sections/products/views/view.tsx
 import type { Theme, SxProps } from '@mui/material/styles';
-import { useMemo, useState } from 'react';
-import { varAlpha } from 'minimal-shared/utils';
-import { toast } from 'sonner';
-import { useNavigate } from 'react-router';
 
-import {
-  Box,
-  Button,
-  Typography,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Paper,
-  Stack,
-  Tooltip,
-  Chip,
-  IconButton,
-  Collapse,
-  Grid,
-  Divider,
-  TableContainer,
-} from '@mui/material';
+import { toast } from 'sonner';
+import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router';
+import { varAlpha } from 'minimal-shared/utils';
 
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined';
-import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
-import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlined';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
+import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined';
+import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlined';
+import {
+  Box,
+  Chip,
+  Grid,
+  Table,
+  Paper,
+  Stack,
+  Button,
+  Tooltip,
+  Divider,
+  TableRow,
+  Collapse,
+  TableHead,
+  TableBody,
+  TableCell,
+  Typography,
+  IconButton,
+  TableContainer,
+} from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
+import { removeProduct } from '../api/productsApi';
 import AddProductDialog from '../components/AddProductDialog';
 import EditProductDialog from '../components/EditProductDialog';
-import { removeProduct } from '../api/productsApi';
 
 type Props = {
   sx?: SxProps<Theme>;

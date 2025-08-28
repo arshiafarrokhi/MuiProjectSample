@@ -31,7 +31,7 @@ export function AuthSplitSection({
   layoutQuery = 'md',
   // title = 'Manage the job',
   imgUrl = `${CONFIG.assetsDir}/assets/illustrations/illustration-dashboard.webp`,
-  // subtitle = 'چت بات هوشمند لکسیم',
+  // subtitle = ' اریانا',
   ...other
 }: AuthSplitSectionProps) {
   const authTrans = useTranslate('auth');
@@ -66,7 +66,7 @@ export function AuthSplitSection({
     >
       <div>
         <Typography variant="h3" sx={{ textAlign: 'center' }}>
-          {authTrans.t('lexiChat')}
+          {authTrans.t('ariana')}
         </Typography>
 
         {/* {subtitle && ( */}

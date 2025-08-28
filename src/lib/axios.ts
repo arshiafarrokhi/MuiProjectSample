@@ -37,7 +37,7 @@ export const fetcher = async (
 
 export const endpoints = {
   auth: {
-    me: '/users/profile/',
+    // me: '/users/profile/',
     signIn: '/users/login/',
     signUp: '/auth/sign-up/',
   },

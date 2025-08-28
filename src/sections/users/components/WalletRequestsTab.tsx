@@ -1,43 +1,42 @@
+import { toast } from 'sonner';
+import createCache from '@emotion/cache';
+import rtlPlugin from 'stylis-plugin-rtl';
+import { CacheProvider } from '@emotion/react';
 // src/sections/users/components/WalletRequestsTab.tsx
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
+
+import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
+import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Box,
   Stack,
-  Typography,
-  Switch,
-  FormControlLabel,
-  Button,
   Table,
-  TableHead,
+  Paper,
+  Switch,
+  Button,
+  Dialog,
+  Tooltip,
   TableRow,
+  TableHead,
   TableCell,
   TableBody,
+  TextField,
+  Typography,
   IconButton,
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
-  Tooltip,
   TableContainer,
-  Paper,
-  Chip,
+  FormControlLabel,
 } from '@mui/material';
-import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
-import { toast } from 'sonner';
-
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
-import { CacheProvider } from '@emotion/react';
-import createCache from '@emotion/cache';
-import rtlPlugin from 'stylis-plugin-rtl';
 
 import {
-  useCreditIncreaseRequests,
   getCreditIncreaseRequest,
-  updateCreditIncreaseRequestState,
+  useCreditIncreaseRequests,
   useWalletTransactionsAdmin,
+  updateCreditIncreaseRequestState,
 } from 'src/sections/users/api/walletRequestsApi';
 
 const clamp2 = {

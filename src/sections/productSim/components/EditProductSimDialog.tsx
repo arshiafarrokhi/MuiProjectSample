@@ -1,21 +1,22 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
+import createCache from '@emotion/cache';
+import rtlPlugin from 'stylis-plugin-rtl';
+import { CacheProvider } from '@emotion/react';
+import React, { useMemo, useState, useEffect } from 'react';
+
+import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import {
+  Box,
+  Stack,
   Dialog,
+  Button,
+  TextField,
+  Typography,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
-  Button,
-  Stack,
-  Box,
-  Typography,
 } from '@mui/material';
-import { toast } from 'sonner';
 
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
-import { CacheProvider } from '@emotion/react';
-import createCache from '@emotion/cache';
-import rtlPlugin from 'stylis-plugin-rtl';
 import { getProductSim, updateProductSim } from '../api/productSimApi';
 
 type Props = {

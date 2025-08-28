@@ -1,14 +1,17 @@
 // src/pages/dashboard/products/index.tsx
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useNavigate } from 'react-router';
-import { CONFIG } from 'src/global-config';
-import { LoadingScreen } from 'src/components/loading-screen/loading-screen';
-import { ProductsView } from 'src/sections/products/views/view';
-import { GetProductsApi } from 'src/sections/products/api/productsApi';
 
-import { Box, Tabs, Tab } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
+
+import { CONFIG } from 'src/global-config';
+
+import { LoadingScreen } from 'src/components/loading-screen/loading-screen';
+
+import { ProductsView } from 'src/sections/products/views/view';
 import CategoriesTab from 'src/sections/products/views/CategoriesTab';
+import { GetProductsApi } from 'src/sections/products/api/productsApi';
 
 const metadata = { title: `Products | Dashboard - ${CONFIG.appName}` };
 

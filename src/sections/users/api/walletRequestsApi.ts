@@ -1,6 +1,8 @@
+import type { SWRConfiguration } from 'swr';
+
 // src/sections/users/api/walletRequestsApi.ts
 import useSWR from 'swr';
-import type { SWRConfiguration } from 'swr';
+
 import axiosInstance, { fetcher, endpoints } from 'src/lib/axios';
 
 const swrOpts: SWRConfiguration = {

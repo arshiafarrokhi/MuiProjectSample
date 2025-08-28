@@ -9,11 +9,13 @@ import { DashboardLayout } from 'src/layouts/dashboard';
 import { LoadingScreen } from 'src/components/loading-screen';
 import ErrorBoundary from 'src/components/ErrorBoundary/ErrorBoundary';
 
+import { AuthGuard } from 'src/auth/guard';
+
 // ----------------------------------------------------------------------
 
 const EditUsersPage = lazy(() => import('src/pages/dashboard/users/components/EditUsersPage'));
 const UsersPage = lazy(() => import('src/pages/dashboard/users'));
-const ProductsPage = lazy(() => import('src/pages/dashboard/products'));
+const ProductsPage = lazy(() => import('src/pages/dashboard/products/index'));
 const ProductSimPage = lazy(() => import('src/pages/dashboard/productSim'));
 const ProductDetailsPage = lazy(
   () => import('src/sections/products/components/ProductDetailsPage')
@@ -37,9 +39,9 @@ export const dashboardRoutes: RouteObject[] = [
     element: CONFIG.auth.skip ? (
       <DashboardRoutesLayout />
     ) : (
-      // <AuthGuard>
-      <DashboardRoutesLayout />
-      // </AuthGuard>
+      <AuthGuard>
+        <DashboardRoutesLayout />
+      </AuthGuard>
     ),
     errorElement: <LoadingScreen />,
     children: [

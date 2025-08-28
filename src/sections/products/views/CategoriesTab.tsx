@@ -1,27 +1,28 @@
+import { toast } from 'sonner';
+import { varAlpha } from 'minimal-shared/utils';
 // src/sections/products/views/CategoriesTab.tsx
 import React, { useMemo, useState } from 'react';
-import {
-  Box,
-  Button,
-  Typography,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Stack,
-  IconButton,
-  Tooltip,
-  TableContainer,
-  Paper,
-} from '@mui/material';
+
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-import { varAlpha } from 'minimal-shared/utils';
-import { toast } from 'sonner';
+import {
+  Box,
+  Table,
+  Stack,
+  Paper,
+  Button,
+  Tooltip,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+  Typography,
+  IconButton,
+  TableContainer,
+} from '@mui/material';
 
-import { GetCategoriesApi, removeCategory } from '../api/categoriesApi';
 import AddCategoryDialog from '../components/AddCategoryDialog';
+import { removeCategory, GetCategoriesApi } from '../api/categoriesApi';
 
 const clamp2Lines = {
   display: '-webkit-box',

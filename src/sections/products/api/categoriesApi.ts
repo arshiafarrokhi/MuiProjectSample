@@ -1,7 +1,9 @@
 // src/sections/products/api/categoriesApi.ts
 import type { SWRConfiguration } from 'swr';
+
 import useSWR from 'swr';
 import { useMemo } from 'react';
+
 import axiosInstance, { fetcher, endpoints } from 'src/lib/axios';
 
 export type Category = {

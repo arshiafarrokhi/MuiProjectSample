@@ -1,9 +1,11 @@
 import type { SWRConfiguration } from 'swr';
+
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
 import axiosInstance, { fetcher, endpoints } from 'src/lib/axios';
-import { GetProductSimResp, GetProductSimsResp } from '../types';
+
+import type { GetProductSimResp, GetProductSimsResp } from '../types';
 const swrOptions: SWRConfiguration = {
   revalidateIfStale: false,
   revalidateOnFocus: false,

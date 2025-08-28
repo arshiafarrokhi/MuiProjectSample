@@ -1,10 +1,9 @@
-// Static token for development/testing
+// Static token kept in file for reference/testing but NOT applied as default header anymore
 export const STATIC_TOKEN =
-  'eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwidHlwIjoiSldUIiwiY3R5IjoiSldUIn0.ykTI4Tnn9hlwxbr-FLAD30O8sKFeKHhkHIqt5BnqQjCqtRw0ZZTFbg.kkZ3TQC4nTCUnFujRkc_cQ.c-s38wI5Q-sw8WjL8mT2vjlEwSWg_n-0Y5lcn_qPLJ-kxgT3VLT9XUOScsWZZ_gPrRQo5S2XSGLRXw_YK4lB5JbJgBS41ybynwHlXpvQN9_6Ym1jTR6Mqhig8D1UEWX0Vxh6w0JcE2DYUPDLROdvgkKc_TGVPfnca0UgtLOLb9qPlk9aeF4SJkyKeJ4ba3HJf9OcOYliYCBejGnKERyTZqrVpSpkkzcvhRFHAptcXdsgLX2EUFOEl51nFcf8461o3IlOD7tea9skjzOGN4x6vo1dyYO7F8gQVS6v1MrGjPfPfO52twukF3hm6oymg3w16fxN7DNVOzyHYMXVpliihilKY3yea2buGO7K6GHEHUd75hcHjKfoBafb9PAT4B8o1HYL5l4UTqkQb5nRukEdPsu0S1OKZ75YSKWGAcqrfuQ3shtGtxvA20ESY1fRYxEgYuOo-SFWfHP0QF1pqkPDl4n67vrXCeTJ8aAt45xu6aCinedUpiCaGNYvkBbOBKT-ffmdWUQdxDNxZcv639IHaFNZoAIrCtfp8oQoQvZDH1I.rw4H113J_kATfJbLiMaILg';
+  'eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwidHlwIjoiSldUIiwiY3R5IjoiSldUIn0.ykTI4Tnn9hlwxbr-FLAD30O8sKFeKHhkHIqt5BnqQjCqtRw0ZZTFbg.kkZ3TQC4nTCUnFujRkc_cQ.c-s38w...'; // trimmed
+
 import { useSetState } from 'minimal-shared/hooks';
 import { useMemo, useEffect, useCallback } from 'react';
-
-import axios, { endpoints } from 'src/lib/axios';
 
 import { setSession } from './utils';
 import { JWT_STORAGE_KEY } from './constant';
@@ -17,8 +16,9 @@ type Props = {
 };
 
 export function AuthProvider({ children }: Props) {
-  // Set static token in axios header for all requests
-  axios.defaults.headers.common['Authorization'] = `Bearer ${STATIC_TOKEN}`;
+  // <-- removed the line that forced STATIC_TOKEN into axios headers:
+  // axios.defaults.headers.common['Authorization'] = `Bearer ${STATIC_TOKEN}`;
+  // Now we rely on setSession(accessToken) when a real token exists in sessionStorage.
 
   const { state, setState } = useSetState<AuthState>({ user: null, loading: true });
 
@@ -27,15 +27,15 @@ export function AuthProvider({ children }: Props) {
       const accessToken = sessionStorage.getItem(JWT_STORAGE_KEY);
 
       if (accessToken) {
+        // setSession should set axios header and any other plumbing
         setSession(accessToken);
 
-        const res = await axios.get(endpoints.auth.me);
+        // const res = await axios.get(endpoints.auth.me);
 
-        // Use the entire response data and merge with accessToken
         setState({
           user: {
-            ...res.data,
-            accessToken, // From sessionStorage
+            // ...res.data,
+            accessToken,
           },
           loading: false,
         });

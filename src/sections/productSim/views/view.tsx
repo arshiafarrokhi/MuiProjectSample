@@ -1,29 +1,30 @@
-import React, { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
-import {
-  Box,
-  Button,
-  Typography,
-  Table,
-  TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
-  Paper,
-  Stack,
-  IconButton,
-  TableContainer,
-} from '@mui/material';
+import React, { useMemo, useState } from 'react';
+
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
+import {
+  Box,
+  Table,
+  Paper,
+  Stack,
+  Button,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+  Typography,
+  IconButton,
+  TableContainer,
+} from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
-import { toast } from 'sonner';
 
 import AddProductSimDialog from '../components/AddProductSimDialog';
 import EditProductSimDialog from '../components/EditProductSimDialog';
-import { GetProductSimsApi, removeProductSim } from '../api/productSimApi';
+import { removeProductSim, GetProductSimsApi } from '../api/productSimApi';
 
 type Props = { sx?: any; onRefetch?: () => void };
 
