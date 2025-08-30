@@ -7,6 +7,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import {
   Box,
+  Tabs,
+  Tab,
   Table,
   Paper,
   Stack,
@@ -25,6 +27,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import AddProductSimDialog from '../components/AddProductSimDialog';
 import EditProductSimDialog from '../components/EditProductSimDialog';
 import { removeProductSim, GetProductSimsApi } from '../api/productSimApi';
+import ProductSimActivityTab from '../components/ProductSimActivityTab';
 
 type Props = { sx?: any; onRefetch?: () => void };
 
@@ -62,97 +65,126 @@ export function ProductSimView({ sx, onRefetch }: Props) {
     }
   };
 
+  // --- tabs ---
+  const [tab, setTab] = useState(0);
+
   return (
     <DashboardContent maxWidth="xl">
       <Typography variant="h4">محصولات سیم‌کارت</Typography>
 
       <Box sx={[{ p: 3, mt: 5 }, ...(Array.isArray(sx) ? sx : sx ? [sx] : [])]}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-          <Button startIcon={<AddIcon />} onClick={() => setOpenAdd(true)} variant="contained">
-            افزودن محصول
-          </Button>
-        </Stack>
+        <Tabs
+          value={tab}
+          onChange={(_, v) => setTab(v)}
+          sx={{ mb: 2 }}
+          variant="scrollable"
+          allowScrollButtonsMobile
+        >
+          <Tab label="لیست محصولات" />
+          <Tab label="فعال‌سازی کشور/اپراتور" />
+        </Tabs>
 
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-          <TableContainer sx={{ maxHeight: { xs: '60vh', md: '70vh' } }}>
-            <Table size="small" stickyHeader aria-label="product-sim-table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>نام</TableCell>
-                  <TableCell>توضیحات</TableCell>
-                  <TableCell>قیمت</TableCell>
-                  <TableCell>اپراتور</TableCell>
-                  <TableCell>کشور</TableCell>
-                  <TableCell>تاریخ</TableCell>
-                  <TableCell align="center">حذف</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {(!rows || rows.length === 0) && !productSimsLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
-                      موردی یافت نشد.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  rows.map((r: any) => (
-                    <TableRow
-                      key={r.id}
-                      hover
-                      onDoubleClick={() =>
-                        nav(`/dashboard/productSim/${r.id}`, { state: { name: r.name } })
-                      }
-                    >
-                      <TableCell>{r.name ?? '—'}</TableCell>
-                      <TableCell sx={{ maxWidth: 360 }}>{r.description ?? '—'}</TableCell>
-                      <TableCell>
-                        {typeof r.price === 'number'
-                          ? new Intl.NumberFormat('fa-IR').format(r.price)
-                          : '—'}
-                      </TableCell>
-                      <TableCell>{r.operator?.name ?? '—'}</TableCell>
-                      <TableCell>{r.country?.name ?? '—'}</TableCell>
-                      <TableCell>
-                        {r.insertTime ? new Date(r.insertTime).toLocaleString('fa-IR') : '—'}
-                      </TableCell>
-                      <TableCell align="center">
-                        <Stack direction="row" spacing={1} justifyContent="center">
-                          <IconButton
-                            size="small"
-                            onClick={() => {
-                              setSelectedId(r.id);
-                              setOpenEdit(true);
-                            }}
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
+        {tab === 0 && (
+          <>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+              sx={{ mb: 2 }}
+            >
+              <Button startIcon={<AddIcon />} onClick={() => setOpenAdd(true)} variant="contained">
+                افزودن محصول
+              </Button>
+            </Stack>
 
-                          <IconButton size="small" color="error" onClick={() => handleDelete(r.id)}>
-                            <DeleteOutlineRoundedIcon fontSize="small" />
-                          </IconButton>
-                        </Stack>
-                      </TableCell>
+            <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+              <TableContainer sx={{ maxHeight: { xs: '60vh', md: '70vh' } }}>
+                <Table size="small" stickyHeader aria-label="product-sim-table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>نام</TableCell>
+                      <TableCell>توضیحات</TableCell>
+                      <TableCell>قیمت</TableCell>
+                      <TableCell>اپراتور</TableCell>
+                      <TableCell>کشور</TableCell>
+                      <TableCell>تاریخ</TableCell>
+                      <TableCell align="center">حذف</TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+                  </TableHead>
+                  <TableBody>
+                    {(!rows || rows.length === 0) && !productSimsLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
+                          موردی یافت نشد.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      rows.map((r: any) => (
+                        <TableRow
+                          key={r.id}
+                          hover
+                          onDoubleClick={() =>
+                            nav(`/dashboard/productSim/${r.id}`, { state: { name: r.name } })
+                          }
+                        >
+                          <TableCell>{r.name ?? '—'}</TableCell>
+                          <TableCell sx={{ maxWidth: 360 }}>{r.description ?? '—'}</TableCell>
+                          <TableCell>
+                            {typeof r.price === 'number'
+                              ? new Intl.NumberFormat('fa-IR').format(r.price)
+                              : '—'}
+                          </TableCell>
+                          <TableCell>{r.operator?.name ?? '—'}</TableCell>
+                          <TableCell>{r.country?.name ?? '—'}</TableCell>
+                          <TableCell>
+                            {r.insertTime ? new Date(r.insertTime).toLocaleString('fa-IR') : '—'}
+                          </TableCell>
+                          <TableCell align="center">
+                            <Stack direction="row" spacing={1} justifyContent="center">
+                              <IconButton
+                                size="small"
+                                onClick={() => {
+                                  setSelectedId(r.id);
+                                  setOpenEdit(true);
+                                }}
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+
+                              <IconButton
+                                size="small"
+                                color="error"
+                                onClick={() => handleDelete(r.id)}
+                              >
+                                <DeleteOutlineRoundedIcon fontSize="small" />
+                              </IconButton>
+                            </Stack>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+
+            <AddProductSimDialog
+              open={openAdd}
+              onClose={() => setOpenAdd(false)}
+              onCreated={() => refetchProductSims && refetchProductSims()}
+            />
+
+            <EditProductSimDialog
+              open={openEdit}
+              productId={selectedId}
+              onClose={() => setOpenEdit(false)}
+              onUpdated={() => refetchProductSims && refetchProductSims()}
+            />
+          </>
+        )}
+
+        {tab === 1 && <ProductSimActivityTab />}
       </Box>
-
-      <AddProductSimDialog
-        open={openAdd}
-        onClose={() => setOpenAdd(false)}
-        onCreated={() => refetchProductSims && refetchProductSims()}
-      />
-
-      <EditProductSimDialog
-        open={openEdit}
-        productId={selectedId}
-        onClose={() => setOpenEdit(false)}
-        onUpdated={() => refetchProductSims && refetchProductSims()}
-      />
     </DashboardContent>
   );
 }

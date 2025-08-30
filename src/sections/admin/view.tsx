@@ -29,13 +29,15 @@ export function AdminsView({ sx, admins, onRefetch }: Props) {
   const safeAdmins = Array.isArray(admins) ? admins : [];
 
   // sort by inserTime desc
-  const ordered = useMemo(() => {
-    return [...safeAdmins].sort((a, b) => {
-      const da = new Date(a?.inserTime ?? 0).getTime();
-      const db = new Date(b?.inserTime ?? 0).getTime();
-      return db - da;
-    });
-  }, [safeAdmins]);
+  const ordered = useMemo(
+    () =>
+      [...safeAdmins].sort((a, b) => {
+        const da = new Date(a?.inserTime ?? 0).getTime();
+        const db = new Date(b?.inserTime ?? 0).getTime();
+        return db - da;
+      }),
+    [safeAdmins]
+  );
 
   return (
     <DashboardContent maxWidth="xl">

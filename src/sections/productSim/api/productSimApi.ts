@@ -126,3 +126,62 @@ export async function getOperators(countryId: number) {
   });
   return res.data;
 }
+
+/* ---------- countries ---------- */
+export function useGetCountries(isActive?: boolean) {
+  const base = endpoints.productSim.countries;
+  const url = typeof isActive === 'boolean' ? `${base}?IsActive=${isActive}` : `${base}`;
+
+  const { data, error, isLoading, isValidating, mutate } = useSWR<any>(url, fetcher, swrOptions);
+
+  // ✅ آرایه‌ی درست
+  const countries = Array.isArray(data?.result?.countries) ? data.result.countries : [];
+
+  return {
+    countries,
+    countriesLoading: isLoading,
+    countriesError: error,
+    countriesValidating: isValidating,
+    refetchCountries: mutate,
+  };
+}
+
+// ---- Operators (وابسته به CountryId) ----
+export function useGetOperators(countryId?: number, isActive?: boolean) {
+  const base = endpoints.productSim.operators;
+
+  // فقط وقتی CountryId داریم فچ کن
+  const qs = new URLSearchParams();
+  qs.set('Paging.PageIndex', '0');
+  if (countryId) qs.set('CountryId', String(countryId));
+  if (typeof isActive === 'boolean') qs.set('IsActive', String(isActive));
+
+  const url = countryId ? `${base}?${qs.toString()}` : null;
+
+  const { data, error, isLoading, isValidating, mutate } = useSWR<any>(url, fetcher, swrOptions);
+
+  // ✅ آرایه‌ی درست
+  const operators = Array.isArray(data?.result?.operators) ? data.result.operators : [];
+
+  return {
+    operators,
+    operatorsLoading: isLoading,
+    operatorsError: error,
+    operatorsValidating: isValidating,
+    refetchOperators: mutate,
+  };
+}
+
+export async function changeCountryActivity(args: { countryId: number; active: boolean }) {
+  const base = endpoints.productSim.changeCountryActivity; // مثلا '/ProductSIM/ChangeCountryActivity'
+  const fullUrl = `${base}?CountryId=${args.countryId}&Active=${args.active}`;
+  const res = await axiosInstance.put(fullUrl); // هیچ body و هیچ config
+  return res.data;
+}
+
+export async function changeOperatorActivity(args: { operatorId: number; active: boolean }) {
+  const base = endpoints.productSim.changeOperatorActivity; // مثلا '/ProductSIM/ChangeOperatorActivity'
+  const fullUrl = `${base}?OperatorId=${args.operatorId}&Active=${args.active}`;
+  const res = await axiosInstance.put(fullUrl); // هیچ body و هیچ config
+  return res.data;
+}

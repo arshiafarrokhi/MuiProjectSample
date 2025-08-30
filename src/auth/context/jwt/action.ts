@@ -1,7 +1,7 @@
-import axios, { endpoints } from 'src/lib/axios';
-
+import api, { endpoints } from 'src/lib/axios';
 import { setSession } from './utils';
 import { JWT_STORAGE_KEY } from './constant';
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
@@ -22,22 +22,16 @@ export type SignUpParams = {
  *************************************** */
 export const signInWithPassword = async ({ email, password }: SignInParams): Promise<void> => {
   try {
-    const params = { email, password };
+    const { data } = await api.post(endpoints.auth.signIn, { email, password });
+    const accessToken: string | undefined =
+      data?.data?.access_token || data?.access_token || data?.token;
 
-    const res = await axios.post(endpoints.auth.signIn, params);
+    if (!accessToken) throw new Error('Access token not found in response');
 
-    const { access_token } = res.data.data;
-
-    console.log(access_token);
-
-    if (!access_token) {
-      throw new Error('Access token not found in response');
-    }
-
-    await setSession(access_token);
-  } catch (error) {
-    console.error('Error during sign in:', error);
-    throw error;
+    await setSession(accessToken); // از این لحظه، اینترسپتور هر دو هدر را می‌گذارد
+  } catch (err) {
+    console.error('Error during sign in:', err);
+    throw err;
   }
 };
 

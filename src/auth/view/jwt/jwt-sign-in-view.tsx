@@ -154,7 +154,7 @@ export function JwtSignInView() {
             type="submit"
             variant="contained"
             loading={isSubmitting}
-            loadingIndicator={authTrans.t('sending...')}
+            loadingIndicator="در حال ارسال"
           >
             ارسال کد
           </LoadingButton>
