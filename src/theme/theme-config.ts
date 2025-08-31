@@ -44,20 +44,20 @@ export const themeConfig: ThemeConfig = {
    *************************************** */
   palette: {
     primary: {
-      lighter: 'oklch(0.547 0.261 29.2)',
-      light: 'oklch(0.547 0.261 29.2)',
-      main: 'oklch(0.547 0.261 29.2)',
-      dark: 'oklch(0.547 0.261 29.2)',
-      darker: 'oklch(0.547 0.261 29.2)',
-      contrastText: 'oklch(1 0 0)', // سفید
+      lighter: '#d14d34',
+      light: '#d14d34',
+      main: '#d14d34',
+      dark: '#d14d34',
+      darker: '#d14d34',
+      contrastText: '#CAFDF5', // سفید
     },
     secondary: {
-      lighter: 'oklch(0.611 0.196 139.7)',
-      light: 'oklch(0.611 0.196 139.7)',
-      main: 'oklch(0.611 0.196 139.7)',
-      dark: 'oklch(0.611 0.196 139.7)',
-      darker: 'oklch(0.611 0.196 139.7)',
-      contrastText: 'oklch(1 0 0)', // سفید
+      lighter: '#5c64db',
+      light: '#5c64db',
+      main: '#5c64db',
+      dark: '#5c64db',
+      darker: '#5c64db',
+      contrastText: '#CAFDF5', // سفید
     },
     info: {
       lighter: '#CAFDF5',
