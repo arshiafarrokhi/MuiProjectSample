@@ -27,6 +27,7 @@ import {
 } from '@mui/material';
 
 import { updateUserApi } from '../api/updateUserApi';
+import { prefixer } from 'stylis';
 
 type EditUserDialogProps = {
   open: boolean;
@@ -60,13 +61,11 @@ export default function EditUserDialog({ open, onClose, user, onUpdated }: EditU
     setErrors({});
   }, [user, open]);
 
-  // Scoped RTL theme/cache (remove if you already have global RTL)
   const rtlCache = useMemo(
-    () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
+    () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [prefixer, rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
+
   const validate = () => {
     const next: Record<string, string> = {};
     if (!fName.trim()) next.fName = 'نام را وارد کنید.';
@@ -123,7 +122,7 @@ export default function EditUserDialog({ open, onClose, user, onUpdated }: EditU
 
   return (
     <CacheProvider value={rtlCache}>
-      <ThemeProvider theme={rtlTheme}>
+      <ThemeProvider theme={(outer) => ({ ...outer, direction: 'rtl' })}>
         <Dialog
           dir="rtl"
           open={open}

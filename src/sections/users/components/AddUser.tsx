@@ -67,11 +67,9 @@ export default function AddUserDialog({ openAddDialog, handleClose, onCreated }:
   // RTL theme & cache (scoped so it won’t affect the rest of app)
 
   const rtlCache = useMemo(
-    () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
+    () => createCache({ key: 'mui-rtl-adduser', stylisPlugins: [prefixer, rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   useEffect(() => {
     let url: string | undefined;
@@ -172,7 +170,7 @@ export default function AddUserDialog({ openAddDialog, handleClose, onCreated }:
 
   return (
     <CacheProvider value={rtlCache}>
-      <ThemeProvider theme={rtlTheme}>
+      <ThemeProvider theme={(outer) => ({ ...outer, direction: 'rtl' })}>
         <Dialog
           dir="rtl"
           open={!!openAddDialog}
