@@ -4,8 +4,6 @@ import { paths } from 'src/routes/paths';
 
 import { CONFIG } from 'src/global-config';
 
-import { Label } from 'src/components/label';
-import type { NavSectionProps } from 'src/components/nav-section';
 import { SvgColor } from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -70,12 +68,13 @@ export function navDataFunc(t: TFunction<any, any>) {
       subheader: t('overview'),
       items: [
         {
-          title: t('Inboxes'),
-          path: paths.dashboard.inboxes,
+          title: t('users'),
+          path: paths.dashboard.users,
           icon: ICONS.dashboard,
         },
-        { title: t('Agent Bots'), path: paths.dashboard.agentBots.root, icon: ICONS.ecommerce },
-        { title: t('Knowledge Bases'), path: paths.dashboard.KnowledgeBases.root, icon: ICONS.analytics },
+        { title: 'محصولات', path: paths.dashboard.products, icon: ICONS.ecommerce },
+        { title: 'محصولات سیم کارت', path: paths.dashboard.productSim, icon: ICONS.analytics },
+        { title: 'ادمین', path: paths.dashboard.admin, icon: ICONS.analytics },
       ],
     },
   ];

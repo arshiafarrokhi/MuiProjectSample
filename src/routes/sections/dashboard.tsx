@@ -13,25 +13,13 @@ import { AuthGuard } from 'src/auth/guard';
 
 // ----------------------------------------------------------------------
 
-// const PageError = lazy(() => import('src/pages/error/404'));
-const Inboxes = lazy(() => import('src/pages/dashboard/inboxes'));
-const AgentBots = lazy(() => import('src/pages/dashboard/agentBot'));
-const EditBotPage = lazy(() => import('src/pages/dashboard/agentBot/EditBotPage'));
-const KnowledgeBases = lazy(() => import('src/pages/dashboard/knowledgeBases'));
-const EditKnowledgeBasesDatasetSettingsPage = lazy(
-  () => import('src/pages/dashboard/knowledgeBases/EditKnowledgeBasesDatasetSettingsPage')
-);
-const EditKnowledgeBasesConfigurationSettingsPage = lazy(
-  () => import('src/pages/dashboard/knowledgeBases/EditKnowledgeBasesConfigurationSettingsPage')
-);
-const EditKnowledgeBasesPage = lazy(
-  () => import('src/pages/dashboard/knowledgeBases/EditKnowledgeBasesPage')
-);
-const EditBotModelSettingspage = lazy(
-  () => import('src/pages/dashboard/agentBot/EditBotModelSettingsPage')
-);
-const EditBotAssistantSettingspage = lazy(
-  () => import('src/pages/dashboard/agentBot/EditBotAssistantSettingspage')
+const EditUsersPage = lazy(() => import('src/pages/dashboard/users/components/EditUsersPage'));
+const UsersPage = lazy(() => import('src/pages/dashboard/users'));
+const ProductsPage = lazy(() => import('src/pages/dashboard/products/index'));
+const ProductSimPage = lazy(() => import('src/pages/dashboard/productSim'));
+const AdminPage = lazy(() => import('src/pages/dashboard/adminPage'));
+const ProductDetailsPage = lazy(
+  () => import('src/sections/products/components/ProductDetailsPage')
 );
 
 // ----------------------------------------------------------------------
@@ -52,33 +40,26 @@ export const dashboardRoutes: RouteObject[] = [
     element: CONFIG.auth.skip ? (
       <DashboardRoutesLayout />
     ) : (
-      // <AuthGuard>
-      <DashboardRoutesLayout />
-      // </AuthGuard>
+      <AuthGuard>
+        <DashboardRoutesLayout />
+      </AuthGuard>
     ),
-    // errorElement: <LoadingScreen />,
+    errorElement: <LoadingScreen />,
     children: [
-      { path: 'inboxes', element: <Inboxes /> },
-      { path: 'agentBots', element: <AgentBots /> },
+      { path: 'users', element: <UsersPage /> },
       {
-        path: 'agentBots/:botId/:botName/edit',
-        element: <EditBotPage />,
-        errorElement: <LoadingScreen />,
-        children: [
-          { path: 'model-settings', element: <EditBotModelSettingspage /> },
-          { path: '', element: <EditBotAssistantSettingspage /> },
-        ],
+        path: 'users/:userId',
+        element: <EditUsersPage />,
+        // errorElement: <LoadingScreen />,
       },
-      { path: 'knowledgeBases', element: <KnowledgeBases /> },
+      { path: 'products', element: <ProductsPage /> },
       {
-        path: 'knowledgeBases/:knId/:knName/edit',
-        element: <EditKnowledgeBasesPage />,
-        errorElement: <LoadingScreen />,
-        children: [
-          { path: 'dataset', element: <EditKnowledgeBasesDatasetSettingsPage /> },
-          { path: '', element: <EditKnowledgeBasesConfigurationSettingsPage /> },
-        ],
+        path: 'products/:productId',
+        element: <ProductDetailsPage />,
+        // errorElement: <LoadingScreen />,
       },
+      { path: 'productSim', element: <ProductSimPage /> },
+      { path: 'admin', element: <AdminPage /> },
     ],
   },
 ];

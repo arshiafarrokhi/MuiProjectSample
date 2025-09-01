@@ -1,16 +1,51 @@
-import type { AxiosRequestConfig } from 'axios';
-
-import axios from 'axios';
-
+import axios, { AxiosHeaders, AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios';
+import { JWT_STORAGE_KEY } from 'src/auth/context/jwt';
 import { CONFIG } from 'src/global-config';
 
-// ----------------------------------------------------------------------
+const LOGIN_PATH = '/auth/jwt/sign-in';
 
 const axiosInstance = axios.create({ baseURL: CONFIG.serverUrl });
 
+axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const token = typeof window !== 'undefined' ? sessionStorage.getItem(JWT_STORAGE_KEY) : null;
+
+  const headers = new AxiosHeaders(config.headers);
+
+  if (token) {
+    // هر دو هدر را همیشه ست کن
+    headers.set('Authorization', `Bearer ${token}`);
+    headers.set('api_access_token', token);
+  } else {
+    headers.delete('Authorization');
+    headers.delete('api_access_token');
+  }
+
+  config.headers = headers;
+  return config;
+});
+
 axiosInstance.interceptors.response.use(
-  (response) => response,
-  (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong!')
+  (res) => res,
+  (error) => {
+    const status = error?.response?.status;
+    if (status === 401) {
+      try {
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem(JWT_STORAGE_KEY);
+          const onAuthPage = window.location.pathname.includes('/auth');
+          const url: string = error?.config?.url || '';
+          const isLoginCall = url.includes('/users/login') || url.includes('/auth/sign-in');
+          if (!onAuthPage && !isLoginCall) {
+            window.location.replace(LOGIN_PATH);
+          }
+        }
+      } catch {
+        console.log('Error handling 401 in axios interceptor');
+      }
+    }
+    const message = error?.response?.data || 'Something went wrong!';
+    return Promise.reject(message);
+  }
 );
 
 export default axiosInstance;
@@ -37,36 +72,62 @@ export const fetcher = async (
 
 export const endpoints = {
   auth: {
-    me: '/users/profile/',
+    // me: '/users/profile/',
     signIn: '/users/login/',
     signUp: '/auth/sign-up/',
   },
-  inboxes: {
-    get: '/accounts/{account_id}/inboxes/',
-    getAgents: 'accounts/{account_id}/agent_bots/',
-    setAgents: 'accounts/{account_id}/inboxes/{inbox_id}/set_agent_bot',
-    getDefaultAgents: 'accounts/{account_id}/inboxes/{inbox_id}/agent_bot',
-  },
-  bots: {
-    getBots: '/accounts/{account_id}/agent_bots/',
-    getCreateBots: '/accounts/{account_id}/agent_bots/',
-    deleteBot: '/accounts/{account_id}/agent_bots/{bot_id}/',
-    defaultEditBot: 'accounts/{account_id}/agent_bots/{bot_id}/',
-    patchDefaultEditBot: 'accounts/{account_id}/agent_bots/{bot_id}/',
-  },
-  knowledgeBases: {
-    dataSource: {
-      getDS: '/accounts/{account_id}/knowledge_bases/{knowledge_base_id}/data_sources',
-      deleteDS: '/accounts/{account_id}/knowledge_bases/{knowledge_base_id}/data_sources/{data_source_id}',
-      CreateDSFile: '/accounts/{account_id}/knowledge_bases/{knowledge_base_id}/data_sources/upload_file',
-      CreateDSText: '/accounts/{account_id}/knowledge_bases/{knowledge_base_id}/data_sources',
+  users: {
+    get: 'Users/',
+    create: 'Users/AddNewUser',
+    update: '/Users/UpdateUser',
+    delete: '/Users/RemoveUser',
+    wallet: {
+      get: '/UserWallet/GetWalletBalance',
+      transactions: '/UserWallet/GetWalletTransactions',
+      creditIncrease: '/UserWallet/WalletCreditIncrease',
+      creditReduction: '/UserWallet/WalletCreditReduction',
+      requests: {
+        list: '/UserWallet/GetCreditIncreaseRequests',
+        getOne: '/UserWallet/GetCreditIncreaseRequest',
+        updateState: '/UserWallet/UpdateCreditIncreaseRequestState',
+      },
     },
-    getKnowledgeBases: '/accounts/{account_id}/knowledge_bases/',
-    deleteKnowledgeBases: '/accounts/{account_id}/knowledge_bases/{knowledge_base_id}',
-    getCreateKnowledgeBases: '/accounts/{account_id}/knowledge_bases/',
-    defaultEditKnowledgeBases: '/accounts/{account_id}/knowledge_bases/{knowledge_base_id}',
-    patchDefaultEditKnowledgeBases: 'accounts/{account_id}/knowledge_bases/{knowledge_base_id}',
   },
-  llm: '/choices/llms',
-  ChunkMethods: '/choices/chunk_methods',
+  products: {
+    list: '/Product/GetProducts',
+    getOne: '/Product/GetProduct',
+    add: '/Product/AddNewProduct',
+    update: '/Product/UpdateProduct',
+    addImage: '/Product/AddProductImages',
+    removeImage: '/Product/RemoveProductImage',
+    delete: '/Product/RemoveProduct',
+    categories: {
+      list: '/Product/GetCategories',
+      add: '/Product/AddNewCategory',
+      remove: '/Product/RemoveCategory',
+    },
+    comment: {
+      get: '/Product/GetProductComments',
+      edit: '/Product/ChangeProductCommentStatus',
+    },
+  },
+  productSim: {
+    list: '/ProductSIM/GetProducts',
+    getOne: '/ProductSIM/GetProduct',
+    add: '/ProductSIM/AddNewProduct',
+    update: '/ProductSIM/UpdateProduct',
+    addImage: '/ProductSIM/AddProductImages',
+    removeImage: '/ProductSIM/RemoveProductImage',
+    delete: '/ProductSIM/RemoveProduct',
+    countries: '/ProductSIM/GetCountries',
+    operators: '/ProductSIM/GetOperators',
+    changeCountryActivity: '/ProductSIM/ChangeCountryActivity',
+    changeOperatorActivity: '/ProductSIM/ChangeOperatorActivity',
+  },
+  admin: {
+    get: '/Account/GetAdminAccounts',
+    add: '/Account/AddNewAdmin',
+    update: '/Account/UpdateAdmin',
+    changePass: '/Account/ChangeAdminPass',
+  },
 };

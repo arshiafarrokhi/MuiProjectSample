@@ -9,7 +9,7 @@ const ROOTS = {
 
 export const paths = {
   faqs: '/faqs',
-  minimalStore: 'https://mui.com/store/items/minimal-dashboard/',
+  minimalStore: 'https://api.admin.arianamohajer.ir/api/',
   // AUTH
   auth: {
     jwt: {
@@ -24,20 +24,10 @@ export const paths = {
   },
   // DASHBOARD
   dashboard: {
-    root: `${ROOTS.DASHBOARD}/inboxes`,
-    inboxes: `${ROOTS.DASHBOARD}/inboxes`,
-    // AgentBots: `${ROOTS.DASHBOARD}/agentBots`,
-    agentBots: {
-      root: `${ROOTS.DASHBOARD}/agentBots`,
-      new: `${ROOTS.DASHBOARD}/agentBots/new`,
-      edit: (botId: number, botName: string) =>
-        `${ROOTS.DASHBOARD}/agentBots/${botId}/${botName}/edit`,
-    },
-    KnowledgeBases: {
-      root: `${ROOTS.DASHBOARD}/knowledgeBases`,
-      new: `${ROOTS.DASHBOARD}/knowledgeBases/new`,
-      edit: (knowledgeBasesId: number, knowledgeBasesName: string) =>
-        `${ROOTS.DASHBOARD}/knowledgeBases/${knowledgeBasesId}/${knowledgeBasesName}/edit`,
-    },
+    root: `${ROOTS.DASHBOARD}/users`,
+    users: `${ROOTS.DASHBOARD}/users`,
+    products: `${ROOTS.DASHBOARD}/products`,
+    productSim: `${ROOTS.DASHBOARD}/productSim`,
+    admin: `${ROOTS.DASHBOARD}/admin`,
   },
 };

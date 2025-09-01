@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 
 import { useTranslate } from 'src/locales';
 import { SimpleLayout } from 'src/layouts/simple';
-import { PageNotFoundIllustration } from 'src/assets/illustrations';
 
 import { varBounce, MotionContainer } from 'src/components/animate';
 

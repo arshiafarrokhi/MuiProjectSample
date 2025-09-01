@@ -11,22 +11,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      (function (d, t) {
-        var BASE_URL = 'http://79.132.193.60:9001';
-        var g = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-        g.src = BASE_URL + '/packs/js/sdk.js';
-        g.defer = true;
-        g.async = true;
-        s.parentNode.insertBefore(g, s);
-        g.onload = function () {
-          window.chatwootSDK.run({
-            websiteToken: 'Dowy29mu7RQTYxDYDVfm9t2D',
-            baseUrl: BASE_URL,
-          });
-        };
-      })(document, 'script');
-    </script>
   </body>
 </html>

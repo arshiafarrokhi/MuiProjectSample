@@ -2,14 +2,11 @@ import { useDropzone } from 'react-dropzone';
 import { varAlpha, mergeClasses } from 'minimal-shared/utils';
 
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import FormHelperText from '@mui/material/FormHelperText';
 
-import { Iconify } from '../iconify';
 import { uploadClasses } from './classes';
 import { UploadPlaceholder } from './components/placeholder';
 import { RejectionFiles } from './components/rejection-files';
-import { MultiFilePreview } from './components/preview-multi-file';
 import { DeleteButton, SingleFilePreview } from './components/preview-single-file';
 
 import type { UploadProps } from './types';

@@ -1,7 +1,9 @@
+// Static token kept in file for reference/testing but NOT applied as default header anymore
+export const STATIC_TOKEN =
+  'eyJhbGciOiJBMTI4S1ciLCJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwidHlwIjoiSldUIiwiY3R5IjoiSldUIn0.ykTI4Tnn9hlwxbr-FLAD30O8sKFeKHhkHIqt5BnqQjCqtRw0ZZTFbg.kkZ3TQC4nTCUnFujRkc_cQ.c-s38w...'; // trimmed
+
 import { useSetState } from 'minimal-shared/hooks';
 import { useMemo, useEffect, useCallback } from 'react';
-
-import axios, { endpoints } from 'src/lib/axios';
 
 import { setSession } from './utils';
 import { JWT_STORAGE_KEY } from './constant';
@@ -14,6 +16,10 @@ type Props = {
 };
 
 export function AuthProvider({ children }: Props) {
+  // <-- removed the line that forced STATIC_TOKEN into axios headers:
+  // axios.defaults.headers.common['Authorization'] = `Bearer ${STATIC_TOKEN}`;
+  // Now we rely on setSession(accessToken) when a real token exists in sessionStorage.
+
   const { state, setState } = useSetState<AuthState>({ user: null, loading: true });
 
   const checkUserSession = useCallback(async () => {
@@ -21,15 +27,15 @@ export function AuthProvider({ children }: Props) {
       const accessToken = sessionStorage.getItem(JWT_STORAGE_KEY);
 
       if (accessToken) {
+        // setSession should set axios header and any other plumbing
         setSession(accessToken);
 
-        const res = await axios.get(endpoints.auth.me);
+        // const res = await axios.get(endpoints.auth.me);
 
-        // Use the entire response data and merge with accessToken
         setState({
           user: {
-            ...res.data,
-            accessToken, // From sessionStorage
+            // ...res.data,
+            accessToken,
           },
           loading: false,
         });
@@ -44,7 +50,7 @@ export function AuthProvider({ children }: Props) {
 
   useEffect(() => {
     checkUserSession();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkAuthenticated = state.user ? 'authenticated' : 'unauthenticated';
