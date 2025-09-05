@@ -24,10 +24,13 @@ export const paths = {
   },
   // DASHBOARD
   dashboard: {
-    root: `${ROOTS.DASHBOARD}/users`,
+    root: `${ROOTS.DASHBOARD}/dashboard`,
+    dashboard: `${ROOTS.DASHBOARD}/dashboard`,
+    messages: `${ROOTS.DASHBOARD}/messages`,
     users: `${ROOTS.DASHBOARD}/users`,
     products: `${ROOTS.DASHBOARD}/products`,
     productSim: `${ROOTS.DASHBOARD}/productSim`,
     admin: `${ROOTS.DASHBOARD}/admin`,
+    orders: `${ROOTS.DASHBOARD}/orders`,
   },
 };

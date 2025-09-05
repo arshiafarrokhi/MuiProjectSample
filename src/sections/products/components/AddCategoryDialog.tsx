@@ -1,3 +1,6 @@
+import type {
+  Theme} from '@mui/material';
+
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
@@ -5,7 +8,7 @@ import { CacheProvider } from '@emotion/react';
 // src/sections/products/components/AddCategoryDialog.tsx
 import React, { useMemo, useState } from 'react';
 
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Stack,
   Dialog,
@@ -13,7 +16,7 @@ import {
   TextField,
   DialogTitle,
   DialogContent,
-  DialogActions,
+  DialogActions
 } from '@mui/material';
 
 import { addCategory } from '../api/categoriesApi';
@@ -26,12 +29,17 @@ type Props = {
 
 export default function AddCategoryDialog({ open, onClose, onCreated }: Props) {
   // RTL طبق قاعده‌ی شما
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');

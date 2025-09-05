@@ -1,3 +1,6 @@
+import type {
+  Theme} from '@mui/material';
+
 // src/sections/users/components/EditUsersView.tsx
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
@@ -6,9 +9,9 @@ import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 
+import { useTheme, ThemeProvider } from '@mui/material/styles';
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded';
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
 import {
@@ -31,7 +34,7 @@ import {
   Typography,
   CardContent,
   InputAdornment,
-  CircularProgress,
+  CircularProgress
 } from '@mui/material';
 
 import { formatFaDate } from 'src/utils/formatDate';
@@ -79,12 +82,17 @@ export default function EditUsersPage() {
   } = userWalletApi();
 
   // ✅ RTL طبق قانون شما
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const fetchSummary = async () => {
     if (!userId) return;

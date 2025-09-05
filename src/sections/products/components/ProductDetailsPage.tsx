@@ -1,3 +1,6 @@
+import type {
+  Theme} from '@mui/material';
+
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
@@ -7,9 +10,9 @@ import { useParams, useLocation, useNavigate } from 'react-router';
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
 import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import {
   Box,
@@ -27,8 +30,10 @@ import {
   Typography,
   IconButton,
   CardContent,
+  Autocomplete,
   ImageListItem,
   ImageListItemBar,
+  CircularProgress,
 } from '@mui/material';
 
 import {
@@ -39,6 +44,8 @@ import {
   removeProductImage,
   changeProductCommentStatus,
 } from 'src/sections/products/api/productsApi';
+
+import { GetCategoriesApi } from '../api/categoriesApi';
 
 // --- helpers ---
 const formatFaDate = (iso?: string | null) => {
@@ -65,12 +72,17 @@ export default function ProductDetailsPage() {
   const { state } = useLocation() as { state?: { name?: string } };
 
   // ✅ RTL Pattern (طبق قاعده شما)
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const [tab, setTab] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -204,6 +216,15 @@ export default function ProductDetailsPage() {
     loadComments();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productId, commentFilters]);
+
+  // داخل ProductDetailsPage، کنار بقیه‌ی state ها/هوک‌ها
+  const { categories, categoriesLoading, refetchCategories } = GetCategoriesApi();
+
+  // برای سینک شدن مقدار انتخابی با categoryId
+  const selectedCategory =
+    Array.isArray(categories) && categoryId !== ''
+      ? (categories.find((c: any) => c?.id === Number(categoryId)) ?? null)
+      : null;
 
   return (
     <CacheProvider value={rtlCache}>
@@ -376,16 +397,63 @@ export default function ProductDetailsPage() {
           {/* Category */}
           {tab === 2 && (
             <Card variant="outlined" sx={{ borderRadius: 2 }}>
-              <CardHeader title="دسته‌بندی" />
+              <CardHeader
+                title="دسته‌بندی"
+                action={
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => refetchCategories && refetchCategories()}
+                  >
+                    تازه‌سازی
+                  </Button>
+                }
+              />
               <CardContent>
-                <TextField
-                  label="شناسه دسته (CategoryId)"
-                  type="number"
-                  value={categoryId}
-                  onChange={(e) =>
-                    setCategoryId(e.target.value === '' ? '' : Number(e.target.value))
-                  }
-                />
+                <Stack spacing={2}>
+                  <Autocomplete
+                    options={Array.isArray(categories) ? categories : []}
+                    loading={!!categoriesLoading}
+                    value={selectedCategory}
+                    onChange={(_, val: any | null) => {
+                      // اگر خالی شد، categoryId رو خالی کن؛ در غیر اینصورت id عددی
+                      setCategoryId(val?.id ?? '');
+                    }}
+                    getOptionLabel={(opt: any) =>
+                      (opt?.name ??
+                        (typeof opt?.id !== 'undefined' ? String(opt.id) : '')) as string
+                    }
+                    isOptionEqualToValue={(opt: any, val: any) => opt?.id === val?.id}
+                    noOptionsText="موردی یافت نشد"
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="انتخاب دسته"
+                        placeholder="نام دسته را جستجو کنید"
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {categoriesLoading ? <CircularProgress size={18} /> : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+
+                  {/* نمایش/ویرایش مستقیم شناسه (اختیاری برای شفافیت) */}
+                  <TextField
+                    label="شناسه دسته (CategoryId)"
+                    type="number"
+                    value={categoryId}
+                    onChange={(e) =>
+                      setCategoryId(e.target.value === '' ? '' : Number(e.target.value))
+                    }
+                    helperText="در صورت انتخاب از لیست، این مقدار به‌صورت خودکار تنظیم می‌شود."
+                  />
+                </Stack>
               </CardContent>
             </Card>
           )}

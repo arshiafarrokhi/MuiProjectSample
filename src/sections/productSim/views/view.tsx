@@ -7,8 +7,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import {
   Box,
-  Tabs,
   Tab,
+  Tabs,
   Table,
   Paper,
   Stack,
@@ -26,8 +26,8 @@ import { DashboardContent } from 'src/layouts/dashboard';
 
 import AddProductSimDialog from '../components/AddProductSimDialog';
 import EditProductSimDialog from '../components/EditProductSimDialog';
-import { removeProductSim, GetProductSimsApi } from '../api/productSimApi';
 import ProductSimActivityTab from '../components/ProductSimActivityTab';
+import { removeProductSim, GetProductSimsApi } from '../api/productSimApi';
 
 type Props = { sx?: any; onRefetch?: () => void };
 

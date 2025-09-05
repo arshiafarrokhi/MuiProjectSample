@@ -1,9 +1,17 @@
+import type {
+  Theme} from '@mui/material';
+
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState } from 'react';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+
+import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
+import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
+import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded';
+import PhoneIphoneRoundedIcon from '@mui/icons-material/PhoneIphoneRounded';
 import {
   Box,
   Dialog,
@@ -12,12 +20,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  InputAdornment,
+  InputAdornment
 } from '@mui/material';
-import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded';
-import PhoneIphoneRoundedIcon from '@mui/icons-material/PhoneIphoneRounded';
-import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
-import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
+
 import { addAdminApi } from '../api/adminApi';
 
 type Props = {
@@ -33,12 +38,17 @@ export default function AddAdminDialog({ open, onClose, onCreated }: Props) {
   const [email, setEmail] = useState('');
   const [posting, setPosting] = useState(false);
 
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const handleSubmit = async () => {
     if (!fullName.trim() || !phone.trim() || !password || !email.trim()) {

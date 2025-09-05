@@ -1,3 +1,6 @@
+import type {
+  Theme} from '@mui/material';
+
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
@@ -5,7 +8,7 @@ import { CacheProvider } from '@emotion/react';
 // src/sections/products/components/EditProductDialog.tsx
 import React, { useMemo, useState, useEffect } from 'react';
 
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Stack,
   Dialog,
@@ -15,7 +18,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  FormControlLabel,
+  FormControlLabel
 } from '@mui/material';
 
 import { updateProductJson } from '../api/productsApi';
@@ -51,12 +54,17 @@ export default function EditProductDialog({ open, onClose, product, onUpdated }:
   }, [product, open]);
 
   // RTL
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const handleSubmit = async () => {
     if (!product?.id) {

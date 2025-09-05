@@ -33,6 +33,7 @@ import {
   InputAdornment,
   FormHelperText,
   CircularProgress,
+  Theme,
 } from '@mui/material';
 
 // api
@@ -64,7 +65,12 @@ export default function AddUserDialog({ openAddDialog, handleClose, onCreated }:
   const fullScreen = useMediaQuery('(max-width:600px)');
   const { setAgentBot } = createUserApi();
 
-  // RTL theme & cache (scoped so it won’t affect the rest of app)
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
 
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-adduser', stylisPlugins: [prefixer, rtlPlugin] }),
