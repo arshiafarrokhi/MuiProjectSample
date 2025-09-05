@@ -170,7 +170,9 @@ export default function OrdersView() {
                   gameAccountId: '',
                 })
               }
-              onRefresh={() => refetchOrders && refetchOrders()}
+              onRefresh={() => {
+                if (refetchOrders) refetchOrders();
+              }}
               show={{
                 userId: true,
                 phone: true,
@@ -352,7 +354,11 @@ export default function OrdersView() {
         onClose={() => setOpenEdit(false)}
         order={selectedOrder}
         onUpdated={() => {
-          tab === 0 ? refetchOrders && refetchOrders() : refetchLocal && refetchLocal();
+          if (tab === 0) {
+            if (refetchOrders) refetchOrders();
+          } else {
+            if (refetchLocal) refetchLocal();
+          }
         }}
       />
     </DashboardContent>
