@@ -67,6 +67,7 @@ export function navDataFunc(t: TFunction<any, any>) {
     {
       subheader: t('overview'),
       items: [
+        { title: 'داشبورد', path: paths.dashboard.dashboard, icon: ICONS.analytics },
         {
           title: t('users'),
           path: paths.dashboard.users,

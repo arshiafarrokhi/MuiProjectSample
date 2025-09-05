@@ -130,4 +130,7 @@ export const endpoints = {
     update: '/Account/UpdateAdmin',
     changePass: '/Account/ChangeAdminPass',
   },
+  dashboard: {
+    get: '/Report/GetDashboard',
+  },
 };

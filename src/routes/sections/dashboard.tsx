@@ -15,6 +15,7 @@ import { AuthGuard } from 'src/auth/guard';
 
 const EditUsersPage = lazy(() => import('src/pages/dashboard/users/components/EditUsersPage'));
 const UsersPage = lazy(() => import('src/pages/dashboard/users'));
+const DashboardPage = lazy(() => import('src/pages/dashboard/dashboard'));
 const ProductsPage = lazy(() => import('src/pages/dashboard/products/index'));
 const ProductSimPage = lazy(() => import('src/pages/dashboard/productSim'));
 const AdminPage = lazy(() => import('src/pages/dashboard/adminPage'));
@@ -46,6 +47,7 @@ export const dashboardRoutes: RouteObject[] = [
     ),
     errorElement: <LoadingScreen />,
     children: [
+      { path: 'dashboard', element: <DashboardPage /> },
       { path: 'users', element: <UsersPage /> },
       {
         path: 'users/:userId',
