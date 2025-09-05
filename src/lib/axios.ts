@@ -138,4 +138,9 @@ export const endpoints = {
     list: '/Other/GetMessages',
     getOne: '/Other/GetMessage',
   },
+  orders: {
+    list: '/Order/GetOrders',
+    update: '/Order/UpdateOrder',
+    listLocal: '/Order/GetLocalSIMOrders',
+  },
 };

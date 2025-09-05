@@ -31,5 +31,6 @@ export const paths = {
     products: `${ROOTS.DASHBOARD}/products`,
     productSim: `${ROOTS.DASHBOARD}/productSim`,
     admin: `${ROOTS.DASHBOARD}/admin`,
+    orders: `${ROOTS.DASHBOARD}/orders`,
   },
 };
