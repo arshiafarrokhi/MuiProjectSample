@@ -126,11 +126,16 @@ export const endpoints = {
   },
   admin: {
     get: '/Account/GetAdminAccounts',
+    loginLogs: '/Account/GetAccountLoginLogs',
     add: '/Account/AddNewAdmin',
     update: '/Account/UpdateAdmin',
     changePass: '/Account/ChangeAdminPass',
   },
   dashboard: {
     get: '/Report/GetDashboard',
+  },
+  messages: {
+    list: '/Other/GetMessages',
+    getOne: '/Other/GetMessage',
   },
 };

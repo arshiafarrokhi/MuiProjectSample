@@ -57,3 +57,30 @@ export async function changeAdminPassApi(payload: { accountId: string; password:
   });
   return res.data;
 }
+
+
+// --- ADD: Login logs hook ---
+export function useGetLoginLogs() {
+  const url = `${endpoints.admin?.loginLogs ?? '/Account/GetAccountLoginLogs'}?Paging.PageIndex=0`;
+
+  const { data, error, isLoading, isValidating, mutate } = useSWR<any>(url, fetcher, {
+    revalidateIfStale: false,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
+
+  const memo = useMemo(() => {
+    const logs = data?.result?.logs ?? [];
+    const pagination = data?.result?.pagination;
+    return {
+      logs,
+      pagination,
+      logsLoading: isLoading,
+      logsError: error,
+      logsValidating: isValidating,
+      refetchLogs: mutate,
+    };
+  }, [data, error, isLoading, isValidating, mutate]);
+
+  return memo;
+}
