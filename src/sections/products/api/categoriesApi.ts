@@ -64,7 +64,7 @@ export async function addCategory(payload: {
 
 export async function removeCategory(categoryName: string) {
   const url = endpoints.products.categories.remove;
-  // طبق خواسته: RemoveCategory?CategoryName=<name>
+  // ✅ فقط از query استفاده می‌کنیم
   const res = await axiosInstance.delete(url, { params: { CategoryName: categoryName } });
   return res.data;
 }

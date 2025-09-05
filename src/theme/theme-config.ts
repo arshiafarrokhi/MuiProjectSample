@@ -44,20 +44,20 @@ export const themeConfig: ThemeConfig = {
    *************************************** */
   palette: {
     primary: {
-      lighter: '#00a3ff',
-      light: '#00a3ff',
-      main: '#00a3ff',
-      dark: '#00a3ff',
-      darker: '#00a3ff',
-      contrastText: '#00a3ff',
+      lighter: '#d14d34',
+      light: '#d14d34',
+      main: '#d14d34',
+      dark: '#d14d34',
+      darker: '#d14d34',
+      contrastText: '#CAFDF5', // سفید
     },
     secondary: {
-      lighter: '#212E48',
-      light: '#212E48',
-      main: '#212E48',
-      dark: '#212E48',
-      darker: '#212E48',
-      contrastText: '#212E48',
+      lighter: '#5c64db',
+      light: '#5c64db',
+      main: '#5c64db',
+      dark: '#5c64db',
+      darker: '#5c64db',
+      contrastText: '#CAFDF5', // سفید
     },
     info: {
       lighter: '#CAFDF5',

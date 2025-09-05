@@ -73,7 +73,7 @@ export default function AddUserDialog({ openAddDialog, handleClose, onCreated }:
   );
 
   const rtlCache = useMemo(
-    () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
+    () => createCache({ key: 'mui-rtl-adduser', stylisPlugins: [prefixer, rtlPlugin] }),
     []
   );
 
@@ -176,7 +176,7 @@ export default function AddUserDialog({ openAddDialog, handleClose, onCreated }:
 
   return (
     <CacheProvider value={rtlCache}>
-      <ThemeProvider theme={rtlTheme}>
+      <ThemeProvider theme={(outer) => ({ ...outer, direction: 'rtl' })}>
         <Dialog
           dir="rtl"
           open={!!openAddDialog}
