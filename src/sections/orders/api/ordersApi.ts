@@ -1,6 +1,8 @@
+import type { SWRConfiguration } from 'swr';
+
 import useSWR from 'swr';
 import { useMemo } from 'react';
-import type { SWRConfiguration } from 'swr';
+
 import axiosInstance, { fetcher, endpoints } from 'src/lib/axios';
 
 const swrOptions: SWRConfiguration = {

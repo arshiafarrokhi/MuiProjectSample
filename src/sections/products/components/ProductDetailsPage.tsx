@@ -1,3 +1,6 @@
+import type {
+  Theme} from '@mui/material';
+
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
@@ -7,9 +10,9 @@ import { useParams, useLocation, useNavigate } from 'react-router';
 
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
 import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import {
   Box,
@@ -27,10 +30,9 @@ import {
   Typography,
   IconButton,
   CardContent,
+  Autocomplete,
   ImageListItem,
   ImageListItemBar,
-  Theme,
-  Autocomplete,
   CircularProgress,
 } from '@mui/material';
 
@@ -42,6 +44,7 @@ import {
   removeProductImage,
   changeProductCommentStatus,
 } from 'src/sections/products/api/productsApi';
+
 import { GetCategoriesApi } from '../api/categoriesApi';
 
 // --- helpers ---

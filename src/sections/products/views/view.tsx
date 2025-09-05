@@ -2,9 +2,9 @@
 import type { Theme, SxProps } from '@mui/material/styles';
 
 import { toast } from 'sonner';
-import { useMemo, useState, Fragment } from 'react';
 import { useNavigate } from 'react-router';
 import { varAlpha } from 'minimal-shared/utils';
+import { useMemo, useState, Fragment } from 'react';
 
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -17,9 +17,9 @@ import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined';
 import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlined';
 import {
   Box,
+  Tab,
   Chip,
   Grid,
-  Tab,
   Tabs,
   Table,
   Paper,

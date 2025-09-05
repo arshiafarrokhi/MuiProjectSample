@@ -1,9 +1,14 @@
+import type {
+  Theme} from '@mui/material';
+
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState } from 'react';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+
+import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Box,
   Dialog,
@@ -12,10 +17,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  InputAdornment,
-  Theme,
+  InputAdornment
 } from '@mui/material';
-import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
+
 import { changeAdminPassApi } from '../api/adminApi';
 
 type Props = {

@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
-import { Box, Tabs, Tab } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 
 import { CONFIG } from 'src/global-config';
+
 import { LoadingScreen } from 'src/components/loading-screen/loading-screen';
 
-import { useGetAdmins } from 'src/sections/admin/api/adminApi';
 import { AdminsView } from 'src/sections/admin/view';
+import { useGetAdmins } from 'src/sections/admin/api/adminApi';
 import AdminLoginLogsTab from 'src/sections/admin/components/AdminLoginLogsTab';
 
 const metadata = { title: `Admin Management | Dashboard - ${CONFIG.appName}` };

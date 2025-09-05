@@ -1,6 +1,8 @@
+import { toast } from 'sonner';
 // src/sections/productSim/components/ProductSimActivityTab.tsx
 import { useState } from 'react';
-import { toast } from 'sonner';
+
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Box,
   Paper,
@@ -14,12 +16,11 @@ import {
   TableHead,
   TableBody,
   TableCell,
-  Typography,
   Accordion,
+  Typography,
   AccordionSummary,
   AccordionDetails,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import {
   useGetCountries,

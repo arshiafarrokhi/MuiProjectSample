@@ -1,34 +1,34 @@
+import { varAlpha } from 'minimal-shared/utils';
 // src/sections/orders/views/view.tsx
 import React, { useMemo, useState } from 'react';
-import { DashboardContent } from 'src/layouts/dashboard';
-import { varAlpha } from 'minimal-shared/utils';
 
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
   Tab,
   Tabs,
+  Chip,
   Paper,
-  Stack,
   Table,
   TableRow,
   TableHead,
   TableBody,
   TableCell,
   Typography,
-  TableContainer,
   IconButton,
-  Chip,
+  TableContainer,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
 
+import { DashboardContent } from 'src/layouts/dashboard';
+
+import FiltersBar from '../components/FiltersBar';
+import EditOrderDialog from '../components/EditOrderDialog';
 import {
   useGetOrders,
-  useGetLocalSIMOrders,
-  type OrdersFilters,
   type LocalFilters,
+  type OrdersFilters,
+  useGetLocalSIMOrders,
 } from '../api/ordersApi';
-import EditOrderDialog from '../components/EditOrderDialog';
-import FiltersBar from '../components/FiltersBar';
 
 // ---------- helpers ----------
 const STATUS_LABEL: Record<number, string> = {

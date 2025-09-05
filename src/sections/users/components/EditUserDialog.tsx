@@ -1,4 +1,5 @@
 import { toast } from 'sonner';
+import { prefixer } from 'stylis';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { CacheProvider } from '@emotion/react';
@@ -6,9 +7,9 @@ import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState, useEffect } from 'react';
 
 import { LoadingButton } from '@mui/lab';
+import { ThemeProvider } from '@mui/material/styles';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import PhoneIphoneRoundedIcon from '@mui/icons-material/PhoneIphoneRounded';
 import PersonOutlineRoundedIcon from '@mui/icons-material/PersonOutlineRounded';
 import {
@@ -24,11 +25,9 @@ import {
   DialogActions,
   InputAdornment,
   CircularProgress,
-  Theme,
 } from '@mui/material';
 
 import { updateUserApi } from '../api/updateUserApi';
-import { prefixer } from 'stylis';
 
 type EditUserDialogProps = {
   open: boolean;

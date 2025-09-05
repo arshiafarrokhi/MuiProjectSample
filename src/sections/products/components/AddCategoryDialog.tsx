@@ -1,3 +1,6 @@
+import type {
+  Theme} from '@mui/material';
+
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
@@ -5,7 +8,7 @@ import { CacheProvider } from '@emotion/react';
 // src/sections/products/components/AddCategoryDialog.tsx
 import React, { useMemo, useState } from 'react';
 
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Stack,
   Dialog,
@@ -13,8 +16,7 @@ import {
   TextField,
   DialogTitle,
   DialogContent,
-  DialogActions,
-  Theme,
+  DialogActions
 } from '@mui/material';
 
 import { addCategory } from '../api/categoriesApi';

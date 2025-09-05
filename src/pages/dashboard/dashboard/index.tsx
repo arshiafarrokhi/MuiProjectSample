@@ -1,8 +1,11 @@
 import { Helmet } from 'react-helmet-async';
+
 import { Box } from '@mui/material';
 
 import { CONFIG } from 'src/global-config';
+
 import { LoadingScreen } from 'src/components/loading-screen/loading-screen';
+
 import { DashboardReportView } from 'src/sections/dashboard/view/view';
 import { useGetDashboardReport } from 'src/sections/dashboard/api/reportApi';
 

@@ -1,9 +1,16 @@
+import type {
+  Theme} from '@mui/material';
+
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState, useEffect } from 'react';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+
+import { useTheme, ThemeProvider } from '@mui/material/styles';
+import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
+import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded';
+import PhoneIphoneRoundedIcon from '@mui/icons-material/PhoneIphoneRounded';
 import {
   Box,
   Dialog,
@@ -12,12 +19,9 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  InputAdornment,
-  Theme,
+  InputAdornment
 } from '@mui/material';
-import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded';
-import PhoneIphoneRoundedIcon from '@mui/icons-material/PhoneIphoneRounded';
-import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
+
 import { updateAdminApi } from '../api/adminApi';
 
 type Props = {

@@ -1,10 +1,13 @@
+import type {
+  Theme} from '@mui/material';
+
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState, useEffect } from 'react';
 
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Box,
   Stack,
@@ -14,8 +17,7 @@ import {
   Typography,
   DialogTitle,
   DialogContent,
-  DialogActions,
-  Theme,
+  DialogActions
 } from '@mui/material';
 
 import { getProductSim, updateProductSim } from '../api/productSimApi';

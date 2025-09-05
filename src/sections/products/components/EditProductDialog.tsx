@@ -1,3 +1,6 @@
+import type {
+  Theme} from '@mui/material';
+
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
@@ -5,7 +8,7 @@ import { CacheProvider } from '@emotion/react';
 // src/sections/products/components/EditProductDialog.tsx
 import React, { useMemo, useState, useEffect } from 'react';
 
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Stack,
   Dialog,
@@ -15,8 +18,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  FormControlLabel,
-  Theme,
+  FormControlLabel
 } from '@mui/material';
 
 import { updateProductJson } from '../api/productsApi';

@@ -1,5 +1,6 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
+
 import axiosInstance, { fetcher, endpoints } from 'src/lib/axios';
 
 type MessagesListResp = {

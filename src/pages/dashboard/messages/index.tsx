@@ -1,10 +1,13 @@
 import { Helmet } from 'react-helmet-async';
+
 import { Box } from '@mui/material';
 
 import { CONFIG } from 'src/global-config';
+
 import { LoadingScreen } from 'src/components/loading-screen/loading-screen';
-import { useGetMessages } from 'src/sections/messages/api/messagesApi'; // فقط برای نشان‌دادن Loader اولیه
+
 import MessagesView from 'src/sections/messages/views/MessagesView';
+import { useGetMessages } from 'src/sections/messages/api/messagesApi'; // فقط برای نشان‌دادن Loader اولیه
 
 const metadata = { title: `Messages | Dashboard - ${CONFIG.appName}` };
 

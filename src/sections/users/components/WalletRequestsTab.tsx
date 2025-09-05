@@ -1,3 +1,6 @@
+import type {
+  Theme} from '@mui/material';
+
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
@@ -6,9 +9,9 @@ import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState } from 'react';
 
 import DoneRoundedIcon from '@mui/icons-material/DoneRounded';
+import { useTheme, ThemeProvider } from '@mui/material/styles';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Box,
   Stack,
@@ -29,8 +32,7 @@ import {
   DialogContent,
   DialogActions,
   TableContainer,
-  FormControlLabel,
-  Theme,
+  FormControlLabel
 } from '@mui/material';
 
 import {

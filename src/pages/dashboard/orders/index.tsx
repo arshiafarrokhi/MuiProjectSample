@@ -1,6 +1,9 @@
 import { Helmet } from 'react-helmet-async';
-import { CONFIG } from 'src/global-config';
+
 import { Box } from '@mui/material';
+
+import { CONFIG } from 'src/global-config';
+
 import OrdersView from 'src/sections/orders/views/view';
 // import OrdersView from 'src/sections/orders/views/view';
 
