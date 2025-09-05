@@ -20,6 +20,7 @@ import {
   FormControl,
   DialogContent,
   DialogActions,
+  Theme,
 } from '@mui/material';
 
 import { getCountries, getOperators, addProductSim } from '../api/productSimApi';
@@ -31,12 +32,17 @@ type Props = {
 };
 
 export default function AddProductSimDialog({ open, onClose, onCreated }: Props) {
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
   const rtlCache = useMemo(
-    () => createCache({ key: 'mui-rtl-productsim', stylisPlugins: [rtlPlugin] }),
+    () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const [name, setName] = useState('');
   const [price, setPrice] = useState<string>('');

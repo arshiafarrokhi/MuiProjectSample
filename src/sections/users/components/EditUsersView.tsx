@@ -32,6 +32,7 @@ import {
   CardContent,
   InputAdornment,
   CircularProgress,
+  Theme,
 } from '@mui/material';
 
 import { formatFaDate } from 'src/utils/formatDate';
@@ -79,12 +80,17 @@ export default function EditUsersPage() {
   } = userWalletApi();
 
   // ✅ RTL طبق قانون شما
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const fetchSummary = async () => {
     if (!userId) return;

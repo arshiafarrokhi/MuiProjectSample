@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Theme,
 } from '@mui/material';
 
 import { addCategory } from '../api/categoriesApi';
@@ -26,12 +27,17 @@ type Props = {
 
 export default function AddCategoryDialog({ open, onClose, onCreated }: Props) {
   // RTL طبق قاعده‌ی شما
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');

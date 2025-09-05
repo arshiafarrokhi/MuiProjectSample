@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogActions,
   InputAdornment,
+  Theme,
 } from '@mui/material';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
 import { changeAdminPassApi } from '../api/adminApi';
@@ -28,12 +29,17 @@ export default function ChangeAdminPassDialog({ open, onClose, accountId, onChan
   const [password, setPassword] = useState('');
   const [posting, setPosting] = useState(false);
 
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const handleSubmit = async () => {
     if (!accountId) {

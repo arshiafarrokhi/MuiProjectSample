@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogActions,
   InputAdornment,
+  Theme,
 } from '@mui/material';
 import MailOutlineRoundedIcon from '@mui/icons-material/MailOutlineRounded';
 import PhoneIphoneRoundedIcon from '@mui/icons-material/PhoneIphoneRounded';
@@ -38,12 +39,17 @@ export default function EditAdminDialog({ open, onClose, admin, onUpdated }: Pro
     setEmail(admin?.email ?? '');
   }, [admin, open]);
 
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const handleSubmit = async () => {
     if (!admin?.accountId) {

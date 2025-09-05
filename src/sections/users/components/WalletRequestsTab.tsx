@@ -30,6 +30,7 @@ import {
   DialogActions,
   TableContainer,
   FormControlLabel,
+  Theme,
 } from '@mui/material';
 
 import {
@@ -68,12 +69,17 @@ type Props = { userId: string };
 
 export default function WalletRequestsTab({ userId }: Props) {
   // RTL (طبق قانون شما)
-  const rtlCache = React.useMemo(
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme ), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
+  const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = React.useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const [accepted, setAccepted] = useState<boolean>(true);
   const [isRemoved, setIsRemoved] = useState<boolean>(false);

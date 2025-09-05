@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogActions,
   FormControlLabel,
+  Theme,
 } from '@mui/material';
 
 import { updateProductJson } from '../api/productsApi';
@@ -51,12 +52,17 @@ export default function EditProductDialog({ open, onClose, product, onUpdated }:
   }, [product, open]);
 
   // RTL
+  const outerTheme = useTheme();
+
+  const rtlTheme = useMemo(
+    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
+    [outerTheme]
+  );
+
   const rtlCache = useMemo(
     () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
     []
   );
-  const outerTheme = useTheme();
-  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   const handleSubmit = async () => {
     if (!product?.id) {
