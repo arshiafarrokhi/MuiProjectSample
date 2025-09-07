@@ -12,7 +12,7 @@ export type BankAccount = {
   lastUpdate: string;
 };
 
-const swrOptions: SWRConfiguration = {
+export const swrOptions: SWRConfiguration = {
   revalidateIfStale: false,
   revalidateOnFocus: false,
   revalidateOnReconnect: false,

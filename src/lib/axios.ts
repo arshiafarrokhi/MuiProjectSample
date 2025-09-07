@@ -149,4 +149,9 @@ export const endpoints = {
     update: '/BankAccount/UpdateBankAccount',
     remove: '/BankAccount/RemoveBankAccount',
   },
+  inax: {
+    getCredit: '/Inax/GetCredit',
+    creditIncrease: '/Inax/CreditIncrease',
+    transactionInquiry: '/Inax/TransactionInquiry',
+  },
 };
