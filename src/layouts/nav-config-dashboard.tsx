@@ -78,6 +78,7 @@ export function navDataFunc(t: TFunction<any, any>) {
         { title: 'ادمین', path: paths.dashboard.admin, icon: ICONS.analytics },
         { title: 'پیام‌ها', path: paths.dashboard.messages, icon: ICONS.mail },
         { title: 'سفارش‌ها', path: paths.dashboard.orders, icon: ICONS.order },
+        { title: 'کارت ها', path: paths.dashboard.bankAccounts, icon: ICONS.order },
       ],
     },
   ];
