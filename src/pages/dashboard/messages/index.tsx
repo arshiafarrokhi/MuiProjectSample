@@ -4,19 +4,11 @@ import { Box } from '@mui/material';
 
 import { CONFIG } from 'src/global-config';
 
-import { LoadingScreen } from 'src/components/loading-screen/loading-screen';
-
 import MessagesView from 'src/sections/messages/views/MessagesView';
-import { useGetMessages } from 'src/sections/messages/api/messagesApi'; // فقط برای نشان‌دادن Loader اولیه
 
 const metadata = { title: `Messages | Dashboard - ${CONFIG.appName}` };
 
 export default function MessagesPage() {
-  // اختیاری: برای یکنواختی تجربه با صفحات دیگر، یک بار لود اولیه:
-  const { messagesLoading } = useGetMessages(undefined);
-
-  if (messagesLoading) return <LoadingScreen />;
-
   return (
     <>
       <Helmet>

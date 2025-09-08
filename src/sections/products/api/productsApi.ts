@@ -63,10 +63,10 @@ function buildQuery(base: string, params: Record<string, any>) {
 
 // ---------- Filters type (export) ----------
 export type ProductListFilters = {
-  pageIndex?: number; // Pagination.PageIndex
-  pageSize?: number; // Pagination.PageSize
-  filter?: string; // Pagination.Filter
-  categoryId?: number | null; // CategoryId
+  pageIndex?: number;          // Pagination.PageIndex
+  pageSize?: number;           // Pagination.PageSize
+  filter?: string;             // Pagination.Filter
+  categoryId?: number | null;  // CategoryId
 };
 
 // ---------- Core hook (export) ----------
@@ -90,7 +90,7 @@ export function useGetProducts(params: ProductListFilters) {
     const currency = data?.result?.currency ?? 'IRT';
     const pagination = data?.result?.pagination;
     const total = pagination?.totalRow ?? 0;
-    const pageSize = pagination?.pagesize ?? params.pageSize ?? 20;
+    const pageSize = pagination?.pagesize ?? (params.pageSize ?? 20);
     const pageCount = Math.max(1, Math.ceil(total / Math.max(1, pageSize)));
 
     return {
@@ -109,11 +109,9 @@ export function useGetProducts(params: ProductListFilters) {
 }
 
 // ---------- Backward-compatible wrapper (export) ----------
-// نگه‌داشتن نام قدیمی بدون تغییر لاجیک
 export function GetProductsApi(pageIndex = 0, categoryId?: number | null) {
   return useGetProducts({
     pageIndex,
-    // PageSize و Filter در نسخه قدیمی نبود، پس دست‌نخورده:
     pageSize: 20,
     filter: undefined,
     categoryId: typeof categoryId === 'number' ? categoryId : undefined,

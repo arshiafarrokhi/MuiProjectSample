@@ -1,5 +1,5 @@
-// src/sections/products/views/view.tsx
 import type { Theme, SxProps } from '@mui/material/styles';
+
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import { varAlpha } from 'minimal-shared/utils';
@@ -14,7 +14,6 @@ import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import PhotoLibraryOutlinedIcon from '@mui/icons-material/PhotoLibraryOutlined';
 import QuestionAnswerOutlinedIcon from '@mui/icons-material/QuestionAnswerOutlined';
-
 import {
   Box,
   Tab,
@@ -43,14 +42,14 @@ import {
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import { removeProduct, useGetProducts } from '../api/productsApi';
+import { removeProduct } from '../api/productsApi';
 import AddProductDialog from '../components/AddProductDialog';
 import EditProductDialog from '../components/EditProductDialog';
 
-// // 👇 جدید
-// import { useGetProducts, type ProductListFilters } from '../api/productsApi';
+// NEW: data hook & types
+import { useGetProducts, type ProductListFilters } from '../api/productsApi';
 
-type Props = {
+export type Props = {
   sx?: SxProps<Theme>;
   products?: any[];
   currency?: string;
@@ -117,13 +116,13 @@ export function ProductsView({
 
   // ---------- Filters (فقط وقتی از prop داده نشده باشد) ----------
   const controlled = Array.isArray(productsProp); // اگر از بیرون محصول می‌آید، UI فیلتر نشان نده
-  const [filters, setFilters] = useState<any>({
+  const [filters, setFilters] = useState<ProductListFilters>({
     pageIndex: 0,
     pageSize: 20,
     filter: '',
     categoryId: undefined,
   });
-  const [applied, setApplied] = useState<any>(filters);
+  const [applied, setApplied] = useState<ProductListFilters>(filters);
 
   const {
     products: fetchedProducts,
@@ -405,12 +404,12 @@ export function ProductsView({
             count={pagination?.totalRow ?? 0}
             page={pagination?.pageIndex ?? applied.pageIndex ?? 0}
             onPageChange={(_, newPage) => {
-              setApplied((p: any) => ({ ...p, pageIndex: newPage }));
+              setApplied((p) => ({ ...p, pageIndex: newPage }));
             }}
             rowsPerPage={pagination?.pagesize ?? applied.pageSize ?? 20}
             onRowsPerPageChange={(e) => {
               const newSize = Number(e.target.value);
-              setApplied((p: any) => ({ ...p, pageSize: newSize, pageIndex: 0 }));
+              setApplied((p) => ({ ...p, pageSize: newSize, pageIndex: 0 }));
             }}
             rowsPerPageOptions={[10, 20, 50, 100]}
             labelRowsPerPage="تعداد در صفحه"
@@ -470,7 +469,7 @@ export function ProductsView({
                 size="small"
                 label="جستجو (Pagination.Filter)"
                 value={filters.filter ?? ''}
-                onChange={(e) => setFilters((p: any) => ({ ...p, filter: e.target.value }))}
+                onChange={(e) => setFilters((p) => ({ ...p, filter: e.target.value }))}
                 sx={{ minWidth: { xs: 1, sm: 280 } }}
               />
 
@@ -480,7 +479,7 @@ export function ProductsView({
                 type="number"
                 value={filters.categoryId ?? ''}
                 onChange={(e) =>
-                  setFilters((p: any) => ({
+                  setFilters((p) => ({
                     ...p,
                     categoryId: e.target.value === '' ? undefined : Number(e.target.value),
                   }))
@@ -492,7 +491,7 @@ export function ProductsView({
                 size="small"
                 value={String(filters.pageSize ?? 20)}
                 onChange={(e) =>
-                  setFilters((p: any) => ({ ...p, pageSize: Number(e.target.value), pageIndex: 0 }))
+                  setFilters((p) => ({ ...p, pageSize: Number(e.target.value), pageIndex: 0 }))
                 }
                 sx={{ minWidth: { xs: 1, sm: 140 } }}
                 displayEmpty
@@ -543,9 +542,7 @@ export function ProductsView({
               {(applied.filter ?? '').length > 0 && (
                 <Chip
                   label={`فیلتر: ${applied.filter}`}
-                  onDelete={() =>
-                    setApplied((p: any) => ({ ...p, filter: undefined, pageIndex: 0 }))
-                  }
+                  onDelete={() => setApplied((p) => ({ ...p, filter: undefined, pageIndex: 0 }))}
                   size="small"
                   color="primary"
                   variant="outlined"
@@ -555,7 +552,7 @@ export function ProductsView({
                 <Chip
                   label={`CategoryId: ${applied.categoryId}`}
                   onDelete={() =>
-                    setApplied((p: any) => ({ ...p, categoryId: undefined, pageIndex: 0 }))
+                    setApplied((p) => ({ ...p, categoryId: undefined, pageIndex: 0 }))
                   }
                   size="small"
                   color="primary"

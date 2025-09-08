@@ -23,11 +23,13 @@ import {
   DialogActions,
   TableContainer,
   CircularProgress,
+  TextField,
+  TablePagination,
 } from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
-import { getMessage, useGetMessages } from '../api/messagesApi';
+import { getMessage, useGetMessages, type GetMessagesFilters } from '../api/messagesApi';
 
 function toFa(n?: number | string | null) {
   if (n === null || typeof n === 'undefined') return '—';
@@ -35,9 +37,18 @@ function toFa(n?: number | string | null) {
 }
 
 export default function MessagesView() {
-  // Seen filter
-  const [seen, setSeen] = useState<boolean | undefined>(undefined);
-  const { messages, messagesLoading, refetchMessages } = useGetMessages(seen);
+  // ---------- filters state ----------
+  const [filters, setFilters] = useState<GetMessagesFilters>({
+    pageIndex: 0,
+    pageSize: 20,
+    filter: '', // Pagination.Filter
+    phone: '', // Phone
+    insertTime: '', // InsertTime (yyyy-MM-dd)
+    seen: undefined, // Seen (اختیاری)
+  });
+  const [applied, setApplied] = useState<GetMessagesFilters>(filters);
+
+  const { messages, paging, pageCount, messagesLoading, refetchMessages } = useGetMessages(applied);
 
   // detail modal state
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -56,17 +67,16 @@ export default function MessagesView() {
   }, [messages]);
 
   const openMessage = async (e: React.MouseEvent, id: number) => {
-    // نکته‌ی اصلی: جلو هر نوع ناوبری/submit گرفته می‌شود
     e.preventDefault();
     e.stopPropagation();
 
     setSelectedId(id);
-    setDetailsOpen(true); // اول باز کن
+    setDetailsOpen(true);
     setDetails(null);
     setDetailsLoading(true);
 
     try {
-      const res = await getMessage(id); // API جزئیات (و Seen=true می‌شود)
+      const res = await getMessage(id);
       const msg = res?.result?.message;
       setDetails(msg ?? null);
     } catch (err: any) {
@@ -81,41 +91,118 @@ export default function MessagesView() {
       <Typography variant="h4">پیام‌ها</Typography>
 
       <Box sx={{ p: 3, mt: 5 }}>
-        {/* فیلتر بالای لیست - بدون form  */}
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          spacing={2}
-          alignItems="center"
-          sx={{ mb: 2 }}
-        >
-          <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
-            فیلتر وضعیت مشاهده
-          </Typography>
-
-          <Select
-            size="small"
-            value={String(seen)}
-            onChange={(e) => {
-              const v = e.target.value;
-              setSeen(v === 'true' ? true : v === 'false' ? false : undefined);
-            }}
-            sx={{ minWidth: 160 }}
+        {/* Filters bar */}
+        <Paper sx={{ p: 2, mb: 2, borderRadius: 2 }}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            sx={{ display: 'flex', flexWrap: 'wrap' }}
+            spacing={1.5}
+            alignItems="center"
           >
-            <MenuItem value="undefined">همه</MenuItem>
-            <MenuItem value="false">دیده‌نشده</MenuItem>
-            <MenuItem value="true">دیده‌شده</MenuItem>
-          </Select>
+            <TextField
+              size="small"
+              label="جستجو (Pagination.Filter)"
+              value={filters.filter ?? ''}
+              onChange={(e) => setFilters((p) => ({ ...p, filter: e.target.value }))}
+              sx={{ minWidth: { xs: 1, sm: 260 } }}
+            />
 
-          <Box sx={{ flex: 1 }} />
+            <TextField
+              size="small"
+              label="Phone"
+              value={filters.phone ?? ''}
+              onChange={(e) => setFilters((p) => ({ ...p, phone: e.target.value }))}
+              sx={{ minWidth: { xs: 1, sm: 180 } }}
+            />
 
-          <Button
-            type="button" // مهم
-            variant="outlined"
-            onClick={() => refetchMessages && refetchMessages()}
-          >
-            تازه‌سازی
-          </Button>
-        </Stack>
+            <TextField
+              size="small"
+              label="InsertTime (yyyy-MM-dd)"
+              type="date"
+              value={filters.insertTime ?? ''}
+              onChange={(e) => setFilters((p) => ({ ...p, insertTime: e.target.value }))}
+              sx={{ minWidth: { xs: 1, sm: 200 } }}
+              InputLabelProps={{ shrink: true }}
+            />
+
+            {/* Seen: اختیاری اگر بخوای حفظ کن */}
+            <Select
+              size="small"
+              value={String(filters.seen)}
+              onChange={(e) => {
+                const v = e.target.value;
+                setFilters((p) => ({
+                  ...p,
+                  seen: v === 'true' ? true : v === 'false' ? false : undefined,
+                }));
+              }}
+              sx={{ minWidth: { xs: 1, sm: 160 } }}
+              displayEmpty
+            >
+              <MenuItem value="undefined">همه</MenuItem>
+              <MenuItem value="false">دیده‌نشده</MenuItem>
+              <MenuItem value="true">دیده‌شده</MenuItem>
+            </Select>
+
+            <Select
+              size="small"
+              value={String(filters.pageSize ?? 20)}
+              onChange={(e) =>
+                setFilters((p) => ({ ...p, pageSize: Number(e.target.value), pageIndex: 0 }))
+              }
+              sx={{ minWidth: { xs: 1, sm: 120 } }}
+              displayEmpty
+            >
+              {[10, 20, 50, 100].map((n) => (
+                <MenuItem key={n} value={String(n)}>
+                  {n}
+                </MenuItem>
+              ))}
+            </Select>
+
+            <Box sx={{ flex: 1 }} />
+
+            <Stack direction="row" spacing={1}>
+              <Button
+                variant="outlined"
+                onClick={() =>
+                  setFilters({
+                    pageIndex: 0,
+                    pageSize: 20,
+                    filter: '',
+                    phone: '',
+                    insertTime: '',
+                    seen: undefined,
+                  })
+                }
+              >
+                ریست
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() =>
+                  setApplied({
+                    pageIndex: 0,
+                    pageSize: filters.pageSize ?? 20,
+                    filter: filters.filter?.trim() || undefined,
+                    phone: filters.phone?.trim() || undefined,
+                    insertTime: filters.insertTime || undefined,
+                    seen: filters.seen,
+                  })
+                }
+              >
+                اعمال فیلتر
+              </Button>
+              <Button
+                variant="text"
+                onClick={() => refetchMessages?.()}
+                disabled={!!messagesLoading}
+              >
+                تازه‌سازی
+              </Button>
+            </Stack>
+          </Stack>
+        </Paper>
 
         <Paper sx={{ width: '100%', overflow: 'hidden' }}>
           <TableContainer sx={{ maxHeight: { xs: '60vh', md: '70vh' } }}>
@@ -155,8 +242,8 @@ export default function MessagesView() {
                       </TableCell>
                       <TableCell align="center">
                         <IconButton
-                          type="button" // مهم
-                          onClick={(e) => openMessage(e, m.id)} // مهم: e.preventDefault/stopPropagation داخلش زده میشه
+                          type="button"
+                          onClick={(e) => openMessage(e, m.id)}
                           aria-label="جزئیات"
                         >
                           <VisibilityRoundedIcon fontSize="small" />
@@ -168,25 +255,38 @@ export default function MessagesView() {
               </TableBody>
             </Table>
           </TableContainer>
+
+          {/* Pagination */}
+          <Box sx={{ px: 1, py: 0.5 }}>
+            <TablePagination
+              component="div"
+              count={paging?.totalRow ?? 0}
+              page={paging?.pageIndex ?? applied.pageIndex ?? 0}
+              onPageChange={(_, newPage) => setApplied((p) => ({ ...p, pageIndex: newPage }))}
+              rowsPerPage={paging?.pageSize ?? applied.pageSize ?? 20}
+              onRowsPerPageChange={(e) => {
+                const newSize = Number(e.target.value);
+                setApplied((p) => ({ ...p, pageSize: newSize, pageIndex: 0 }));
+              }}
+              rowsPerPageOptions={[10, 20, 50, 100]}
+              labelRowsPerPage="تعداد در صفحه"
+              labelDisplayedRows={({ from, to, count }) =>
+                `${toFa(from)}–${toFa(to)} از ${toFa(count)}`
+              }
+            />
+          </Box>
         </Paper>
       </Box>
 
       {/* Details Modal */}
-      <Dialog
-        open={detailsOpen}
-        onClose={(_, reason) => {
-          // فقط با بستن دستی/کلیک کراس بسته شود (دلخواه)
-          if (reason === 'backdropClick' || reason === 'escapeKeyDown') {
-            setDetailsOpen(false);
-          } else {
-            setDetailsOpen(false);
-          }
-        }}
-        fullWidth
-        maxWidth="sm"
-      >
+      <Dialog open={detailsOpen} onClose={() => setDetailsOpen(false)} fullWidth maxWidth="sm">
         <DialogTitle
-          sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+          }}
         >
           <Typography variant="subtitle1" fontWeight={700}>
             جزئیات پیام {selectedId ? `#${toFa(selectedId)}` : ''}
@@ -198,7 +298,7 @@ export default function MessagesView() {
 
         <DialogContent dividers>
           {detailsLoading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4, flexWrap: 'wrap' }}>
               <CircularProgress size={22} />
             </Box>
           ) : !details ? (

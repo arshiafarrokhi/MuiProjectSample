@@ -5,10 +5,7 @@ import { Box, Tab, Tabs } from '@mui/material';
 
 import { CONFIG } from 'src/global-config';
 
-import { LoadingScreen } from 'src/components/loading-screen/loading-screen';
-
 import { AdminsView } from 'src/sections/admin/view';
-import { useGetAdmins } from 'src/sections/admin/api/adminApi';
 import AdminLoginLogsTab from 'src/sections/admin/components/AdminLoginLogsTab';
 
 const metadata = { title: `Admin Management | Dashboard - ${CONFIG.appName}` };
@@ -35,9 +32,6 @@ function TabPanel(props: { children?: React.ReactNode; index: number; value: num
 export default function AdminPage() {
   const [tab, setTab] = useState(0);
 
-  // همون هوک قبلی برای تب "ادمین‌ها"
-  const { admins, adminsLoading, refetchAdmins } = useGetAdmins();
-
   return (
     <>
       <Helmet>
@@ -50,19 +44,11 @@ export default function AdminPage() {
           <Tab label="لاگ‌های ورود" {...a11yProps(1)} />
         </Tabs>
 
-        {/* تب ادمین‌ها: همون AdminsView بدون تغییر */}
         <TabPanel value={tab} index={0}>
-          {adminsLoading ? (
-            <LoadingScreen />
-          ) : (
-            <AdminsView
-              admins={admins}
-              onRefetch={() => refetchAdmins(undefined, { revalidate: true })}
-            />
-          )}
+          {/* بدون props → ویو خودش دیتا را می‌گیرد و کنترل فیلترها دست کاربر است */}
+          <AdminsView />
         </TabPanel>
 
-        {/* تب لاگ‌های ورود: تب جدید */}
         <TabPanel value={tab} index={1}>
           <AdminLoginLogsTab />
         </TabPanel>
