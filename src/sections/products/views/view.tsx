@@ -1,4 +1,3 @@
-// src/sections/products/views/view.tsx
 import type { Theme, SxProps } from '@mui/material/styles';
 
 import { toast } from 'sonner';
@@ -35,6 +34,10 @@ import {
   Typography,
   IconButton,
   TableContainer,
+  TextField,
+  Select,
+  MenuItem,
+  TablePagination,
 } from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -43,7 +46,10 @@ import { removeProduct } from '../api/productsApi';
 import AddProductDialog from '../components/AddProductDialog';
 import EditProductDialog from '../components/EditProductDialog';
 
-type Props = {
+// NEW: data hook & types
+import { useGetProducts, type ProductListFilters } from '../api/productsApi';
+
+export type Props = {
   sx?: SxProps<Theme>;
   products?: any[];
   currency?: string;
@@ -95,7 +101,12 @@ const clamp2Lines = {
 };
 
 // ---------- component ----------
-export function ProductsView({ sx, products, currency, onRefetch }: Props) {
+export function ProductsView({
+  sx,
+  products: productsProp,
+  currency: currencyProp,
+  onRefetch,
+}: Props) {
   const nav = useNavigate();
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -103,15 +114,37 @@ export function ProductsView({ sx, products, currency, onRefetch }: Props) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [tab, setTab] = useState<number>(0); // 0: فعال، 1: حذف‌شده
 
-  // مرتب‌سازی محصولات از جدیدترین به قدیمی‌ترین بر اساس inserTime
+  // ---------- Filters (فقط وقتی از prop داده نشده باشد) ----------
+  const controlled = Array.isArray(productsProp); // اگر از بیرون محصول می‌آید، UI فیلتر نشان نده
+  const [filters, setFilters] = useState<ProductListFilters>({
+    pageIndex: 0,
+    pageSize: 20,
+    filter: '',
+    categoryId: undefined,
+  });
+  const [applied, setApplied] = useState<ProductListFilters>(filters);
+
+  const {
+    products: fetchedProducts,
+    currency: currencyHook,
+    pagination,
+    pageCount,
+    productsLoading,
+    refetchProducts,
+  } = useGetProducts(applied);
+
+  const effectiveProducts = controlled ? (productsProp ?? []) : (fetchedProducts ?? []);
+  const effectiveCurrency = controlled ? (currencyProp ?? 'IRT') : (currencyHook ?? 'IRT');
+
+  // مرتب‌سازی از جدید به قدیم
   const safeProducts = useMemo(() => {
-    if (!Array.isArray(products)) return [];
-    return [...products].sort((a, b) => {
+    if (!Array.isArray(effectiveProducts)) return [];
+    return [...effectiveProducts].sort((a, b) => {
       const dateA = new Date(a.inserTime).getTime();
       const dateB = new Date(b.inserTime).getTime();
-      return dateB - dateA; // جدیدترین اول
+      return dateB - dateA;
     });
-  }, [products]);
+  }, [effectiveProducts]);
 
   const activeProducts = useMemo(() => safeProducts.filter((p) => !p?.isRemoved), [safeProducts]);
   const removedProducts = useMemo(() => safeProducts.filter((p) => !!p?.isRemoved), [safeProducts]);
@@ -123,7 +156,8 @@ export function ProductsView({ sx, products, currency, onRefetch }: Props) {
       const msg = res?.message || (ok ? 'محصول حذف شد.' : 'حذف محصول ناموفق بود.');
       if (ok) {
         toast.success(msg);
-        onRefetch?.();
+        if (controlled) onRefetch?.();
+        else refetchProducts?.();
       } else {
         toast.error(msg);
       }
@@ -142,10 +176,10 @@ export function ProductsView({ sx, products, currency, onRefetch }: Props) {
           overflowY: 'auto',
           overflowX: 'auto',
           maxHeight: {
-            xs: 'calc(100dvh - 300px)',
-            sm: 'calc(100dvh - 320px)',
-            md: 'calc(100dvh - 360px)',
-            lg: 'calc(100dvh - 400px)',
+            xs: 'calc(100dvh - 360px)',
+            sm: 'calc(100dvh - 380px)',
+            md: 'calc(100dvh - 420px)',
+            lg: 'calc(100dvh - 460px)',
           },
           borderRadius: 1.5,
           bgcolor: 'background.paper',
@@ -173,7 +207,7 @@ export function ProductsView({ sx, products, currency, onRefetch }: Props) {
             {rows.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={10} align="center" sx={{ py: 3 }}>
-                  محصولی یافت نشد.
+                  {productsLoading ? 'در حال بارگذاری...' : 'محصولی یافت نشد.'}
                 </TableCell>
               </TableRow>
             ) : (
@@ -293,7 +327,6 @@ export function ProductsView({ sx, products, currency, onRefetch }: Props) {
                       </TableCell>
                     </TableRow>
 
-                    {/* جزئیات جمع‌شونده */}
                     <TableRow>
                       <TableCell colSpan={10} sx={{ p: 0, bgcolor: 'background.default' }}>
                         <Collapse in={expandedRow} timeout="auto" unmountOnExit>
@@ -316,7 +349,9 @@ export function ProductsView({ sx, products, currency, onRefetch }: Props) {
                                   <Typography variant="body2" color="text.secondary">
                                     واحد پول:
                                   </Typography>
-                                  <Typography variant="body2">{currency ?? 'IRT'}</Typography>
+                                  <Typography variant="body2">
+                                    {effectiveCurrency ?? 'IRT'}
+                                  </Typography>
                                 </Stack>
                               </Grid>
 
@@ -360,6 +395,30 @@ export function ProductsView({ sx, products, currency, onRefetch }: Props) {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Pagination فقط وقتی کنترل داخل صفحه است */}
+      {!controlled && (
+        <Box sx={{ px: 1, py: 0.5 }}>
+          <TablePagination
+            component="div"
+            count={pagination?.totalRow ?? 0}
+            page={pagination?.pageIndex ?? applied.pageIndex ?? 0}
+            onPageChange={(_, newPage) => {
+              setApplied((p) => ({ ...p, pageIndex: newPage }));
+            }}
+            rowsPerPage={pagination?.pagesize ?? applied.pageSize ?? 20}
+            onRowsPerPageChange={(e) => {
+              const newSize = Number(e.target.value);
+              setApplied((p) => ({ ...p, pageSize: newSize, pageIndex: 0 }));
+            }}
+            rowsPerPageOptions={[10, 20, 50, 100]}
+            labelRowsPerPage="تعداد در صفحه"
+            labelDisplayedRows={({ from, to, count }) =>
+              `${toFaDigits(from)}–${toFaDigits(to)} از ${toFaDigits(count)}`
+            }
+          />
+        </Box>
+      )}
     </Paper>
   );
 
@@ -397,10 +456,120 @@ export function ProductsView({ sx, products, currency, onRefetch }: Props) {
           <Stack direction="row" spacing={1} alignItems="center">
             <InfoOutlinedIcon fontSize="small" />
             <Typography variant="body2" color="text.secondary">
-              واحد پول: {currency || 'IRT'}
+              واحد پول: {effectiveCurrency || 'IRT'}
             </Typography>
           </Stack>
         </Stack>
+
+        {/* نوار فیلترها (فقط وقتی محصولات از prop نیامده) */}
+        {!controlled && (
+          <Paper sx={{ p: 2, mb: 2, borderRadius: 2 }}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems="center">
+              <TextField
+                size="small"
+                label="جستجو (Pagination.Filter)"
+                value={filters.filter ?? ''}
+                onChange={(e) => setFilters((p) => ({ ...p, filter: e.target.value }))}
+                sx={{ minWidth: { xs: 1, sm: 280 } }}
+              />
+
+              <TextField
+                size="small"
+                label="CategoryId"
+                type="number"
+                value={filters.categoryId ?? ''}
+                onChange={(e) =>
+                  setFilters((p) => ({
+                    ...p,
+                    categoryId: e.target.value === '' ? undefined : Number(e.target.value),
+                  }))
+                }
+                sx={{ minWidth: { xs: 1, sm: 160 } }}
+              />
+
+              <Select
+                size="small"
+                value={String(filters.pageSize ?? 20)}
+                onChange={(e) =>
+                  setFilters((p) => ({ ...p, pageSize: Number(e.target.value), pageIndex: 0 }))
+                }
+                sx={{ minWidth: { xs: 1, sm: 140 } }}
+                displayEmpty
+              >
+                {[10, 20, 50, 100].map((n) => (
+                  <MenuItem key={n} value={String(n)}>
+                    {n}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <Box sx={{ flex: 1 }} />
+
+              <Stack direction="row" spacing={1}>
+                <Button
+                  variant="outlined"
+                  onClick={() => {
+                    setFilters({ pageIndex: 0, pageSize: 20, filter: '', categoryId: undefined });
+                  }}
+                >
+                  ریست
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => {
+                    setApplied({
+                      pageIndex: 0,
+                      pageSize: filters.pageSize ?? 20,
+                      filter: filters.filter?.trim() || undefined,
+                      categoryId: filters.categoryId,
+                    });
+                  }}
+                >
+                  اعمال فیلتر
+                </Button>
+                <Button
+                  variant="text"
+                  onClick={() => refetchProducts?.()}
+                  disabled={!!productsLoading}
+                >
+                  تازه‌سازی
+                </Button>
+              </Stack>
+            </Stack>
+
+            {/* خلاصه فیلترهای فعال */}
+            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 1 }}>
+              {(applied.filter ?? '').length > 0 && (
+                <Chip
+                  label={`فیلتر: ${applied.filter}`}
+                  onDelete={() => setApplied((p) => ({ ...p, filter: undefined, pageIndex: 0 }))}
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                />
+              )}
+              {typeof applied.categoryId === 'number' && (
+                <Chip
+                  label={`CategoryId: ${applied.categoryId}`}
+                  onDelete={() =>
+                    setApplied((p) => ({ ...p, categoryId: undefined, pageIndex: 0 }))
+                  }
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                />
+              )}
+              {!!applied.pageSize && (
+                <Chip label={`PageSize: ${applied.pageSize}`} size="small" variant="outlined" />
+              )}
+              <Chip
+                label={`PageIndex: ${toFaDigits(applied.pageIndex ?? 0)} / ${toFaDigits((pageCount ?? 1) - 1)}`}
+                size="small"
+                variant="outlined"
+              />
+            </Stack>
+          </Paper>
+        )}
 
         {/* Tabs: Active / Removed */}
         <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }} aria-label="product tabs">
@@ -438,14 +607,20 @@ export function ProductsView({ sx, products, currency, onRefetch }: Props) {
       <AddProductDialog
         open={openAddDialog}
         onClose={() => setOpenAddDialog(false)}
-        onCreated={onRefetch}
+        onCreated={() => {
+          if (controlled) onRefetch?.();
+          else refetchProducts?.();
+        }}
       />
 
       <EditProductDialog
         open={openEditDialog}
         onClose={() => setOpenEditDialog(false)}
         product={selectedProduct}
-        onUpdated={onRefetch}
+        onUpdated={() => {
+          if (controlled) onRefetch?.();
+          else refetchProducts?.();
+        }}
       />
     </DashboardContent>
   );

@@ -1,6 +1,7 @@
 import { varAlpha } from 'minimal-shared/utils';
 // src/sections/orders/views/view.tsx
 import React, { useMemo, useState } from 'react';
+import ProfitPercentageCard from '../components/ProfitPercentageCard';
 
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -143,11 +144,11 @@ export default function OrdersView() {
           }),
         ]}
       >
+        <ProfitPercentageCard />
         <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ mb: 2 }}>
           <Tab label="سفارش‌ها (عمومی)" />
           <Tab label="سفارش‌های سیم‌کارت داخلی" />
         </Tabs>
-
         {/* ------------------ TAB 0: Orders ------------------ */}
         {tab === 0 && (
           <Box>

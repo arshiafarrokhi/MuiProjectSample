@@ -10,36 +10,62 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import Typography from '@mui/material/Typography';
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
+import {
+  Paper,
+  Stack,
+  TextField,
+  Select,
+  MenuItem,
+  Chip,
+  TablePagination,
+  IconButton,
+  Tooltip,
+} from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import AddAdminDialog from './components/AddAdminDialog';
 import EditAdminDialog from './components/EditAdminDialog';
 import ChangeAdminPassDialog from './components/ChangeAdminPassDialog';
+import { useGetAdmins, type AdminListFilters } from './api/adminApi';
 
-type Props = {
+export type Props = {
   sx?: SxProps<Theme>;
   admins?: any[];
   onRefetch?: () => void;
 };
 
-export function AdminsView({ sx, admins, onRefetch }: Props) {
+const toFa = (n?: number | string | null) =>
+  n == null ? '—' : String(n).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d]);
+
+export function AdminsView({ sx, admins: adminsProp, onRefetch }: Props) {
   const [openAdd, setOpenAdd] = useState(false);
   const [editData, setEditData] = useState<any | null>(null);
   const [passData, setPassData] = useState<any | null>(null);
 
-  const safeAdmins = Array.isArray(admins) ? admins : [];
+  const controlled = Array.isArray(adminsProp); // اگر از بیرون بیاید، فیلتر داخلی پنهان می‌شود
 
-  // sort by inserTime desc
-  const ordered = useMemo(
-    () =>
-      [...safeAdmins].sort((a, b) => {
-        const da = new Date(a?.inserTime ?? 0).getTime();
-        const db = new Date(b?.inserTime ?? 0).getTime();
-        return db - da;
-      }),
-    [safeAdmins]
-  );
+  // ---------- Filters (فقط وقتی کنترل‌شده نیست) ----------
+  const [filters, setFilters] = useState<AdminListFilters>({
+    pageIndex: 0,
+    pageSize: 20,
+    filter: '',
+  });
+  const [applied, setApplied] = useState<AdminListFilters>(filters);
+
+  const { admins, paging, pageCount, adminsLoading, refetchAdmins } = useGetAdmins(applied);
+
+  const effectiveAdmins = controlled ? (adminsProp ?? []) : (admins ?? []);
+
+  const safeAdmins = useMemo(() => {
+    const arr = Array.isArray(effectiveAdmins) ? [...effectiveAdmins] : [];
+    // sort by inserTime desc
+    return arr.sort((a, b) => {
+      const da = new Date(a?.inserTime ?? 0).getTime();
+      const db = new Date(b?.inserTime ?? 0).getTime();
+      return db - da;
+    });
+  }, [effectiveAdmins]);
 
   return (
     <DashboardContent maxWidth="xl">
@@ -63,8 +89,86 @@ export function AdminsView({ sx, admins, onRefetch }: Props) {
           </Button>
         </Box>
 
+        {/* Filters bar (فقط وقتی غیرکنترل‌شده) */}
+        {!controlled && (
+          <Paper sx={{ p: 2, mb: 2, borderRadius: 2 }}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems="center">
+              <TextField
+                size="small"
+                label="جستجو (Pagination.Filter)"
+                value={filters.filter ?? ''}
+                onChange={(e) => setFilters((p) => ({ ...p, filter: e.target.value }))}
+                sx={{ minWidth: { xs: 1, sm: 280 } }}
+              />
+
+              <Select
+                size="small"
+                value={String(filters.pageSize ?? 20)}
+                onChange={(e) =>
+                  setFilters((p) => ({ ...p, pageSize: Number(e.target.value), pageIndex: 0 }))
+                }
+                sx={{ minWidth: { xs: 1, sm: 140 } }}
+                displayEmpty
+              >
+                {[10, 20, 50, 100].map((n) => (
+                  <MenuItem key={n} value={String(n)}>
+                    {n}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <Box sx={{ flex: 1 }} />
+
+              <Stack direction="row" spacing={1}>
+                <Button
+                  variant="outlined"
+                  onClick={() => setFilters({ pageIndex: 0, pageSize: 20, filter: '' })}
+                >
+                  ریست
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() =>
+                    setApplied({
+                      pageIndex: 0,
+                      pageSize: filters.pageSize ?? 20,
+                      filter: filters.filter?.trim() || undefined,
+                    })
+                  }
+                >
+                  اعمال فیلتر
+                </Button>
+                <Button variant="text" onClick={() => refetchAdmins?.()} disabled={!!adminsLoading}>
+                  تازه‌سازی
+                </Button>
+              </Stack>
+            </Stack>
+
+            {/* خلاصهٔ فیلترها */}
+            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 1 }}>
+              {(applied.filter ?? '').length > 0 && (
+                <Chip
+                  label={`فیلتر: ${applied.filter}`}
+                  onDelete={() => setApplied((p) => ({ ...p, filter: undefined, pageIndex: 0 }))}
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                />
+              )}
+              {!!applied.pageSize && (
+                <Chip label={`PageSize: ${applied.pageSize}`} size="small" variant="outlined" />
+              )}
+              <Chip
+                label={`PageIndex: ${toFa(applied.pageIndex ?? 0)} / ${toFa((pageCount ?? 1) - 1)}`}
+                size="small"
+                variant="outlined"
+              />
+            </Stack>
+          </Paper>
+        )}
+
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {ordered.map((ad, idx) => {
+          {safeAdmins.map((ad, idx) => {
             const accountId = ad?.accountId ?? ad?.id ?? ad?.guid ?? '';
             return (
               <Box
@@ -93,51 +197,81 @@ export function AdminsView({ sx, admins, onRefetch }: Props) {
                     style={{ borderRadius: '50%', objectFit: 'cover' }}
                   />
                   <Box>
-                    <Typography variant="subtitle1" fontWeight={700}>
+                    <Typography variant="subtitle1" fontWeight={700} noWrap>
                       {ad.fullname}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body2" color="text.secondary" noWrap>
                       {ad.email} • {ad.phone}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      نقش: {ad.role} | ثبت: {new Date(ad.inserTime).toLocaleString('fa-IR')}
+                      نقش: {ad.role} | ثبت:{' '}
+                      {ad.inserTime ? new Date(ad.inserTime).toLocaleString('fa-IR') : '—'}
                     </Typography>
                   </Box>
                 </Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                  <EditIcon
-                    sx={{ cursor: 'pointer' }}
-                    titleAccess="ویرایش ادمین"
-                    onClick={() => {
-                      if (!accountId) {
-                        toast.error('شناسه ادمین یافت نشد.');
-                        return;
-                      }
-                      setEditData({
-                        accountId,
-                        fullName: ad.fullname ?? '',
-                        phone: ad.phone ?? '',
-                        email: ad.email ?? '',
-                      });
-                    }}
-                  />
-                  <KeyRoundedIcon
-                    sx={{ cursor: 'pointer' }}
-                    titleAccess="تغییر رمز"
-                    onClick={() => {
-                      if (!accountId) {
-                        toast.error('شناسه ادمین یافت نشد.');
-                        return;
-                      }
-                      setPassData({ accountId });
-                    }}
-                  />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Tooltip title="ویرایش ادمین">
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        if (!accountId) {
+                          toast.error('شناسه ادمین یافت نشد.');
+                          return;
+                        }
+                        setEditData({
+                          accountId,
+                          fullName: ad.fullname ?? '',
+                          phone: ad.phone ?? '',
+                          email: ad.email ?? '',
+                        });
+                      }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="تغییر رمز">
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        if (!accountId) {
+                          toast.error('شناسه ادمین یافت نشد.');
+                          return;
+                        }
+                        setPassData({ accountId });
+                      }}
+                    >
+                      <KeyRoundedIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
               </Box>
             );
           })}
         </Box>
+
+        {/* Pagination (فقط وقتی غیرکنترل‌شده) */}
+        {!controlled && (
+          <Box sx={{ px: 0.5, pt: 1.5 }}>
+            <TablePagination
+              component="div"
+              count={paging?.totalRow ?? 0}
+              page={paging?.pageIndex ?? applied.pageIndex ?? 0}
+              onPageChange={(_, newPage) => setApplied((p) => ({ ...p, pageIndex: newPage }))}
+              rowsPerPage={paging?.pageSize ?? applied.pageSize ?? 20}
+              onRowsPerPageChange={(e) => {
+                const newSize = Number(e.target.value);
+                setApplied((p) => ({ ...p, pageSize: newSize, pageIndex: 0 }));
+              }}
+              rowsPerPageOptions={[10, 20, 50, 100]}
+              labelRowsPerPage="تعداد در صفحه"
+              labelDisplayedRows={({ from, to, count }) =>
+                `${toFa(from)}–${toFa(to)} از ${toFa(count)}`
+              }
+            />
+          </Box>
+        )}
       </Box>
 
       <AddAdminDialog
@@ -145,7 +279,8 @@ export function AdminsView({ sx, admins, onRefetch }: Props) {
         onClose={() => setOpenAdd(false)}
         onCreated={() => {
           setOpenAdd(false);
-          if (onRefetch) onRefetch();
+          if (controlled) onRefetch?.();
+          else refetchAdmins?.();
         }}
       />
 
@@ -155,7 +290,8 @@ export function AdminsView({ sx, admins, onRefetch }: Props) {
         admin={editData}
         onUpdated={() => {
           setEditData(null);
-          if (onRefetch) onRefetch();
+          if (controlled) onRefetch?.();
+          else refetchAdmins?.();
         }}
       />
 
@@ -165,7 +301,8 @@ export function AdminsView({ sx, admins, onRefetch }: Props) {
         accountId={passData?.accountId}
         onChanged={() => {
           setPassData(null);
-          if (onRefetch) onRefetch();
+          if (controlled) onRefetch?.();
+          else refetchAdmins?.();
         }}
       />
     </DashboardContent>

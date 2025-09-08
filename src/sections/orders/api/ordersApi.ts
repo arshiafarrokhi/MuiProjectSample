@@ -112,3 +112,69 @@ export function useGetLocalSIMOrders(filters: LocalFilters) {
 
   return memo;
 }
+
+export type ProductProfitItem = {
+  percentage: number;
+  type: number; // 1,2,3
+};
+
+// enum براساس توضیح کارفرما
+export enum ProductType {
+  Game = 1,
+  SIMChargeGlobal = 2,
+  SIMInternetGloabl = 3, // (عین نوشتاری که دادی نگه داشتم)
+}
+
+export const PRODUCT_TYPE_LABEL: Record<number, string> = {
+  [ProductType.Game]: 'بازی',
+  [ProductType.SIMChargeGlobal]: 'شارژ جهانی سیم',
+  [ProductType.SIMInternetGloabl]: 'اینترنت جهانی سیم',
+};
+
+// GET: /api/Order/GetProductsProfitPercentage
+export function useGetProductsProfitPercentage() {
+  const url = endpoints.orders?.profitGet ?? '/Order/GetProductsProfitPercentage';
+
+  const { data, error, isLoading, isValidating, mutate } = useSWR<any>(url, fetcher, swrOptions);
+
+  const memo = useMemo(() => {
+    const items: ProductProfitItem[] = data?.result ?? [];
+    // اطمینان از داشتن ۳ آیتم: 1,2,3 (در صورت نبودن از ۰ پر می‌کنیم)
+    const byType = new Map<number, ProductProfitItem>();
+    items.forEach((i) =>
+      byType.set(Number(i.type), { type: Number(i.type), percentage: Number(i.percentage) || 0 })
+    );
+
+    const normalized: ProductProfitItem[] = [1, 2, 3].map((t) => ({
+      type: t,
+      percentage: byType.get(t)?.percentage ?? 0,
+    }));
+
+    return {
+      profitItems: normalized,
+      profitLoading: isLoading,
+      profitError: error,
+      profitValidating: isValidating,
+      refetchProfit: mutate,
+    };
+  }, [data, error, isLoading, isValidating, mutate]);
+
+  return memo;
+}
+
+// POST: /api/Order/UpdateProductsProfitPercentage
+export async function updateProductsProfitPercentage(payload: {
+  percentage: number;
+  type: number; // 1,2,3
+}) {
+  const url = endpoints.orders?.profitUpdate ?? '/api/Order/UpdateProductsProfitPercentage';
+  const res = await axiosInstance.post(
+    url,
+    {
+      percentage: Number(payload.percentage),
+      type: Number(payload.type),
+    },
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+  return res.data;
+}

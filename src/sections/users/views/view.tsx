@@ -1,9 +1,8 @@
-// src/sections/users/views/UsersView.tsx
 import type { Theme, SxProps } from '@mui/material/styles';
 
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, Fragment } from 'react';
 import { varAlpha } from 'minimal-shared/utils';
 
 import Box from '@mui/material/Box';
@@ -14,38 +13,70 @@ import EditIcon from '@mui/icons-material/Edit';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
-// Added wallet icon import
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
+import {
+  Paper,
+  Stack,
+  TextField,
+  Select,
+  MenuItem,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  TableContainer,
+  TablePagination,
+  Chip,
+  Tooltip,
+  IconButton,
+} from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import AddUserDialog from '../components/AddUser';
-import { deleteUserApi } from '../api/deleteUserApi';
-// import AddUserDialog from '../components/addUser';
 import EditUserDialog from '../components/EditUserDialog';
+import { deleteUserApi } from '../api/deleteUserApi';
+import { useGetUsers, type UsersListFilters } from '../api/usersApi';
 
-type Props = {
+export type Props = {
   sx?: SxProps<Theme>;
   users?: any[];
   activeOnly?: boolean;
   setActiveOnly?: (v: boolean) => void;
-  // Optional: you can pass a refetch method if you have one
   onRefetch?: () => void;
 };
 
-export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: Props) {
+function toFa(n?: number | string | null) {
+  if (n === null || typeof n === 'undefined') return '—';
+  return String(n).replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d]);
+}
+
+export function UsersView({ sx, users: usersProp, activeOnly, setActiveOnly, onRefetch }: Props) {
+  const nav = useNavigate();
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any | null>(null);
 
-  const [openWalletDialog, setOpenWalletDialog] = useState(false);
-  const [walletUser, setWalletUser] = useState<any | null>(null);
-
   const [localActiveOnly, setLocalActiveOnly] = useState<boolean>(activeOnly ?? true);
-
   useEffect(() => {
     if (typeof activeOnly === 'boolean') setLocalActiveOnly(activeOnly);
   }, [activeOnly]);
+
+  const controlled = Array.isArray(usersProp); // اگر کاربرها از props بیاید، فیلتر داخلی پنهان می‌شود
+
+  // ---- Filters (فقط در حالت غیرکنترل‌شده) ----
+  const [filters, setFilters] = useState<UsersListFilters>({
+    pageIndex: 1, // سازگار با قبل
+    pageSize: 20,
+    filter: '', // Pagination.Filter
+    activeUsers: true, // ActiveUsers
+  });
+  const [applied, setApplied] = useState<UsersListFilters>(filters);
+
+  const { users, paging, pageCount, usersLoading, refetchUsers } = useGetUsers(applied);
+
+  const effectiveUsers = controlled ? (usersProp ?? []) : (users ?? []);
 
   const { deleteUser } = deleteUserApi();
 
@@ -57,7 +88,8 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
 
       if (ok) {
         toast.success(message);
-        onRefetch?.();
+        if (controlled) onRefetch?.();
+        else refetchUsers?.();
       } else {
         toast.error(message);
       }
@@ -69,11 +101,10 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
   const handleToggleActive = (value: boolean) => {
     setLocalActiveOnly(value);
     if (typeof setActiveOnly === 'function') setActiveOnly(value);
+    if (!controlled) setFilters((p) => ({ ...p, activeUsers: value }));
   };
 
-  const safeUsers = Array.isArray(users) ? users : [];
-
-  const nav = useNavigate();
+  const safeUsers = Array.isArray(effectiveUsers) ? effectiveUsers : [];
 
   return (
     <DashboardContent maxWidth="xl">
@@ -97,19 +128,126 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
           </Button>
         </Box>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={!!localActiveOnly}
-                  onChange={(e) => handleToggleActive(e.target.checked)}
+        {/* Filters bar (فقط در حالت غیرکنترل‌شده) */}
+        {!controlled && (
+          <Paper sx={{ p: 2, mb: 2, borderRadius: 2 }}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems="center">
+              <TextField
+                size="small"
+                label="جستجو (Pagination.Filter)"
+                value={filters.filter ?? ''}
+                onChange={(e) => setFilters((p) => ({ ...p, filter: e.target.value }))}
+                sx={{ minWidth: { xs: 1, sm: 260 } }}
+              />
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={!!filters.activeUsers}
+                    onChange={(e) => setFilters((p) => ({ ...p, activeUsers: e.target.checked }))}
+                    color="primary"
+                  />
+                }
+                label="فقط کاربران فعال (ActiveUsers)"
+              />
+
+              <Select
+                size="small"
+                value={String(filters.pageSize ?? 20)}
+                onChange={(e) =>
+                  setFilters((p) => ({ ...p, pageSize: Number(e.target.value), pageIndex: 1 }))
+                }
+                sx={{ minWidth: { xs: 1, sm: 120 } }}
+                displayEmpty
+              >
+                {[10, 20, 50, 100].map((n) => (
+                  <MenuItem key={n} value={String(n)}>
+                    {n}
+                  </MenuItem>
+                ))}
+              </Select>
+
+              <Box sx={{ flex: 1 }} />
+
+              <Stack direction="row" spacing={1}>
+                <Button
+                  variant="outlined"
+                  onClick={() =>
+                    setFilters({ pageIndex: 1, pageSize: 20, filter: '', activeUsers: true })
+                  }
+                >
+                  ریست
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() =>
+                    setApplied({
+                      pageIndex: 1,
+                      pageSize: filters.pageSize ?? 20,
+                      filter: filters.filter?.trim() || undefined,
+                      activeUsers: filters.activeUsers,
+                    })
+                  }
+                >
+                  اعمال فیلتر
+                </Button>
+                <Button variant="text" onClick={() => refetchUsers?.()} disabled={!!usersLoading}>
+                  تازه‌سازی
+                </Button>
+              </Stack>
+            </Stack>
+
+            {/* خلاصه فیلترهای فعال */}
+            <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mt: 1 }}>
+              {(applied.filter ?? '').length > 0 && (
+                <Chip
+                  label={`فیلتر: ${applied.filter}`}
+                  onDelete={() => setApplied((p) => ({ ...p, filter: undefined, pageIndex: 1 }))}
+                  size="small"
                   color="primary"
+                  variant="outlined"
                 />
-              }
-              label="کاربر فعال"
-            />
-          </Box>
+              )}
+              {typeof applied.activeUsers === 'boolean' && (
+                <Chip
+                  label={`ActiveUsers: ${applied.activeUsers ? 'true' : 'false'}`}
+                  onDelete={() =>
+                    setApplied((p) => ({ ...p, activeUsers: undefined, pageIndex: 1 }))
+                  }
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                />
+              )}
+              {!!applied.pageSize && (
+                <Chip label={`PageSize: ${applied.pageSize}`} size="small" variant="outlined" />
+              )}
+              <Chip
+                label={`PageIndex: ${applied.pageIndex ?? 1} / ${Math.max(1, pageCount ?? 1)}`}
+                size="small"
+                variant="outlined"
+              />
+            </Stack>
+          </Paper>
+        )}
+
+        {/* Users list */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* سوئیچ فقط وقتی کنترل‌شده است نشان بده تا با فیلتر بالایی دو تا نشود */}
+          {controlled && (
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={!!localActiveOnly}
+                    onChange={(e) => handleToggleActive(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="کاربر فعال"
+              />
+            </Box>
+          )}
 
           {safeUsers.map((usersItem: any) => (
             <Box
@@ -139,7 +277,7 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
               >
                 <img
                   src={usersItem.avatar}
-                  alt={usersItem.fName + ' ' + usersItem.lName}
+                  alt={(usersItem.fName || '') + ' ' + (usersItem.lName || '')}
                   width={70}
                   style={{ borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
                 />
@@ -155,54 +293,81 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
               </Box>
 
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                {/* Edit button */}
-                <EditIcon
-                  color="action"
-                  sx={{ cursor: 'pointer', fontSize: 28 }}
+                <IconButton
+                  color="default"
+                  size="small"
                   onClick={() => {
                     setSelectedUser({
-                      id: usersItem.id, // <-- used as userId in API
+                      id: usersItem.id,
                       fName: usersItem.fName ?? '',
                       lName: usersItem.lName ?? '',
                       phone: usersItem.phone ?? '',
                     });
                     setOpenEditDialog(true);
                   }}
-                  titleAccess="ویرایش کاربر"
-                />
-                {/* Delete button */}
-                <DeleteOutlineRoundedIcon
+                  title="ویرایش کاربر"
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
+
+                <IconButton
                   color="error"
-                  sx={{ cursor: 'pointer', fontSize: 26 }}
+                  size="small"
                   onClick={() => {
                     if (confirm('آیا مطمئن هستید که می‌خواهید این کاربر را حذف کنید؟')) {
                       handleDelete(usersItem.id);
                     }
                   }}
-                  titleAccess="حذف کاربر"
-                />
-                {/* wallet button */}
-                <AccountBalanceWalletRoundedIcon
+                  title="حذف کاربر"
+                >
+                  <DeleteOutlineRoundedIcon fontSize="small" />
+                </IconButton>
+
+                <IconButton
                   color="primary"
-                  sx={{ cursor: 'pointer', fontSize: 26 }}
+                  size="small"
                   onClick={() =>
                     nav(`/dashboard/users/${usersItem.id}`, {
                       state: { fName: usersItem.fName ?? '', lName: usersItem.lName ?? '' },
                     })
                   }
-                  titleAccess="کیف‌پول"
-                />
+                  title="کیف‌پول"
+                >
+                  <AccountBalanceWalletRoundedIcon fontSize="small" />
+                </IconButton>
               </Box>
             </Box>
           ))}
         </Box>
+
+        {/* Pagination (فقط وقتی غیرکنترل‌شده) */}
+        {!controlled && (
+          <Box sx={{ px: 0.5, pt: 1.5 }}>
+            <TablePagination
+              component="div"
+              count={paging?.totalRow ?? 0}
+              page={(paging?.pageIndex ?? applied.pageIndex ?? 1) - 1}
+              onPageChange={(_, newPage) => setApplied((p) => ({ ...p, pageIndex: newPage + 1 }))}
+              rowsPerPage={paging?.pageSize ?? applied.pageSize ?? 20}
+              onRowsPerPageChange={(e) => {
+                const newSize = Number(e.target.value);
+                setApplied((p) => ({ ...p, pageSize: newSize, pageIndex: 1 }));
+              }}
+              rowsPerPageOptions={[10, 20, 50, 100]}
+              labelRowsPerPage="تعداد در صفحه"
+              labelDisplayedRows={({ from, to, count }) =>
+                `${toFa(from)}–${toFa(to)} از ${toFa(count)}`
+              }
+            />
+          </Box>
+        )}
       </Box>
 
       {/* Add User */}
       <AddUserDialog
         handleClose={() => setOpenAddDialog(false)}
         openAddDialog={openAddDialog}
-        onCreated={onRefetch}
+        onCreated={() => (controlled ? onRefetch?.() : refetchUsers?.())}
       />
 
       {/* Edit User */}
@@ -210,7 +375,7 @@ export function UsersView({ sx, users, activeOnly, setActiveOnly, onRefetch }: P
         open={openEditDialog}
         onClose={() => setOpenEditDialog(false)}
         user={selectedUser}
-        onUpdated={onRefetch} // if you have a refetch method, it will refresh the list post-update
+        onUpdated={() => (controlled ? onRefetch?.() : refetchUsers?.())}
       />
     </DashboardContent>
   );
