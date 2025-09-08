@@ -156,4 +156,8 @@ export const endpoints = {
     creditIncrease: '/Inax/CreditIncrease',
     transactionInquiry: '/Inax/TransactionInquiry',
   },
+  userWallet: {
+    getCreditIncreaseRequests: '/UserWallet/GetCreditIncreaseRequests',
+    getCreditIncreaseRequest: '/UserWallet/GetCreditIncreaseRequest',
+  },
 };

@@ -80,6 +80,11 @@ export function navDataFunc(t: TFunction<any, any>) {
         { title: 'سفارش‌ها', path: paths.dashboard.orders, icon: ICONS.order },
         { title: 'کارت ها', path: paths.dashboard.bankAccounts, icon: ICONS.order },
         { title: 'inax', path: paths.dashboard.inax, icon: ICONS.order },
+        {
+          title: 'درخواست های افزایش حساب',
+          path: paths.dashboard.creditIncreaseRequests,
+          icon: ICONS.order,
+        },
       ],
     },
   ];

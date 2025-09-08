@@ -34,5 +34,6 @@ export const paths = {
     orders: `${ROOTS.DASHBOARD}/orders`,
     bankAccounts: `${ROOTS.DASHBOARD}/bank-accounts`,
     inax: `${ROOTS.DASHBOARD}/inax`,
+    creditIncreaseRequests: `${ROOTS.DASHBOARD}/creditIncreaseRequests`,
   },
 };
