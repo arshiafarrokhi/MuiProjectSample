@@ -1,6 +1,4 @@
-// src/sections/products/api/productsApi.ts
 import type { SWRConfiguration } from 'swr';
-
 import useSWR from 'swr';
 import { useMemo } from 'react';
 
@@ -29,7 +27,7 @@ export type Product = {
 
 export type GetProductsResp = {
   result: {
-    pagination: { totalRow: number; pageIndex: number; pagesize: number; filter: string };
+    pagination: { totalRow: number; pageIndex: number; pagesize: number; filter?: string };
     products: Product[];
     currency: string;
   };
@@ -52,13 +50,34 @@ const swrOptions: SWRConfiguration = {
   revalidateOnReconnect: false,
 };
 
-// ---------- SWR: list ----------
-export function GetProductsApi(pageIndex = 0, categoryId?: number | null) {
-  const base = endpoints.products.list; // '/Product/GetProducts'
-  const url =
-    typeof categoryId === 'number'
-      ? `${base}?Pagination.PageIndex=${pageIndex}&CategoryId=${categoryId}`
-      : `${base}?Pagination.PageIndex=${pageIndex}`;
+// ---------- helpers ----------
+function buildQuery(base: string, params: Record<string, any>) {
+  const usp = new URLSearchParams();
+  Object.entries(params).forEach(([k, v]) => {
+    if (v === undefined || v === null || v === '') return;
+    usp.set(k, String(v));
+  });
+  const qs = usp.toString();
+  return qs ? `${base}?${qs}` : base;
+}
+
+// ---------- Filters type (export) ----------
+export type ProductListFilters = {
+  pageIndex?: number; // Pagination.PageIndex
+  pageSize?: number; // Pagination.PageSize
+  filter?: string; // Pagination.Filter
+  categoryId?: number | null; // CategoryId
+};
+
+// ---------- Core hook (export) ----------
+export function useGetProducts(params: ProductListFilters) {
+  const base = endpoints.products?.list ?? '/Product/GetProducts';
+  const url = buildQuery(base, {
+    'Pagination.PageIndex': params.pageIndex ?? 0,
+    'Pagination.PageSize': params.pageSize ?? 20,
+    'Pagination.Filter': params.filter,
+    CategoryId: typeof params.categoryId === 'number' ? params.categoryId : undefined,
+  });
 
   const { data, isLoading, error, isValidating, mutate } = useSWR<GetProductsResp>(
     url,
@@ -66,25 +85,44 @@ export function GetProductsApi(pageIndex = 0, categoryId?: number | null) {
     swrOptions
   );
 
-  const memoizedValue = useMemo(
-    () => ({
-      products: data?.result?.products ?? [],
-      currency: data?.result?.currency ?? 'IRT',
-      pagination: data?.result?.pagination,
+  const memoizedValue = useMemo(() => {
+    const products = data?.result?.products ?? [];
+    const currency = data?.result?.currency ?? 'IRT';
+    const pagination = data?.result?.pagination;
+    const total = pagination?.totalRow ?? 0;
+    const pageSize = pagination?.pagesize ?? params.pageSize ?? 20;
+    const pageCount = Math.max(1, Math.ceil(total / Math.max(1, pageSize)));
+
+    return {
+      products,
+      currency,
+      pagination,
+      pageCount,
       productsLoading: isLoading,
       productsError: error,
       productsValidating: isValidating,
       refetchProducts: mutate,
-    }),
-    [data, error, isLoading, isValidating, mutate]
-  );
+    };
+  }, [data, error, isLoading, isValidating, mutate, params.pageSize]);
 
   return memoizedValue;
 }
 
+// ---------- Backward-compatible wrapper (export) ----------
+// نگه‌داشتن نام قدیمی بدون تغییر لاجیک
+export function GetProductsApi(pageIndex = 0, categoryId?: number | null) {
+  return useGetProducts({
+    pageIndex,
+    // PageSize و Filter در نسخه قدیمی نبود، پس دست‌نخورده:
+    pageSize: 20,
+    filter: undefined,
+    categoryId: typeof categoryId === 'number' ? categoryId : undefined,
+  });
+}
+
 // ---------- get one ----------
 export async function getProduct(productId: string) {
-  const url = endpoints.products.getOne;
+  const url = endpoints.products?.getOne ?? '/Product/GetProduct';
   const res = await axiosInstance.get<GetProductResp>(url, { params: { ProductId: productId } });
   return res.data;
 }
@@ -98,7 +136,7 @@ export async function createProductJson(payload: {
   status?: number; // always 1 per requirement
   categoryId: number;
 }) {
-  const url = endpoints.products.add;
+  const url = endpoints.products?.add ?? '/Product/AddProduct';
   const body = { ...payload, status: 1 }; // enforce status=1
   const res = await axiosInstance.post(url, body, {
     headers: { 'Content-Type': 'application/json' },
@@ -108,7 +146,7 @@ export async function createProductJson(payload: {
 
 // ---------- add image (multipart) ----------
 export async function addProductImage(payload: { productId: string; image: File }) {
-  const url = endpoints.products.addImage;
+  const url = endpoints.products?.addImage ?? '/Product/AddProductImage';
   const form = new FormData();
   form.append('ProductId', payload.productId);
   form.append('Images', payload.image);
@@ -127,7 +165,7 @@ export async function updateProductJson(payload: {
   price: number;
   status?: number; // always 1
 }) {
-  const url = endpoints.products.update;
+  const url = endpoints.products?.update ?? '/Product/UpdateProduct';
   const body = { ...payload, status: 1 };
   const res = await axiosInstance.post(url, body, {
     headers: { 'Content-Type': 'application/json' },
@@ -137,29 +175,29 @@ export async function updateProductJson(payload: {
 
 // ---------- delete product (DELETE ?ProductId=) ----------
 export async function removeProduct(productId: string) {
-  const url = endpoints.products.delete;
+  const url = endpoints.products?.delete ?? '/Product/RemoveProduct';
   const res = await axiosInstance.delete(url, { params: { ProductId: productId } });
   return res.data;
 }
 
-// ---------- delete product image (DELETE ?ProductId=) ----------
+// ---------- delete product image (DELETE with JSON body) ----------
 export async function removeProductImage(payload: { productId: string; imageId: number }) {
-  const url = endpoints.products.removeImage; // '/Product/RemoveProductImage'
+  const url = endpoints.products?.removeImage ?? '/Product/RemoveProductImage';
   const res = await axiosInstance.delete(url, {
-    data: payload, // 👈 بدنه‌ی DELETE اینجاست
+    data: payload,
     headers: { 'Content-Type': 'application/json' },
   });
   return res.data;
 }
 
-// ---------- get product comments ----------
+// ---------- comments ----------
 export async function getProductComments(params: {
   productId: string;
   status?: boolean;
   isRemoved?: boolean;
   pageIndex?: number;
 }) {
-  const url = endpoints.products.comment.get; // فرض: 'Product/GetProductComments'
+  const url = endpoints.products?.comment?.get ?? '/Product/GetProductComments';
   const res = await axiosInstance.get(url, {
     params: {
       'CommentFilters.ProductId': params.productId,
@@ -171,14 +209,10 @@ export async function getProductComments(params: {
   return res.data;
 }
 
-// ---------- change comment status ----------
 export async function changeProductCommentStatus(params: { commentId: string; status: boolean }) {
-  const url = endpoints.products.comment.edit; // فرض: 'Product/ChangeProductCommentStatus'
+  const url = endpoints.products?.comment?.edit ?? '/Product/ChangeProductCommentStatus';
   const res = await axiosInstance.post(url, null, {
-    params: {
-      CommentId: params.commentId,
-      Status: params.status,
-    },
+    params: { CommentId: params.commentId, Status: params.status },
   });
   return res.data;
 }

@@ -61,7 +61,9 @@ export default function ProfitPercentageCard() {
       toast[ok ? 'success' : 'error'](
         res?.message || (ok ? 'درصد سود با موفقیت ذخیره شد.' : 'ذخیره ناموفق بود.')
       );
-      if (ok) refetchProfit && refetchProfit();
+      if (ok) {
+        refetchProfit();
+      }
     } catch (e: any) {
       toast.error(e?.message || 'خطا در ذخیره درصد سود');
     } finally {
