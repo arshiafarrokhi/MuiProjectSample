@@ -1,5 +1,4 @@
-import type {
-  Theme} from '@mui/material';
+import type { Theme } from '@mui/material';
 
 // src/sections/users/components/EditUsersView.tsx
 import { toast } from 'sonner';
@@ -34,7 +33,7 @@ import {
   Typography,
   CardContent,
   InputAdornment,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 
 import { formatFaDate } from 'src/utils/formatDate';
@@ -308,7 +307,7 @@ export default function EditUsersPage() {
                             setIncAmount(e.target.value === '' ? '' : Number(e.target.value))
                           }
                           InputProps={{
-                            startAdornment: <InputAdornment position="start">ریال</InputAdornment>,
+                            startAdornment: <InputAdornment position="start">تومان</InputAdornment>,
                           }}
                         />
                         <TextField
@@ -343,7 +342,7 @@ export default function EditUsersPage() {
                             setDecAmount(e.target.value === '' ? '' : Number(e.target.value))
                           }
                           InputProps={{
-                            startAdornment: <InputAdornment position="start">ریال</InputAdornment>,
+                            startAdornment: <InputAdornment position="start">تومان</InputAdornment>,
                           }}
                         />
                         <TextField
