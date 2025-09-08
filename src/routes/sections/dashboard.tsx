@@ -24,6 +24,8 @@ const ProductDetailsPage = lazy(
   () => import('src/sections/products/components/ProductDetailsPage')
 );
 const OrdersPage = lazy(() => import('src/pages/dashboard/orders'));
+const BankAccountsPage = lazy(() => import('src/sections/bankAccounts/views/view'));
+const InaxServicePage = lazy(() => import('src/sections/inax/views/InaxServicePage'));
 
 // ----------------------------------------------------------------------
 
@@ -66,6 +68,8 @@ export const dashboardRoutes: RouteObject[] = [
       { path: 'admin', element: <AdminPage /> },
       { path: 'messages', element: <MessagesPage /> },
       { path: 'orders', element: <OrdersPage /> },
+      { path: 'bank-accounts', element: <BankAccountsPage /> },
+      { path: 'inax', element: <InaxServicePage /> },
     ],
   },
 ];

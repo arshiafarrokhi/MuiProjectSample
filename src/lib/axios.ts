@@ -143,4 +143,15 @@ export const endpoints = {
     update: '/Order/UpdateOrder',
     listLocal: '/Order/GetLocalSIMOrders',
   },
+  bankAccount: {
+    list: '/BankAccount/GetBankAccounts',
+    add: '/BankAccount/AddBankAccount',
+    update: '/BankAccount/UpdateBankAccount',
+    remove: '/BankAccount/RemoveBankAccount',
+  },
+  inax: {
+    getCredit: '/Inax/GetCredit',
+    creditIncrease: '/Inax/CreditIncrease',
+    transactionInquiry: '/Inax/TransactionInquiry',
+  },
 };
