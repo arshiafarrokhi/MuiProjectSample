@@ -50,26 +50,49 @@ export async function getProductSim(productId: string) {
 export async function addProductSim(payload: {
   name: string;
   price: number | string;
-  image: File;
-  simOperatorId: number;
+  image: File; // فقط این در body (binary)
+  simOperatorId: number; // Query
+
   description?: string;
+
+  // Internet.* → همگی Query
+  internetHourly: boolean; // Internet.Hourly
+  internetDays: number | string; // Internet.Days
+  internetVolume: number | string; // Internet.Volume
+  internetUnit: 1 | 2; // Internet.Unit (1=MB, 2=GB)
+  internetSimType: 1 | 2; // Internet.SimType (1=permanent, 2=credit)
+  internetInternetType: 1 | 2 | 3 | 4; // Internet.InternetType (1=daily,2=weather,3=monthly,4=yearly)
 }) {
   const url = endpoints.productSim?.add ?? '/api/ProductSIM/AddNewProduct';
-  const form = new FormData();
-  form.append('Name', String(payload.name));
-  form.append('Price', String(payload.price));
-  if (typeof payload.description !== 'undefined' && payload.description !== null) {
-    form.append('Description', String(payload.description));
-  }
-  form.append('Image', payload.image);
-  form.append('SIMOperatorId', String(payload.simOperatorId));
 
-  // fields that must always be sent
-  form.append('Status', '1');
-  form.append('IsPublish', 'true');
+  // فقط تصویر در بدنه (binary / multipart)
+  const form = new FormData();
+  form.append('Image', payload.image);
+
+  // بقیه فیلدها در QueryString
+  const params: Record<string, any> = {
+    Name: payload.name,
+    Price: payload.price,
+    SIMOperatorId: payload.simOperatorId,
+    Status: 1,
+    IsPublish: true,
+
+    // Internet.*
+    'Internet.Hourly': payload.internetHourly,
+    'Internet.Days': payload.internetDays,
+    'Internet.Volume': payload.internetVolume,
+    'Internet.Unit': payload.internetUnit,
+    'Internet.SimType': payload.internetSimType,
+    'Internet.InternetType': payload.internetInternetType,
+  };
+
+  if (payload.description != null && String(payload.description).trim() !== '') {
+    params.Description = payload.description;
+  }
 
   const res = await axiosInstance.post(url, form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
+    params, // ⬅️ همه‌ی فیلدهای غیرتصویری به صورت query
+    headers: { 'Content-Type': 'multipart/form-data' }, // بگذار axios boundary را ست کند
   });
   return res.data;
 }
