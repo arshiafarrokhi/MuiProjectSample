@@ -5,11 +5,23 @@
     <link rel="icon" href="./public/Logo.ico" />
     <meta name="theme-color" content="#000000" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Minimal UI Kit</title>
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Le-YMIrAAAAAPUCgXiCprsOQKqAVApCNgix9x62"></script>
+    <title>ariana mohajer</title>
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      function onClick(e) {
+        e.preventDefault();
+        grecaptcha.enterprise.ready(async () => {
+          const token = await grecaptcha.enterprise.execute(
+            '6LehQsIrAAAAACkn_pxeC_Q822na_g6c46_mm5Z6',
+            { action: 'LOGIN' }
+          );
+        });
+      }
+    </script>
   </body>
 </html>
