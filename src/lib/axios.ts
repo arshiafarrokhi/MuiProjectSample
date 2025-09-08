@@ -142,6 +142,8 @@ export const endpoints = {
     list: '/Order/GetOrders',
     update: '/Order/UpdateOrder',
     listLocal: '/Order/GetLocalSIMOrders',
+    profitUpdate: '/Order/UpdateProductsProfitPercentage',
+    profitGet: '/Order/GetProductsProfitPercentage',
   },
   bankAccount: {
     list: '/BankAccount/GetBankAccounts',
