@@ -132,6 +132,7 @@ export default function ProductDetailsPage() {
         categoryId: Number(categoryId),
         price: Number(price),
         status: 1,
+        isPublished: false
       });
       const ok = res?.success ?? true;
       const msg = res?.message || (ok ? 'ذخیره شد.' : 'ذخیره ناموفق بود.');

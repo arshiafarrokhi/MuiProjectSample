@@ -7,15 +7,14 @@ import { useBoolean } from 'minimal-shared/hooks';
 
 import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
-import Button from '@mui/material/Button';
 
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hooks';
 
-import axios from 'src/lib/axios'; // same default export used in AuthProvider
 import axiosInstance from 'src/lib/axios';
 import { useTranslate } from 'src/locales';
 
@@ -24,8 +23,8 @@ import { Form, Field } from 'src/components/hook-form';
 import { AnimateLogoRotate } from 'src/components/animate';
 
 import { useAuthContext } from '../../hooks';
+import { setSession } from '../../context/jwt';
 import { FormHead } from '../../components/form-head';
-import { JWT_STORAGE_KEY } from '../../context/jwt/constant';
 
 // ----------------------------------------------------------------------
 
@@ -120,19 +119,7 @@ export function JwtSignInView() {
         if (resp?.data?.success && resp?.data?.result?.token) {
           const token = String(resp.data.result.token);
 
-          try {
-            sessionStorage.setItem(JWT_STORAGE_KEY, token);
-          } catch (e) {
-            console.error('sessionStorage set failed', e);
-          }
-
-          try {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            (axiosInstance as any).defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          } catch (e) {
-            console.error('Failed to set axios authorization header', e);
-          }
-
+          await setSession(token);
           await checkUserSession?.();
 
           toast.success(authTrans.t('Login is successful!'));

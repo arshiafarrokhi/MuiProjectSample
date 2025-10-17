@@ -7,7 +7,7 @@ import { CONFIG } from 'src/global-config';
 
 import { ProductSimView } from 'src/sections/productSim/views/view';
 
-const metadata = { title: `Products | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `محصولات | داشبورد - ${CONFIG.appName}` };
 
 export default function ProductsPage() {
   const location = useLocation();

@@ -2,8 +2,7 @@ import type { Theme, SxProps } from '@mui/material/styles';
 
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
-import { useState, useEffect, useMemo, Fragment } from 'react';
-import { varAlpha } from 'minimal-shared/utils';
+import { useState, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Switch from '@mui/material/Switch';
@@ -15,28 +14,21 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded';
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded';
 import {
+  Chip,
   Paper,
   Stack,
-  TextField,
   Select,
   MenuItem,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TableContainer,
-  TablePagination,
-  Chip,
-  Tooltip,
+  TextField,
   IconButton,
+  TablePagination,
 } from '@mui/material';
 
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import AddUserDialog from '../components/AddUser';
-import EditUserDialog from '../components/EditUserDialog';
 import { deleteUserApi } from '../api/deleteUserApi';
+import EditUserDialog from '../components/EditUserDialog';
 import { useGetUsers, type UsersListFilters } from '../api/usersApi';
 
 export type Props = {
@@ -74,7 +66,7 @@ export function UsersView({ sx, users: usersProp, activeOnly, setActiveOnly, onR
   });
   const [applied, setApplied] = useState<UsersListFilters>(filters);
 
-  const { users, paging, pageCount, usersLoading, refetchUsers } = useGetUsers(applied);
+  const { users, paging, usersLoading, refetchUsers } = useGetUsers(applied);
 
   const effectiveUsers = controlled ? (usersProp ?? []) : (users ?? []);
 
@@ -117,7 +109,7 @@ export function UsersView({ sx, users: usersProp, activeOnly, setActiveOnly, onR
             mt: 5,
             width: 1,
             border: `dashed 1px ${theme.vars.palette.divider}`,
-            bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.04),
+            // bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.04),
           }),
           ...(Array.isArray(sx) ? sx : [sx]),
         ]}
@@ -134,7 +126,7 @@ export function UsersView({ sx, users: usersProp, activeOnly, setActiveOnly, onR
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems="center">
               <TextField
                 size="small"
-                label="جستجو (Pagination.Filter)"
+                label="جستجو"
                 value={filters.filter ?? ''}
                 onChange={(e) => setFilters((p) => ({ ...p, filter: e.target.value }))}
                 sx={{ minWidth: { xs: 1, sm: 260 } }}
@@ -148,7 +140,7 @@ export function UsersView({ sx, users: usersProp, activeOnly, setActiveOnly, onR
                     color="primary"
                   />
                 }
-                label="فقط کاربران فعال (ActiveUsers)"
+                label="فقط کاربران فعال"
               />
 
               <Select
@@ -210,7 +202,7 @@ export function UsersView({ sx, users: usersProp, activeOnly, setActiveOnly, onR
               )}
               {typeof applied.activeUsers === 'boolean' && (
                 <Chip
-                  label={`ActiveUsers: ${applied.activeUsers ? 'true' : 'false'}`}
+                  label="کاربران فعال"
                   onDelete={() =>
                     setApplied((p) => ({ ...p, activeUsers: undefined, pageIndex: 1 }))
                   }
@@ -219,14 +211,14 @@ export function UsersView({ sx, users: usersProp, activeOnly, setActiveOnly, onR
                   variant="outlined"
                 />
               )}
-              {!!applied.pageSize && (
+              {/* {!!applied.pageSize && (
                 <Chip label={`PageSize: ${applied.pageSize}`} size="small" variant="outlined" />
-              )}
-              <Chip
+              )} */}
+              {/* <Chip
                 label={`PageIndex: ${applied.pageIndex ?? 1} / ${Math.max(1, pageCount ?? 1)}`}
                 size="small"
                 variant="outlined"
-              />
+              /> */}
             </Stack>
           </Paper>
         )}
@@ -262,7 +254,7 @@ export function UsersView({ sx, users: usersProp, activeOnly, setActiveOnly, onR
                   paddingY: '15px',
                   borderRadius: '12px',
                   overflow: 'hidden',
-                  bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.08),
+                  // bgcolor: varAlpha(theme.vars.palette.grey['500Channel'], 0.08),
                 }),
                 ...(Array.isArray(sx) ? sx : [sx]),
               ]}

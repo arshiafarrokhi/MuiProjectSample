@@ -8,7 +8,7 @@ import { CONFIG } from 'src/global-config';
 import { AdminsView } from 'src/sections/admin/view';
 import AdminLoginLogsTab from 'src/sections/admin/components/AdminLoginLogsTab';
 
-const metadata = { title: `Admin Management | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `مدیریت ادمین | داشبورد - ${CONFIG.appName}` };
 
 function a11yProps(index: number) {
   return { id: `admin-tab-${index}`, 'aria-controls': `admin-tabpanel-${index}` };

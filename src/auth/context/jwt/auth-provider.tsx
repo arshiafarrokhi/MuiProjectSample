@@ -24,11 +24,11 @@ export function AuthProvider({ children }: Props) {
 
   const checkUserSession = useCallback(async () => {
     try {
-      const accessToken = sessionStorage.getItem(JWT_STORAGE_KEY);
+      const accessToken = localStorage.getItem(JWT_STORAGE_KEY);
 
       if (accessToken) {
         // setSession should set axios header and any other plumbing
-        setSession(accessToken);
+        await setSession(accessToken);
 
         // const res = await axios.get(endpoints.auth.me);
 
@@ -40,6 +40,7 @@ export function AuthProvider({ children }: Props) {
           loading: false,
         });
       } else {
+        await setSession(null);
         setState({ user: null, loading: false });
       }
     } catch (error) {

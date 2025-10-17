@@ -2,7 +2,7 @@ import { toast } from 'sonner';
 import { prefixer } from 'stylis';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
-import { CacheProvider } from '@emotion/react';
+// import { CacheProvider } from '@emotion/react';
 // src/sections/users/components/EditUserDialog.tsx
 import React, { useMemo, useState, useEffect } from 'react';
 
@@ -121,7 +121,7 @@ export default function EditUserDialog({ open, onClose, user, onUpdated }: EditU
   };
 
   return (
-    <CacheProvider value={rtlCache}>
+    // <CacheProvider value={rtlCache}>
       <ThemeProvider theme={(outer) => ({ ...outer, direction: 'rtl' })}>
         <Dialog
           dir="rtl"
@@ -253,6 +253,6 @@ export default function EditUserDialog({ open, onClose, user, onUpdated }: EditU
           </DialogActions>
         </Dialog>
       </ThemeProvider>
-    </CacheProvider>
+    // </CacheProvider>
   );
 }

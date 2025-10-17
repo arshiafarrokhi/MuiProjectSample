@@ -34,7 +34,7 @@ export function useGetOrders(filters: OrdersFilters) {
   const base = endpoints.orders?.list ?? '/Order/GetOrders';
 
   const url = buildQuery(base, {
-    'Paging.PageIndex': 0,
+    'Paging.PageIndex': 1,
     UserId: filters.userId,
     OrderStatus: filters.orderStatus,
     ProductType: filters.productType,
@@ -88,7 +88,8 @@ export function useGetLocalSIMOrders(filters: LocalFilters) {
   const base = endpoints.orders?.listLocal ?? '/Order/GetLocalSIMOrders';
 
   const url = buildQuery(base, {
-    'Paging.PageIndex': 0,
+    'Paging.PageIndex': 1,
+    'Paging.PageSize' : 10,
     OrderStatus: filters.orderStatus,
     UserId: filters.userId,
     Operator: filters.operator,

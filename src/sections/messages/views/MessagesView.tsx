@@ -101,7 +101,7 @@ export default function MessagesView() {
           >
             <TextField
               size="small"
-              label="جستجو (Pagination.Filter)"
+              label="جستجو"
               value={filters.filter ?? ''}
               onChange={(e) => setFilters((p) => ({ ...p, filter: e.target.value }))}
               sx={{ minWidth: { xs: 1, sm: 260 } }}
@@ -109,7 +109,7 @@ export default function MessagesView() {
 
             <TextField
               size="small"
-              label="Phone"
+              label="شماره تلفن"
               value={filters.phone ?? ''}
               onChange={(e) => setFilters((p) => ({ ...p, phone: e.target.value }))}
               sx={{ minWidth: { xs: 1, sm: 180 } }}

@@ -95,7 +95,7 @@ export function AdminsView({ sx, admins: adminsProp, onRefetch }: Props) {
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems="center">
               <TextField
                 size="small"
-                label="جستجو (Pagination.Filter)"
+                label="جستجو"
                 value={filters.filter ?? ''}
                 onChange={(e) => setFilters((p) => ({ ...p, filter: e.target.value }))}
                 sx={{ minWidth: { xs: 1, sm: 280 } }}
@@ -155,14 +155,14 @@ export function AdminsView({ sx, admins: adminsProp, onRefetch }: Props) {
                   variant="outlined"
                 />
               )}
-              {!!applied.pageSize && (
+              {/* {!!applied.pageSize && (
                 <Chip label={`PageSize: ${applied.pageSize}`} size="small" variant="outlined" />
               )}
               <Chip
                 label={`PageIndex: ${toFa(applied.pageIndex ?? 0)} / ${toFa((pageCount ?? 1) - 1)}`}
                 size="small"
                 variant="outlined"
-              />
+              /> */}
             </Stack>
           </Paper>
         )}

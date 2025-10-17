@@ -1,6 +1,8 @@
 import axios, { AxiosHeaders, AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios';
-import { JWT_STORAGE_KEY } from 'src/auth/context/jwt';
+
 import { CONFIG } from 'src/global-config';
+
+import { JWT_STORAGE_KEY } from 'src/auth/context/jwt/constant';
 
 const LOGIN_PATH = '/auth/jwt/sign-in';
 const SITE_KEY = '6Le-YMIrAAAAAPUCgXiCprsOQKqAVApCNgix9x62';
@@ -81,7 +83,7 @@ function recaptchaActionFor(url?: string): string | null {
 // Request interceptor (async: to await captcha token)
 axiosInstance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
-    const token = typeof window !== 'undefined' ? sessionStorage.getItem(JWT_STORAGE_KEY) : null;
+    const token = typeof window !== 'undefined' ? localStorage.getItem(JWT_STORAGE_KEY) : null;
 
     const headers = new AxiosHeaders(config.headers);
 
@@ -126,7 +128,7 @@ axiosInstance.interceptors.response.use(
     if (status === 401) {
       try {
         if (typeof window !== 'undefined') {
-          sessionStorage.removeItem(JWT_STORAGE_KEY);
+          localStorage.removeItem(JWT_STORAGE_KEY);
           const onAuthPage = window.location.pathname.includes('/auth');
           const url: string = error?.config?.url || '';
           const isLoginCall = url.includes('/users/login') || url.includes('/auth/sign-in');

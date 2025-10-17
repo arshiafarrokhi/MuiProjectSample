@@ -6,7 +6,8 @@ import EditUsersView from 'src/sections/users/components/EditUsersView';
 
 // ----------------------------------------------------------------------
 
-const metadata = { title: `users Edit Page | Dashboard - ${CONFIG.appName}` };
+
+const metadata = { title: `صفحه ویرایش کاربران | داشبورد - ${CONFIG.appName}` };
 
 export default function Page() {
   return (

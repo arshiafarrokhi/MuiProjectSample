@@ -5,6 +5,7 @@ import { paths } from 'src/routes/paths';
 import { CONFIG } from 'src/global-config';
 
 import { SvgColor } from 'src/components/svg-color';
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -67,23 +68,31 @@ export function navDataFunc(t: TFunction<any, any>) {
     {
       subheader: t('overview'),
       items: [
-        { title: 'داشبورد', path: paths.dashboard.dashboard, icon: ICONS.analytics },
+        { title: 'داشبورد', path: paths.dashboard.dashboard, icon: ICONS.dashboard },
         {
           title: t('users'),
           path: paths.dashboard.users,
-          icon: ICONS.dashboard,
+          icon: ICONS.user,
         },
         { title: 'محصولات', path: paths.dashboard.products, icon: ICONS.ecommerce },
-        { title: 'محصولات سیم کارت', path: paths.dashboard.productSim, icon: ICONS.analytics },
-        { title: 'ادمین', path: paths.dashboard.admin, icon: ICONS.analytics },
+        { title: 'محصولات سیم کارت', path: paths.dashboard.productSim, icon: ICONS.product },
+        {
+          title: 'ادمین',
+          path: paths.dashboard.admin,
+          icon: <Iconify icon="solar:user-plus-bold" />,
+        },
         { title: 'پیام‌ها', path: paths.dashboard.messages, icon: ICONS.mail },
         { title: 'سفارش‌ها', path: paths.dashboard.orders, icon: ICONS.order },
-        { title: 'کارت ها', path: paths.dashboard.bankAccounts, icon: ICONS.order },
+        {
+          title: 'کارت ها',
+          path: paths.dashboard.bankAccounts,
+          icon: <Iconify icon="solar:cart-3-bold" />,
+        },
         { title: 'inax', path: paths.dashboard.inax, icon: ICONS.order },
         {
           title: 'درخواست های افزایش حساب',
           path: paths.dashboard.creditIncreaseRequests,
-          icon: ICONS.order,
+          icon: ICONS.invoice,
         },
       ],
     },

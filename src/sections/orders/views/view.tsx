@@ -1,3 +1,5 @@
+// 
+
 import { varAlpha } from 'minimal-shared/utils';
 // src/sections/orders/views/view.tsx
 import React, { useMemo, useState } from 'react';
@@ -72,6 +74,106 @@ const formatFaDate = (iso?: string | null) => {
   }
 };
 
+// -------- resolvers (work across shapes) ----------------
+const first = <T,>(...vals: any[]): T | undefined =>
+  vals.find((v) => v !== undefined && v !== null);
+
+const getOrderUserId = (o: any) =>
+  first<string>(
+    o?.userId,
+    o?.user?.userId,
+    o?.gameProduct?.user?.userId,
+    o?.simProduct?.user?.userId
+  );
+
+const getOrderDateISO = (o: any) =>
+  first<string>(
+    o?.insertTime,
+    o?.date,
+    o?.createdAt,
+    o?.createDate,
+    o?.createdDate,
+    o?.insertDate,
+    o?.orderDate,
+    o?.paymentDate,
+    o?.transDate,
+    o?.transactionDate
+  );
+
+const getOrderDateISOAny = (o: any) =>
+  getOrderDateISO(o) ??
+  first<string>(
+    o?.gameProduct?.insertTime,
+    o?.simProduct?.insertTime,
+    o?.gameProduct?.date,
+    o?.simProduct?.date
+  );
+
+// normalize object for dialog (prevents id/status mismatches)
+const normalizeOrder = (o: any) => {
+  const status =
+    first<number>(o?.status, o?.orderStatus, o?.gameProduct?.status, o?.simProduct?.status, 1) ?? 1;
+
+  const orderId = first<any>(
+    o?.orderId,
+    o?.id,
+    o?.guid,
+    o?.orderGUID,
+    o?.OrderId,
+    o?.gameProduct?.orderId,
+    o?.simProduct?.orderId
+  );
+
+  const amount = first<number>(
+    o?.amount,
+    o?.gameProduct?.price,
+    o?.simProduct?.price,
+    o?.gameProduct?.transaction?.amount != null
+      ? Math.abs(o.gameProduct.transaction.amount)
+      : undefined,
+    o?.simProduct?.transaction?.amount != null
+      ? Math.abs(o.simProduct.transaction.amount)
+      : undefined
+  );
+
+  const rejectDescription = first<string>(
+    o?.rejectDescription,
+    o?.gameProduct?.rejectDescription,
+    o?.simProduct?.rejectDescription
+  );
+
+  return { ...o, orderId, status, amount, rejectDescription };
+};
+
+// ----- Manual status colors (no MUI color prop) -----
+const STATUS_STYLE: Record<number, { bg: string; color: string; border: string }> = {
+  1: { bg: '#FFF4E5', color: '#A15C07', border: '#FFD8A8' }, // در انتظار پرداخت (amber)
+  2: { bg: '#E7F5FF', color: '#1C7ED6', border: '#A5D8FF' }, // در حال پردازش (blue)
+  3: { bg: '#E6FCF5', color: '#087F5B', border: '#96F2D7' }, // تکمیل شد (green)
+  4: { bg: '#F8F9FA', color: '#495057', border: '#DEE2E6' }, // لغو توسط کاربر (gray)
+  5: { bg: '#FFF0F6', color: '#D6336C', border: '#FFC9DE' }, // لغو توسط ادمین (pink/red)
+  6: { bg: '#FFF5F5', color: '#C92A2A', border: '#FFA8A8' }, // ناموفق (red)
+};
+
+const renderStatusChip = (status?: number) => {
+  const s = Number(status || 0);
+  const style = STATUS_STYLE[s] ?? { bg: '#F1F3F5', color: '#495057', border: '#DEE2E6' };
+
+  return (
+    <Chip
+      size="small"
+      label={STATUS_LABEL[s] || '—'}
+      variant="outlined"
+      sx={{
+        bgcolor: style.bg,
+        color: style.color,
+        borderColor: style.border,
+        fontWeight: 600,
+      }}
+    />
+  );
+};
+
 // =========================================================
 
 export default function OrdersView() {
@@ -80,8 +182,8 @@ export default function OrdersView() {
   // ----------- Filters: Orders -----------
   const [filters, setFilters] = useState<OrdersFilters>({
     userId: '',
-    orderStatus: undefined,
-    productType: undefined,
+    orderStatus: 7,
+    productType: 2,
     regionType: undefined,
     phone: '',
     gameAccountId: '',
@@ -93,8 +195,8 @@ export default function OrdersView() {
   const sortedOrders = useMemo(() => {
     const arr = Array.isArray(orders) ? [...orders] : [];
     return arr.sort((a: any, b: any) => {
-      const ta = new Date(a?.insertTime || a?.date || 0).getTime();
-      const tb = new Date(b?.insertTime || b?.date || 0).getTime();
+      const ta = new Date(getOrderDateISOAny(a) ?? 0).getTime();
+      const tb = new Date(getOrderDateISOAny(b) ?? 0).getTime();
       return tb - ta;
     });
   }, [orders]);
@@ -113,8 +215,8 @@ export default function OrdersView() {
   const sortedLocal = useMemo(() => {
     const arr = Array.isArray(localOrders) ? [...localOrders] : [];
     return arr.sort((a: any, b: any) => {
-      const ta = new Date(a?.insertTime || a?.date || 0).getTime();
-      const tb = new Date(b?.insertTime || b?.date || 0).getTime();
+      const ta = new Date(getOrderDateISO(a) ?? 0).getTime();
+      const tb = new Date(getOrderDateISO(b) ?? 0).getTime();
       return tb - ta;
     });
   }, [localOrders]);
@@ -124,7 +226,7 @@ export default function OrdersView() {
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
 
   const openEditFor = (ord: any) => {
-    setSelectedOrder(ord);
+    setSelectedOrder(normalizeOrder(ord));
     setOpenEdit(true);
   };
 
@@ -149,6 +251,7 @@ export default function OrdersView() {
           <Tab label="سفارش‌ها (عمومی)" />
           <Tab label="سفارش‌های سیم‌کارت داخلی" />
         </Tabs>
+
         {/* ------------------ TAB 0: Orders ------------------ */}
         {tab === 0 && (
           <Box>
@@ -209,7 +312,7 @@ export default function OrdersView() {
                         </TableCell>
                       </TableRow>
                     ) : (
-                      sortedOrders.map((o: any) => (
+                      sortedOrders?.map((o: any) => (
                         <TableRow key={o.id || o.orderId}>
                           <TableCell>
                             <IconButton size="small" onClick={() => openEditFor(o)}>
@@ -217,30 +320,51 @@ export default function OrdersView() {
                             </IconButton>
                           </TableCell>
                           <TableCell sx={{ maxWidth: 200 }} title={o.id || o.orderId}>
-                            <Typography noWrap>{o.id || o.orderId || '—'}</Typography>
+                            <Typography noWrap>
+                              {o?.orderId ||
+                                o?.gameProduct?.orderId ||
+                                o?.simProduct?.orderId ||
+                                '—'}
+                            </Typography>
                           </TableCell>
-                          <TableCell sx={{ maxWidth: 200 }} title={o.userId}>
-                            <Typography noWrap>{o.userId || '—'}</Typography>
+                          <TableCell sx={{ maxWidth: 200 }} title={String(getOrderUserId(o) ?? '')}>
+                            <Typography noWrap>{getOrderUserId(o) || '—'}</Typography>
                           </TableCell>
-                          <TableCell>{o.phone || '—'}</TableCell>
                           <TableCell>
-                            <Chip
-                              size="small"
-                              label={STATUS_LABEL[o.status || o.orderStatus] || '—'}
-                              color={
-                                (o.status || o.orderStatus) === 3
-                                  ? 'success'
-                                  : (o.status || o.orderStatus) === 6
-                                    ? 'error'
-                                    : 'default'
-                              }
-                              variant="outlined"
-                            />
+                            {o?.phone ||
+                              o?.gameProduct?.user?.userPhone ||
+                              o?.simProduct?.user?.userPhone ||
+                              '—'}
                           </TableCell>
-                          <TableCell>{PRODUCT_LABEL[o.productType] || '—'}</TableCell>
+                          <TableCell>
+                            {renderStatusChip(
+                              o?.status ??
+                                o?.orderStatus ??
+                                o?.gameProduct?.status ??
+                                o?.simProduct?.status
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {PRODUCT_LABEL[
+                              (o?.productType ??
+                                o?.gameProduct?.productType ??
+                                o?.simProduct?.productType) as number
+                            ] || '—'}
+                          </TableCell>
                           <TableCell>{REGION_LABEL[o.regionType] || '—'}</TableCell>
-                          <TableCell>{toFaDigits(o.amount ?? '—')}</TableCell>
-                          <TableCell>{formatFaDate(o.insertTime || o.date)}</TableCell>
+                          <TableCell>
+                            {toFaDigits(
+                              o?.amount ??
+                                o?.gameProduct?.price ??
+                                o?.simProduct?.price ??
+                                (o?.gameProduct?.transaction?.amount != null
+                                  ? Math.abs(o.gameProduct.transaction.amount)
+                                  : o?.simProduct?.transaction?.amount != null
+                                    ? Math.abs(o.simProduct.transaction.amount)
+                                    : '—')
+                            )}
+                          </TableCell>
+                          <TableCell>{formatFaDate(getOrderDateISOAny(o))}</TableCell>
                         </TableRow>
                       ))
                     )}
@@ -315,29 +439,16 @@ export default function OrdersView() {
                           <TableCell sx={{ maxWidth: 200 }} title={o.id || o.orderId}>
                             <Typography noWrap>{o.id || o.orderId || '—'}</Typography>
                           </TableCell>
-                          <TableCell sx={{ maxWidth: 200 }} title={o.userId}>
-                            <Typography noWrap>{o.userId || '—'}</Typography>
+                          <TableCell sx={{ maxWidth: 200 }} title={String(getOrderUserId(o) ?? '')}>
+                            <Typography noWrap>{getOrderUserId(o) || '—'}</Typography>
                           </TableCell>
                           <TableCell>
                             {o.operator?.name ?? o.operator ?? o.operatorId ?? '—'}
                           </TableCell>
                           <TableCell>{o.phone || '—'}</TableCell>
-                          <TableCell>
-                            <Chip
-                              size="small"
-                              label={STATUS_LABEL[o.status || o.orderStatus] || '—'}
-                              color={
-                                (o.status || o.orderStatus) === 3
-                                  ? 'success'
-                                  : (o.status || o.orderStatus) === 6
-                                    ? 'error'
-                                    : 'default'
-                              }
-                              variant="outlined"
-                            />
-                          </TableCell>
+                          <TableCell>{renderStatusChip(o.status ?? o.orderStatus)}</TableCell>
                           <TableCell>{toFaDigits(o.amount ?? '—')}</TableCell>
-                          <TableCell>{formatFaDate(o.insertTime || o.date)}</TableCell>
+                          <TableCell>{formatFaDate(getOrderDateISO(o))}</TableCell>
                         </TableRow>
                       ))
                     )}

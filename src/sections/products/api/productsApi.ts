@@ -162,6 +162,7 @@ export async function updateProductJson(payload: {
   categoryId: number;
   price: number;
   status?: number; // always 1
+  isPublished:boolean
 }) {
   const url = endpoints.products?.update ?? '/Product/UpdateProduct';
   const body = { ...payload, status: 1 };

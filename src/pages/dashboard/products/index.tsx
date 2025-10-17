@@ -6,7 +6,7 @@ import { CONFIG } from 'src/global-config';
 import { ProductsView } from 'src/sections/products/views/view';
 import CategoriesTab from 'src/sections/products/views/CategoriesTab';
 
-const metadata = { title: `Products | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `محصولات | داشبورد - ${CONFIG.appName}` };
 
 export default function ProductsPage() {
   const [tab, setTab] = useState<number>(0); // 0: محصولات، 1: دسته‌بندی‌ها

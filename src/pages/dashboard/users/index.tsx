@@ -5,7 +5,7 @@ import { Box, Tab, Tabs } from '@mui/material';
 import { CONFIG } from 'src/global-config';
 import { UsersView } from 'src/sections/users/views/view';
 
-const metadata = { title: `users Page | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `صفحه کاربران | داشبورد - ${CONFIG.appName}` };
 
 export default function Page() {
   return (

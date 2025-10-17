@@ -4,7 +4,7 @@ import { prefixer } from 'stylis';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
 // RTL support (scoped to this dialog)
-import { CacheProvider } from '@emotion/react';
+// import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState, useEffect } from 'react';
 
 import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
@@ -175,7 +175,7 @@ export default function AddUserDialog({ openAddDialog, handleClose, onCreated }:
   }, [openAddDialog]);
 
   return (
-    <CacheProvider value={rtlCache}>
+    // <CacheProvider value={rtlCache}>
       <ThemeProvider theme={(outer) => ({ ...outer, direction: 'rtl' })}>
         <Dialog
           dir="rtl"
@@ -375,6 +375,6 @@ export default function AddUserDialog({ openAddDialog, handleClose, onCreated }:
           </DialogActions>
         </Dialog>
       </ThemeProvider>
-    </CacheProvider>
+    // </CacheProvider>
   );
 }

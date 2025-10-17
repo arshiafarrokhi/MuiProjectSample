@@ -6,7 +6,7 @@ import { CONFIG } from 'src/global-config';
 
 import MessagesView from 'src/sections/messages/views/MessagesView';
 
-const metadata = { title: `Messages | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `پیام‌ها | داشبورد - ${CONFIG.appName}` };
 
 export default function MessagesPage() {
   return (

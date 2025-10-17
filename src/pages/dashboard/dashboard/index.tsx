@@ -12,7 +12,7 @@ import { useGetDashboardReport } from 'src/sections/dashboard/api/reportApi';
 // import { useGetDashboardReport } from 'src/sections/report/api/reportApi';
 // import { DashboardReportView } from 'src/sections/report/views/DashboardReportView';
 
-const metadata = { title: `Reports | Dashboard - ${CONFIG.appName}` };
+const metadata = { title: `گزارش‌ها | داشبورد - ${CONFIG.appName}` };
 
 export default function ReportPage() {
   const { report, reportLoading, reportValidating, refetchReport } = useGetDashboardReport();

@@ -1,14 +1,11 @@
-import type {
-  Theme} from '@mui/material';
-
+// src/sections/products/components/EditProductDialog.tsx
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
 import { CacheProvider } from '@emotion/react';
-// src/sections/products/components/EditProductDialog.tsx
 import React, { useMemo, useState, useEffect } from 'react';
 
-import { useTheme, ThemeProvider } from '@mui/material/styles';
+import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
 import {
   Stack,
   Dialog,
@@ -18,10 +15,33 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  FormControlLabel
+  FormControlLabel,
+  FormControl,
+  FormHelperText,
+  CircularProgress,
 } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 
 import { updateProductJson } from '../api/productsApi';
+import { GetCategoriesApi } from '../api/categoriesApi';
+import type { Category } from '../api/categoriesApi';
+
+// Persian → Latin digits
+function toLatinDigits(input: string) {
+  const map: Record<string, string> = {
+    '۰': '0',
+    '۱': '1',
+    '۲': '2',
+    '۳': '3',
+    '۴': '4',
+    '۵': '5',
+    '۶': '6',
+    '۷': '7',
+    '۸': '8',
+    '۹': '9',
+  };
+  return input.replace(/[۰-۹]/g, (d) => map[d] ?? d);
+}
 
 type Props = {
   open: boolean;
@@ -45,6 +65,9 @@ export default function EditProductDialog({ open, onClose, product, onUpdated }:
   const [isPublish, setIsPublish] = useState<boolean>(product?.isPublish ?? true);
   const [loading, setLoading] = useState(false);
 
+  // Load categories (names shown, id stored)
+  const { categories, categoriesLoading, categoriesError } = GetCategoriesApi();
+
   useEffect(() => {
     setName(product?.name ?? '');
     setDescription(product?.description ?? '');
@@ -55,16 +78,16 @@ export default function EditProductDialog({ open, onClose, product, onUpdated }:
 
   // RTL
   const outerTheme = useTheme();
-
-  const rtlTheme = useMemo(
-    () => ({ ...(outerTheme as Theme), direction: 'rtl' }) as Theme,
-    [outerTheme]
-  );
-
+  const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
   const rtlCache = useMemo(
-    () => createCache({ key: 'mui-rtl-edituser', stylisPlugins: [rtlPlugin] }),
+    () => createCache({ key: 'mui-rtl-editproduct', stylisPlugins: [rtlPlugin] }),
     []
   );
+
+  const selectedCategory = useMemo<Category | null>(() => {
+    if (categoryId === '') return null;
+    return categories.find((c) => c.id === Number(categoryId)) ?? null;
+  }, [categoryId, categories]);
 
   const handleSubmit = async () => {
     if (!product?.id) {
@@ -75,21 +98,24 @@ export default function EditProductDialog({ open, onClose, product, onUpdated }:
       toast.error('نام، قیمت و دسته را کامل وارد کنید.');
       return;
     }
+
     setLoading(true);
     try {
       const res = await updateProductJson({
         productId: product.id,
         name: name.trim(),
         description: description.trim(),
-        categoryId: Number(categoryId),
+        categoryId: Number(categoryId), // send id only
         price: Number(price),
         status: 1,
+        isPublished: isPublish,
       });
+
       const ok = res?.success ?? true;
       const msg = res?.message || (ok ? 'محصول بروزرسانی شد.' : 'بروزرسانی ناموفق بود.');
       if (ok) {
         toast.success(msg);
-        if (onUpdated) onUpdated();
+        onUpdated?.(); // parent should SWR mutate()
         onClose();
       } else {
         toast.error(msg);
@@ -119,6 +145,7 @@ export default function EditProductDialog({ open, onClose, product, onUpdated }:
                 onChange={(e) => setName(e.target.value)}
                 required
               />
+
               <TextField
                 label="توضیحات"
                 multiline
@@ -126,31 +153,68 @@ export default function EditProductDialog({ open, onClose, product, onUpdated }:
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
+
+              {/* Keep as text to accept Persian digits; normalize -> Number */}
               <TextField
                 label="قیمت"
-                type="number"
+                type="text"
                 value={price}
-                onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
+                onChange={(e) => {
+                  const normalized = toLatinDigits(e.target.value).replace(/[^\d]/g, '');
+                  setPrice(normalized === '' ? '' : Number(normalized));
+                }}
+                inputProps={{ inputMode: 'numeric' }}
               />
-              <TextField
-                label="شناسه دسته (CategoryId)"
-                type="number"
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value === '' ? '' : Number(e.target.value))}
-              />
+
+              {/* Category selector: show names, store id */}
+              <FormControl error={categoryId === ''} fullWidth>
+                <Autocomplete<Category, false, false, false>
+                  options={categories}
+                  loading={categoriesLoading}
+                  value={selectedCategory}
+                  onChange={(_, option) => setCategoryId(option ? option.id : '')}
+                  getOptionLabel={(opt) => opt?.name ?? ''}
+                  noOptionsText={categoriesLoading ? 'در حال بارگذاری...' : 'موردی یافت نشد'}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="دسته‌بندی"
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {categoriesLoading ? (
+                              <CircularProgress size={18} sx={{ mr: 1 }} />
+                            ) : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+                {categoryId === '' && <FormHelperText>انتخاب دسته اجباری است</FormHelperText>}
+                {categoriesError && <FormHelperText error>خطا در بارگذاری دسته‌ها</FormHelperText>}
+              </FormControl>
+
               <FormControlLabel
                 control={
                   <Switch checked={isPublish} onChange={(e) => setIsPublish(e.target.checked)} />
                 }
-                label="انتشار (نمایشی)"
+                label="انتشار"
               />
             </Stack>
           </DialogContent>
+
           <DialogActions sx={{ p: 2 }}>
             <Button onClick={onClose} color="inherit" variant="outlined">
               انصراف
             </Button>
-            <Button onClick={handleSubmit} variant="contained" disabled={loading}>
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              disabled={loading || categoriesLoading}
+            >
               {loading ? 'در حال ذخیره...' : 'ذخیره'}
             </Button>
           </DialogActions>

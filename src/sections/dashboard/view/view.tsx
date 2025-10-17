@@ -24,6 +24,8 @@ import {
   LinearProgress,
 } from '@mui/material';
 
+import { useRouter } from 'src/routes/hooks';
+
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import type { DashboardReport } from '../api/reportApi';
@@ -42,6 +44,7 @@ type Props = {
 };
 
 export function DashboardReportView({ report, onRefresh, validating }: Props) {
+  const router = useRouter()
   const safe = useMemo<DashboardReport>(
     () => ({
       usersCount: report?.usersCount ?? 0,
@@ -64,12 +67,23 @@ export function DashboardReportView({ report, onRefresh, validating }: Props) {
       : 0;
 
   const itemsTop = [
-    { label: 'کاربران', value: safe.usersCount, icon: <PeopleAltRoundedIcon /> },
-    { label: 'ادمین‌ها', value: safe.adminsCount, icon: <AdminPanelSettingsRoundedIcon /> },
+    {
+      label: 'کاربران',
+      value: safe.usersCount,
+      icon: <PeopleAltRoundedIcon />,
+      path: '/dashboard/users',
+    },
+    {
+      label: 'ادمین‌ها',
+      value: safe.adminsCount,
+      icon: <AdminPanelSettingsRoundedIcon />,
+      path: '/dashboard/admin',
+    },
     {
       label: 'درخواست‌های افزایش اعتبار',
       value: safe.creditIncreaseRequestsCount,
       icon: <RequestPageRoundedIcon />,
+      path: '/dashboard/creditIncreaseRequests',
     },
   ];
 
@@ -112,9 +126,10 @@ export function DashboardReportView({ report, onRefresh, validating }: Props) {
       <Grid container spacing={2} sx={{ mb: 2 }}>
         {itemsTop.map((it) => (
           <Grid key={it.label} item xs={12} md={4}>
-            <Card variant="outlined" sx={{ borderRadius: 2 }}>
+            <Card variant="outlined" sx={{ borderRadius: 2, cursor:'pointer' }} onClick={() => router.push(`${it.path}`)}>
               <CardHeader
                 avatar={it.icon}
+                
                 title={
                   <Typography variant="subtitle2" color="text.secondary">
                     {it.label}

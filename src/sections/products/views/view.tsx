@@ -45,9 +45,9 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { removeProduct } from '../api/productsApi';
 import AddProductDialog from '../components/AddProductDialog';
 import EditProductDialog from '../components/EditProductDialog';
-
 // NEW: data hook & types
 import { useGetProducts, type ProductListFilters } from '../api/productsApi';
+import { GetCategoriesApi } from '../api/categoriesApi';
 
 export type Props = {
   sx?: SxProps<Theme>;
@@ -74,6 +74,11 @@ const getCount = (v: any) => {
 
 const toFaDigits = (val: any) =>
   (val ?? '—').toString().replace(/\d/g, (d: string) => '۰۱۲۳۴۵۶۷۸۹'[+d]);
+
+
+export function formatPrice(price: any): string {
+  return new Intl.NumberFormat('fa-IR').format(price);
+}
 
 const formatFaDate = (iso?: string | null) => {
   if (!iso) return '—';
@@ -132,6 +137,14 @@ export function ProductsView({
     productsLoading,
     refetchProducts,
   } = useGetProducts(applied);
+  const { categories, categoriesLoading } = GetCategoriesApi();
+  const categoryMap = useMemo(() => {
+    const map = new Map<number, string>();
+    (categories ?? []).forEach((cat) => {
+      map.set(cat.id, cat.name ?? `#${cat.id}`);
+    });
+    return map;
+  }, [categories]);
 
   const effectiveProducts = controlled ? (productsProp ?? []) : (fetchedProducts ?? []);
   const effectiveCurrency = controlled ? (currencyProp ?? 'IRT') : (currencyHook ?? 'IRT');
@@ -286,7 +299,7 @@ export function ProductsView({
                       </TableCell>
 
                       <TableCell sx={{ width: 120 }}>
-                        {isPrimitive(p.price) ? toFaDigits(p.price) : '—'}
+                        {isPrimitive(p.price) ? `${formatPrice(p.price)} تومان` : '—'}
                       </TableCell>
 
                       <TableCell sx={{ width: 100 }}>{p.isPublish ? 'بله' : 'خیر'}</TableCell>
@@ -467,25 +480,42 @@ export function ProductsView({
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} alignItems="center">
               <TextField
                 size="small"
-                label="جستجو (Pagination.Filter)"
+                label="جستجو"
                 value={filters.filter ?? ''}
                 onChange={(e) => setFilters((p) => ({ ...p, filter: e.target.value }))}
                 sx={{ minWidth: { xs: 1, sm: 280 } }}
               />
 
-              <TextField
+              <Select
                 size="small"
-                label="CategoryId"
-                type="number"
-                value={filters.categoryId ?? ''}
-                onChange={(e) =>
-                  setFilters((p) => ({
-                    ...p,
-                    categoryId: e.target.value === '' ? undefined : Number(e.target.value),
-                  }))
+                value={
+                  typeof filters.categoryId === 'number' ? String(filters.categoryId) : ''
                 }
-                sx={{ minWidth: { xs: 1, sm: 160 } }}
-              />
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setFilters((prev) => ({
+                    ...prev,
+                    categoryId: value === '' ? undefined : Number(value),
+                  }));
+                }}
+                sx={{ minWidth: { xs: 1, sm: 200 } }}
+                displayEmpty
+                disabled={categoriesLoading}
+                renderValue={(selected) => {
+                  if (selected === '') return 'انتخاب دسته';
+                  const id = Number(selected);
+                  return categoryMap.get(id) ?? `شناسه ${id}`;
+                }}
+              >
+                <MenuItem value="">
+                  <em>همه دسته‌ها</em>
+                </MenuItem>
+                {(categories ?? []).map((cat) => (
+                  <MenuItem key={cat.id} value={String(cat.id)}>
+                    {cat.name}
+                  </MenuItem>
+                ))}
+              </Select>
 
               <Select
                 size="small"
@@ -550,7 +580,7 @@ export function ProductsView({
               )}
               {typeof applied.categoryId === 'number' && (
                 <Chip
-                  label={`CategoryId: ${applied.categoryId}`}
+                  label={`دسته: ${categoryMap.get(applied.categoryId) ?? applied.categoryId}`}
                   onDelete={() =>
                     setApplied((p) => ({ ...p, categoryId: undefined, pageIndex: 0 }))
                   }
