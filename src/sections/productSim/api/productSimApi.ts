@@ -82,12 +82,14 @@ export async function addProductSim(payload: {
   image: File; // فقط این در body (binary)
   simOperatorId: number; // Query
   description?: string;
-  internetHourly: boolean; // Internet.Hourly
-  internetDays: number | string; // Internet.Days
-  internetVolume: number | string; // Internet.Volume
-  internetUnit: 1 | 2; // Internet.Unit (1=MB, 2=GB)
-  internetSimType: 1 | 2; // Internet.SimType (1=permanent, 2=credit)
-  internetInternetType: 1 | 2 | 3 | 4; // Internet.InternetType
+  internet?: {
+    hourly: boolean; // Internet.Hourly
+    days: number | string; // Internet.Days
+    volume: number | string; // Internet.Volume
+    unit: 1 | 2; // Internet.Unit (1=MB, 2=GB)
+    simType: 1 | 2; // Internet.SimType (1=permanent, 2=credit)
+    internetType: 1 | 2 | 3 | 4; // Internet.InternetType
+  };
 }) {
   const url = endpoints.productSim?.add ?? '/api/ProductSIM/AddNewProduct';
 
@@ -100,16 +102,19 @@ export async function addProductSim(payload: {
     SIMOperatorId: payload.simOperatorId,
     Status: 1,
     IsPublish: true,
-    'Internet.Hourly': payload.internetHourly,
-    'Internet.Days': payload.internetDays,
-    'Internet.Volume': payload.internetVolume,
-    'Internet.Unit': payload.internetUnit,
-    'Internet.SimType': payload.internetSimType,
-    'Internet.InternetType': payload.internetInternetType,
   };
 
   if (payload.description != null && String(payload.description).trim() !== '') {
     params.Description = payload.description;
+  }
+
+  if (payload.internet) {
+    params['Internet.Hourly'] = payload.internet.hourly;
+    params['Internet.Days'] = payload.internet.days;
+    params['Internet.Volume'] = payload.internet.volume;
+    params['Internet.Unit'] = payload.internet.unit;
+    params['Internet.SimType'] = payload.internet.simType;
+    params['Internet.InternetType'] = payload.internet.internetType;
   }
 
   const res = await axiosInstance.post(url, form, {

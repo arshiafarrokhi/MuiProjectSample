@@ -38,6 +38,7 @@ import {
   removeProductSim,
   GetProductSimsApi,
 } from '../api/productSimApi';
+import { formatPrice } from 'src/sections/products/views/view';
 
 type Props = { sx?: any; onRefetch?: () => void };
 
@@ -199,7 +200,8 @@ export function ProductSimView({ sx, onRefetch }: Props) {
               spacing={2}
               alignItems={{ xs: 'stretch', sm: 'center' }}
               justifyContent="space-between"
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, gap: 2 }}
+              useFlexGap
             >
               <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} flex={1}>
                 <TextField
@@ -298,17 +300,32 @@ export function ProductSimView({ sx, onRefetch }: Props) {
                   label="نمایش حذف‌شده‌ها"
                 />
 
-                <Stack direction="row" spacing={1}>
-                  <Button variant="outlined" onClick={resetFilters}>
+                <Stack
+                  direction={{ xs: 'column', sm: 'row' }}
+                  spacing={1}
+                  alignItems={{ xs: 'stretch', sm: 'center' }}
+                  sx={{ width: { xs: '100%', sm: 'auto' } }}
+                  useFlexGap
+                >
+                  <Button
+                    variant="outlined"
+                    onClick={resetFilters}
+                    sx={{ width: { xs: '100%', sm: 'auto' } }}
+                  >
                     ریست
                   </Button>
-                  <Button variant="contained" onClick={applyFilters}>
+                  <Button
+                    variant="contained"
+                    onClick={applyFilters}
+                    sx={{ width: { xs: '100%', sm: 'auto' } }}
+                  >
                     اعمال فیلتر
                   </Button>
                   <Button
                     startIcon={<AddIcon />}
                     onClick={() => setOpenAdd(true)}
                     variant="contained"
+                    sx={{ width: { xs: '100%', sm: 'auto' } }}
                   >
                     افزودن محصول
                   </Button>
@@ -350,7 +367,7 @@ export function ProductSimView({ sx, onRefetch }: Props) {
                           <TableCell sx={{ maxWidth: 360 }}>{r.description ?? '—'}</TableCell>
                           <TableCell>
                             {typeof r.price === 'number'
-                              ? new Intl.NumberFormat('fa-IR').format(r.price)
+                              ? `${formatPrice(r.price)} تومان` 
                               : '—'}
                           </TableCell>
                           <TableCell>{r.operator?.name ?? '—'}</TableCell>

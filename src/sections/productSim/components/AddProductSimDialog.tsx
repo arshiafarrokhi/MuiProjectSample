@@ -65,6 +65,7 @@ export default function AddProductSimDialog({ open, onClose, onCreated }: Props)
   const [countryId, setCountryId] = useState<number | ''>('');
   const [operatorId, setOperatorId] = useState<number | ''>('');
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [hasInternetPackage, setHasInternetPackage] = useState<boolean>(false);
 
   // --- Internet fields (NEW)
   const [internetHourly, setInternetHourly] = useState<boolean>(false);
@@ -88,6 +89,7 @@ export default function AddProductSimDialog({ open, onClose, onCreated }: Props)
     setCountryId('');
     setOperatorId('');
     setImageFile(null);
+    setHasInternetPackage(false);
 
     // reset Internet fields
     setInternetHourly(false);
@@ -158,7 +160,11 @@ export default function AddProductSimDialog({ open, onClose, onCreated }: Props)
       toast.error('تصویر انتخاب کنید.');
       return false;
     }
-    // Internet fields
+
+    if (!hasInternetPackage) {
+      return true;
+    }
+
     if (internetDays === '' || isNaN(Number(internetDays)) || Number(internetDays) < 0) {
       toast.error('Days را صحیح وارد کنید.');
       return false;
@@ -192,14 +198,16 @@ export default function AddProductSimDialog({ open, onClose, onCreated }: Props)
         description: description.trim(),
         image: imageFile!,
         simOperatorId: Number(operatorId),
-
-        // NEW internet fields
-        internetHourly,
-        internetDays: Number(internetDays),
-        internetVolume: Number(internetVolume),
-        internetUnit,
-        internetSimType,
-        internetInternetType,
+        internet: hasInternetPackage
+          ? {
+              hourly: internetHourly,
+              days: Number(internetDays),
+              volume: Number(internetVolume),
+              unit: internetUnit,
+              simType: internetSimType,
+              internetType: internetInternetType,
+            }
+          : undefined,
       });
 
       const ok = res?.success ?? true;
@@ -284,81 +292,95 @@ export default function AddProductSimDialog({ open, onClose, onCreated }: Props)
               </FormControl>
 
               {/* NEW: Internet Fields */}
-              <Typography variant="subtitle2" sx={{ mt: 1 }}>
-                اطلاعات اینترنت
-              </Typography>
-
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={internetHourly}
-                    onChange={(e) => setInternetHourly(e.target.checked)}
+                    checked={hasInternetPackage}
+                    onChange={(e) => setHasInternetPackage(e.target.checked)}
                   />
                 }
-                label="ساعتی (Hourly)"
+                label="بسته اینترنت"
               />
 
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <TextField
-                  label="روز (Days)"
-                  type="number"
-                  value={internetDays}
-                  onChange={(e) => setInternetDays(e.target.value)}
-                />
-                <TextField
-                  label="حجم (Volume)"
-                  type="number"
-                  value={internetVolume}
-                  onChange={(e) => setInternetVolume(e.target.value)}
-                />
-              </Stack>
+              {hasInternetPackage && (
+                <>
+                  <Typography variant="subtitle2" sx={{ mt: 1 }}>
+                    اطلاعات اینترنت
+                  </Typography>
 
-              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                <FormControl fullWidth>
-                  <InputLabel>واحد (Unit)</InputLabel>
-                  <Select
-                    label="واحد (Unit)"
-                    value={internetUnit}
-                    onChange={(e) => setInternetUnit(e.target.value as 1 | 2)}
-                  >
-                    {UNITS.map((u) => (
-                      <MenuItem key={u.value} value={u.value}>
-                        {u.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={internetHourly}
+                        onChange={(e) => setInternetHourly(e.target.checked)}
+                      />
+                    }
+                    label="ساعتی (Hourly)"
+                  />
 
-                <FormControl fullWidth>
-                  <InputLabel>نوع سیم‌کارت (SimType)</InputLabel>
-                  <Select
-                    label="نوع سیم‌کارت (SimType)"
-                    value={internetSimType}
-                    onChange={(e) => setInternetSimType(e.target.value as 1 | 2)}
-                  >
-                    {SIM_TYPES.map((s) => (
-                      <MenuItem key={s.value} value={s.value}>
-                        {s.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Stack>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                    <TextField
+                      label="روز (Days)"
+                      type="number"
+                      value={internetDays}
+                      onChange={(e) => setInternetDays(e.target.value)}
+                    />
+                    <TextField
+                      label="حجم (Volume)"
+                      type="number"
+                      value={internetVolume}
+                      onChange={(e) => setInternetVolume(e.target.value)}
+                    />
+                  </Stack>
 
-              <FormControl fullWidth>
-                <InputLabel>نوع اینترنت (InternetType)</InputLabel>
-                <Select
-                  label="نوع اینترنت (InternetType)"
-                  value={internetInternetType}
-                  onChange={(e) => setInternetInternetType(e.target.value as 1 | 2 | 3 | 4)}
-                >
-                  {INTERNET_TYPES.map((t) => (
-                    <MenuItem key={t.value} value={t.value}>
-                      {t.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                    <FormControl fullWidth>
+                      <InputLabel>واحد (Unit)</InputLabel>
+                      <Select
+                        label="واحد (Unit)"
+                        value={internetUnit}
+                        onChange={(e) => setInternetUnit(e.target.value as 1 | 2)}
+                      >
+                        {UNITS.map((u) => (
+                          <MenuItem key={u.value} value={u.value}>
+                            {u.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+
+                    <FormControl fullWidth>
+                      <InputLabel>نوع سیم‌کارت (SimType)</InputLabel>
+                      <Select
+                        label="نوع سیم‌کارت (SimType)"
+                        value={internetSimType}
+                        onChange={(e) => setInternetSimType(e.target.value as 1 | 2)}
+                      >
+                        {SIM_TYPES.map((s) => (
+                          <MenuItem key={s.value} value={s.value}>
+                            {s.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Stack>
+
+                  <FormControl fullWidth>
+                    <InputLabel>نوع اینترنت (InternetType)</InputLabel>
+                    <Select
+                      label="نوع اینترنت (InternetType)"
+                      value={internetInternetType}
+                      onChange={(e) => setInternetInternetType(e.target.value as 1 | 2 | 3 | 4)}
+                    >
+                      {INTERNET_TYPES.map((t) => (
+                        <MenuItem key={t.value} value={t.value}>
+                          {t.label}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </>
+              )}
 
               <Stack direction="row" spacing={2} alignItems="center">
                 <Button variant="outlined" component="label">
