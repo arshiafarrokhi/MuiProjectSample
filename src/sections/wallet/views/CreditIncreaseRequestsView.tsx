@@ -1,44 +1,48 @@
 import { toast } from 'sonner';
-import React, { useMemo, useState } from 'react';
-import { varAlpha } from 'minimal-shared/utils';
 import { useNavigate } from 'react-router';
+import { varAlpha } from 'minimal-shared/utils';
+import React, { useMemo, useState } from 'react';
 
+import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
+import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
 import {
   Box,
-  Paper,
-  Stack,
+  Tab,
   Chip,
   Tabs,
-  Tab,
+  Paper,
+  Stack,
   Table,
-  TableHead,
+  Select,
+  Button,
+  Dialog,
+  Switch,
+  Tooltip,
   TableRow,
+  MenuItem,
+  TableHead,
   TableCell,
   TableBody,
-  TableContainer,
-  TablePagination,
   TextField,
-  Select,
-  MenuItem,
-  Button,
   IconButton,
-  Dialog,
+  Typography,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Typography,
-  Tooltip,
+  TableContainer,
+  TablePagination,
   CircularProgress,
+  FormControlLabel,
 } from '@mui/material';
-import VisibilityRoundedIcon from '@mui/icons-material/VisibilityRounded';
-import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 
 import { DashboardContent } from 'src/layouts/dashboard';
+
 import {
-  useGetCreditIncreaseRequests,
   getCreditIncreaseRequest,
   type CreditIncreaseFilters,
+  useGetCreditIncreaseRequests,
 } from '../api/creditIncreaseApi';
+import { formatPrice } from 'src/sections/products/views/view';
 
 const toFaDigits = (val: any) =>
   (val ?? '—').toString().replace(/\d/g, (d: string) => '۰۱۲۳۴۵۶۷۸۹'[+d]);
@@ -131,7 +135,7 @@ export default function CreditIncreaseRequestsView() {
           >
             <TextField
               size="small"
-              label="جستجو (Paging.Filter)"
+              label="جستجو"
               value={filters.filter ?? ''}
               onChange={(e) => setFilters((p) => ({ ...p, filter: e.target.value }))}
               sx={{ minWidth: { xs: 1, sm: 260 } }}
@@ -145,35 +149,65 @@ export default function CreditIncreaseRequestsView() {
               sx={{ minWidth: { xs: 1, sm: 260 } }}
             />
 
-            <Select
-              size="small"
-              value={String(filters.accepted ?? 'any')}
-              onChange={(e) => {
-                const v = e.target.value;
-                setFilters((p) => ({ ...p, accepted: v === 'any' ? undefined : v === 'true' }));
-              }}
-              sx={{ minWidth: { xs: 1, sm: 160 } }}
-              displayEmpty
-            >
-              <MenuItem value="any">Accepted: همه</MenuItem>
-              <MenuItem value="true">Accepted: بله</MenuItem>
-              <MenuItem value="false">Accepted: خیر</MenuItem>
-            </Select>
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                    checked={filters.accepted === true}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        accepted: e.target.checked,
+                      }))
+                    }
+                  />
+                }
+                label={
+                  typeof filters.accepted === 'boolean'
+                    ? `تأیید شده: ${filters.accepted ? 'بله' : 'خیر'}`
+                    : 'تأیید شده: همه'
+                }
+                sx={{ ml: 0 }}
+              />
+              <Button
+                size="small"
+                onClick={() => setFilters((prev) => ({ ...prev, accepted: undefined }))}
+                disabled={typeof filters.accepted !== 'boolean'}
+              >
+                همه
+              </Button>
+            </Stack>
 
-            <Select
-              size="small"
-              value={String(filters.isRemoved ?? 'any')}
-              onChange={(e) => {
-                const v = e.target.value;
-                setFilters((p) => ({ ...p, isRemoved: v === 'any' ? undefined : v === 'true' }));
-              }}
-              sx={{ minWidth: { xs: 1, sm: 160 } }}
-              displayEmpty
-            >
-              <MenuItem value="any">IsRemoved: همه</MenuItem>
-              <MenuItem value="true">IsRemoved: بله</MenuItem>
-              <MenuItem value="false">IsRemoved: خیر</MenuItem>
-            </Select>
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              <FormControlLabel
+                control={
+                  <Switch
+                    color="primary"
+                    checked={filters.isRemoved === true}
+                    onChange={(e) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        isRemoved: e.target.checked,
+                      }))
+                    }
+                  />
+                }
+                label={
+                  typeof filters.isRemoved === 'boolean'
+                    ? `حذف‌شده: ${filters.isRemoved ? 'بله' : 'خیر'}`
+                    : 'حذف‌شده: همه'
+                }
+                sx={{ ml: 0 }}
+              />
+              <Button
+                size="small"
+                onClick={() => setFilters((prev) => ({ ...prev, isRemoved: undefined }))}
+                disabled={typeof filters.isRemoved !== 'boolean'}
+              >
+                همه
+              </Button>
+            </Stack>
 
             <TextField
               size="small"
@@ -259,7 +293,7 @@ export default function CreditIncreaseRequestsView() {
             )}
             {typeof applied.accepted === 'boolean' && (
               <Chip
-                label={`Accepted: ${applied.accepted ? 'true' : 'false'}`}
+                label={`تأیید شده: ${applied.accepted ? 'بله' : 'خیر'}`}
                 onDelete={() => setApplied((p) => ({ ...p, accepted: undefined, pageIndex: 1 }))}
                 size="small"
                 color="primary"
@@ -268,7 +302,7 @@ export default function CreditIncreaseRequestsView() {
             )}
             {typeof applied.isRemoved === 'boolean' && (
               <Chip
-                label={`IsRemoved: ${applied.isRemoved ? 'true' : 'false'}`}
+                label={`حذف‌شده: ${applied.isRemoved ? 'بله' : 'خیر'}`}
                 onDelete={() => setApplied((p) => ({ ...p, isRemoved: undefined, pageIndex: 1 }))}
                 size="small"
                 color="primary"
@@ -346,7 +380,7 @@ export default function CreditIncreaseRequestsView() {
                           </Typography>
                         </TableCell>
                         <TableCell>{r?.user?.userPhone ?? '—'}</TableCell>
-                        <TableCell>{toFaDigits(amount ?? '—')}</TableCell>
+                        <TableCell>{formatPrice(amount ?? '—')} تومان</TableCell>
                         <TableCell sx={{ maxWidth: 280 }}>
                           <Tooltip title={r?.description || ''}>
                             <Typography noWrap>{r?.description ?? '—'}</Typography>

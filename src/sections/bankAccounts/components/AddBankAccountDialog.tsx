@@ -14,7 +14,7 @@ import { useMemo } from 'react';
 import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
-import { CacheProvider } from '@emotion/react';
+// import { CacheProvider } from '@emotion/react';
 import { addBankAccount } from '../api/bankAccountsApi';
 
 // Function to clean the card number
@@ -68,7 +68,7 @@ export default function AddBankCardDialog({ open, onClose, onSaved }: Props) {
   };
 
   return (
-    <CacheProvider value={rtlCache}>
+    // <CacheProvider value={rtlCache}>
       <ThemeProvider theme={rtlTheme}>
         <Dialog
           open={open}
@@ -129,6 +129,6 @@ export default function AddBankCardDialog({ open, onClose, onSaved }: Props) {
           </DialogActions>
         </Dialog>
       </ThemeProvider>
-    </CacheProvider>
+    // </CacheProvider>
   );
 }

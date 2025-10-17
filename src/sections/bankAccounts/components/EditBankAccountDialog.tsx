@@ -14,7 +14,7 @@ import { LoadingButton } from '@mui/lab';
 import { useMemo } from 'react';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
-import { CacheProvider } from '@emotion/react';
+// import { CacheProvider } from '@emotion/react';
 import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 
 import { updateBankAccount } from '../api/bankAccountsApi';
@@ -81,66 +81,62 @@ export default function EditBankCardDialog({ open, onClose, account, onSaved }: 
   };
 
   return (
-    <CacheProvider value={rtlCache}>
-      <ThemeProvider theme={rtlTheme}>
-        <Dialog
-          open={open}
-          onClose={onClose}
-          fullWidth
-          maxWidth="sm"
-          aria-labelledby="edit-bank-card"
-        >
-          <DialogTitle id="edit-bank-card">ویرایش کارت بانکی</DialogTitle>
-          <Divider />
-          <DialogContent sx={{ pt: 2 }}>
-            <Box
-              sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
-            >
-              <TextField
-                label="شماره کارت"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-                error={!!cardNumber && !isValidCard(cardNumber)}
-                helperText={
-                  !cardNumber
-                    ? ''
-                    : isValidCard(cardNumber)
-                      ? ' '
-                      : 'شماره کارت باید ۱۶ تا ۲۶ رقم باشد'
-                }
-                sx={{ gridColumn: { xs: '1', sm: '1 / span 2' } }}
-              />
-              <TextField
-                label="نام صاحب حساب"
-                value={ownerName}
-                onChange={(e) => setOwnerName(e.target.value)}
-              />
-              <TextField
-                label="نام بانک"
-                value={bankName}
-                onChange={(e) => setBankName(e.target.value)}
-              />
-            </Box>
-          </DialogContent>
-          <DialogActions sx={{ p: 2 }}>
-            <Button onClick={onClose} color="inherit" variant="outlined">
-              انصراف
-            </Button>
-            <LoadingButton
-              loading={submitting}
-              onClick={handleSubmit}
-              variant="contained"
-              disabled={
-                !isValidCard(cardNumber) ||
-                ownerName.trim().length < 3 ||
-                bankName.trim().length < 2
+    // <CacheProvider value={rtlCache}>
+    <ThemeProvider theme={rtlTheme}>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        fullWidth
+        maxWidth="sm"
+        aria-labelledby="edit-bank-card"
+      >
+        <DialogTitle id="edit-bank-card">ویرایش کارت بانکی</DialogTitle>
+        <Divider />
+        <DialogContent sx={{ pt: 2 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+            <TextField
+              label="شماره کارت"
+              value={cardNumber}
+              onChange={(e) => setCardNumber(e.target.value)}
+              error={!!cardNumber && !isValidCard(cardNumber)}
+              helperText={
+                !cardNumber
+                  ? ''
+                  : isValidCard(cardNumber)
+                    ? ' '
+                    : 'شماره کارت باید ۱۶ تا ۲۶ رقم باشد'
               }
-            >
-              ذخیره
-            </LoadingButton>
-          </DialogActions>
-        </Dialog>
-      </ThemeProvider>
-    </CacheProvider>
+              sx={{ gridColumn: { xs: '1', sm: '1 / span 2' } }}
+            />
+            <TextField
+              label="نام صاحب حساب"
+              value={ownerName}
+              onChange={(e) => setOwnerName(e.target.value)}
+            />
+            <TextField
+              label="نام بانک"
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ p: 2 }}>
+          <Button onClick={onClose} color="inherit" variant="outlined">
+            انصراف
+          </Button>
+          <LoadingButton
+            loading={submitting}
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={
+              !isValidCard(cardNumber) || ownerName.trim().length < 3 || bankName.trim().length < 2
+            }
+          >
+            ذخیره
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
+    </ThemeProvider>
+    // </CacheProvider>
   );
 }

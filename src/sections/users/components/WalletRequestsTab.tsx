@@ -4,7 +4,7 @@ import type {
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
-import { CacheProvider } from '@emotion/react';
+// import { CacheProvider } from '@emotion/react';
 // src/sections/users/components/WalletRequestsTab.tsx
 import React, { useMemo, useState } from 'react';
 
@@ -146,7 +146,7 @@ export default function WalletRequestsTab({ userId }: Props) {
   };
 
   return (
-    <CacheProvider value={rtlCache}>
+    // <CacheProvider value={rtlCache}>
       <ThemeProvider theme={rtlTheme}>
         <Box dir="rtl">
           {/* فیلترها */}
@@ -376,6 +376,6 @@ export default function WalletRequestsTab({ userId }: Props) {
           </Dialog>
         </Box>
       </ThemeProvider>
-    </CacheProvider>
+    // </CacheProvider>
   );
 }

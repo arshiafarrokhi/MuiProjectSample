@@ -4,7 +4,7 @@ import type {
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
-import { CacheProvider } from '@emotion/react';
+// import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState } from 'react';
 
 import KeyRoundedIcon from '@mui/icons-material/KeyRounded';
@@ -76,7 +76,7 @@ export default function AddAdminDialog({ open, onClose, onCreated }: Props) {
   };
 
   return (
-    <CacheProvider value={rtlCache}>
+    // <CacheProvider value={rtlCache}>
       <ThemeProvider theme={rtlTheme}>
         <Dialog
           open={open}
@@ -155,6 +155,6 @@ export default function AddAdminDialog({ open, onClose, onCreated }: Props) {
           </DialogActions>
         </Dialog>
       </ThemeProvider>
-    </CacheProvider>
+    // </CacheProvider>
   );
 }

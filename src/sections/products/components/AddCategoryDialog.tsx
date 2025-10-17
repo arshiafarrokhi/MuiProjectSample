@@ -43,7 +43,6 @@ export default function AddCategoryDialog({ open, onClose, onCreated }: Props) {
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [parentId, setParentId] = useState<number | ''>('');
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
@@ -56,7 +55,6 @@ export default function AddCategoryDialog({ open, onClose, onCreated }: Props) {
       const res = await addCategory({
         name: name.trim(),
         description: description.trim() || undefined,
-        parentId: parentId === '' ? 0 : Number(parentId),
       });
       const ok = res?.success ?? true;
       const msg = res?.message || (ok ? 'دسته‌بندی ایجاد شد.' : 'ایجاد ناموفق بود.');
@@ -66,7 +64,6 @@ export default function AddCategoryDialog({ open, onClose, onCreated }: Props) {
         onClose();
         setName('');
         setDescription('');
-        setParentId('');
       } else {
         toast.error(msg);
       }
@@ -97,13 +94,6 @@ export default function AddCategoryDialog({ open, onClose, onCreated }: Props) {
                 fullWidth
                 multiline
                 minRows={2}
-              />
-              <TextField
-                label="شناسه والد (parentId)"
-                type="number"
-                value={parentId}
-                onChange={(e) => setParentId(e.target.value === '' ? '' : Number(e.target.value))}
-                fullWidth
               />
             </Stack>
           </DialogContent>

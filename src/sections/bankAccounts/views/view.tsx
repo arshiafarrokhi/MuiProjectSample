@@ -27,7 +27,7 @@ import EditBankCardDialog from '../components/EditBankAccountDialog';
 import AddBankCardDialog from '../components/AddBankAccountDialog';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
-import { CacheProvider } from '@emotion/react';
+// import { CacheProvider } from '@emotion/react';
 import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
 
 function readableCard(num: string) {
@@ -79,7 +79,7 @@ export default function BankAccountsPage() {
   const rtlTheme = useMemo(() => createTheme(outerTheme, { direction: 'rtl' }), [outerTheme]);
 
   return (
-    <CacheProvider value={rtlCache}>
+    // <CacheProvider value={rtlCache}>
       <ThemeProvider theme={rtlTheme}>
         <Box p={2}>
           <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
@@ -189,6 +189,6 @@ export default function BankAccountsPage() {
           />
         </Box>
       </ThemeProvider>
-    </CacheProvider>
+    // </CacheProvider>
   );
 }

@@ -4,7 +4,7 @@ import type {
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
-import { CacheProvider } from '@emotion/react';
+// import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 
@@ -30,10 +30,13 @@ import {
   Typography,
   IconButton,
   CardContent,
-  Autocomplete,
   ImageListItem,
   ImageListItemBar,
-  CircularProgress,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  FormHelperText,
 } from '@mui/material';
 
 import {
@@ -220,15 +223,16 @@ export default function ProductDetailsPage() {
 
   // داخل ProductDetailsPage، کنار بقیه‌ی state ها/هوک‌ها
   const { categories, categoriesLoading, refetchCategories } = GetCategoriesApi();
+  const categoryOptions = Array.isArray(categories) ? categories : [];
 
   // برای سینک شدن مقدار انتخابی با categoryId
   const selectedCategory =
-    Array.isArray(categories) && categoryId !== ''
-      ? (categories.find((c: any) => c?.id === Number(categoryId)) ?? null)
+    categoryId !== ''
+      ? (categoryOptions.find((c: any) => c?.id === Number(categoryId)) ?? null)
       : null;
 
   return (
-    <CacheProvider value={rtlCache}>
+    // <CacheProvider value={rtlCache}>
       <ThemeProvider theme={rtlTheme}>
         <Box dir="rtl" sx={{ p: { xs: 2, md: 3 } }}>
           <Typography variant="h5" fontWeight={800} sx={{ mb: 2 }}>
@@ -293,15 +297,34 @@ export default function ProductDetailsPage() {
                     />
                   </Grid>
                   <Grid item xs={12} md={6}>
-                    <TextField
-                      fullWidth
-                      label="شناسه دسته (CategoryId)"
-                      type="number"
-                      value={categoryId}
-                      onChange={(e) =>
-                        setCategoryId(e.target.value === '' ? '' : Number(e.target.value))
-                      }
-                    />
+                    <FormControl fullWidth disabled={categoriesLoading}>
+                      <InputLabel id="product-category-overview-label">دسته</InputLabel>
+                      <Select
+                        labelId="product-category-overview-label"
+                        value={categoryId === '' ? '' : Number(categoryId)}
+                        label="دسته"
+                        onChange={(e) =>
+                          setCategoryId(e.target.value === '' ? '' : Number(e.target.value))
+                        }
+                        displayEmpty
+                      >
+                        <MenuItem value="">
+                          <em>انتخاب دسته</em>
+                        </MenuItem>
+                        {categoryOptions.map((cat: any) => (
+                          <MenuItem key={cat.id} value={cat.id}>
+                            {cat.name ?? `#${cat.id}`}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      <FormHelperText>
+                        {categoriesLoading
+                          ? 'در حال دریافت دسته‌ها...'
+                          : selectedCategory?.description
+                          ? selectedCategory.description
+                          : 'دسته مرتبط با محصول را انتخاب کنید.'}
+                      </FormHelperText>
+                    </FormControl>
                   </Grid>
 
                   {/* نمایش اطلاعات تکمیلی */}
@@ -412,48 +435,48 @@ export default function ProductDetailsPage() {
               />
               <CardContent>
                 <Stack spacing={2}>
-                  <Autocomplete
-                    options={Array.isArray(categories) ? categories : []}
-                    loading={!!categoriesLoading}
-                    value={selectedCategory}
-                    onChange={(_, val: any | null) => {
-                      // اگر خالی شد، categoryId رو خالی کن؛ در غیر اینصورت id عددی
-                      setCategoryId(val?.id ?? '');
-                    }}
-                    getOptionLabel={(opt: any) =>
-                      (opt?.name ??
-                        (typeof opt?.id !== 'undefined' ? String(opt.id) : '')) as string
-                    }
-                    isOptionEqualToValue={(opt: any, val: any) => opt?.id === val?.id}
-                    noOptionsText="موردی یافت نشد"
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="انتخاب دسته"
-                        placeholder="نام دسته را جستجو کنید"
-                        InputProps={{
-                          ...params.InputProps,
-                          endAdornment: (
-                            <>
-                              {categoriesLoading ? <CircularProgress size={18} /> : null}
-                              {params.InputProps.endAdornment}
-                            </>
-                          ),
-                        }}
-                      />
-                    )}
-                  />
+                  <FormControl fullWidth disabled={categoriesLoading}>
+                    <InputLabel id="product-category-tab-label">انتخاب دسته</InputLabel>
+                    <Select
+                      labelId="product-category-tab-label"
+                      value={categoryId === '' ? '' : Number(categoryId)}
+                      label="انتخاب دسته"
+                      onChange={(e) =>
+                        setCategoryId(e.target.value === '' ? '' : Number(e.target.value))
+                      }
+                      displayEmpty
+                    >
+                      <MenuItem value="">
+                        <em>بدون دسته</em>
+                      </MenuItem>
+                      {categoryOptions.map((cat: any) => (
+                        <MenuItem key={cat.id} value={cat.id}>
+                          {cat.name ?? `#${cat.id}`}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    <FormHelperText>
+                      {categoriesLoading
+                        ? 'در حال بارگذاری دسته‌ها...'
+                        : 'یکی از دسته‌ها را برای محصول انتخاب کنید و سپس ذخیره را بزنید.'}
+                    </FormHelperText>
+                  </FormControl>
 
-                  {/* نمایش/ویرایش مستقیم شناسه (اختیاری برای شفافیت) */}
-                  <TextField
-                    label="شناسه دسته (CategoryId)"
-                    type="number"
-                    value={categoryId}
-                    onChange={(e) =>
-                      setCategoryId(e.target.value === '' ? '' : Number(e.target.value))
-                    }
-                    helperText="در صورت انتخاب از لیست، این مقدار به‌صورت خودکار تنظیم می‌شود."
-                  />
+                  {selectedCategory && (
+                    <Card variant="outlined" sx={{ borderRadius: 2 }}>
+                      <CardContent>
+                        <Typography variant="subtitle2" gutterBottom>
+                          جزئیات دسته انتخاب‌شده
+                        </Typography>
+                        <Typography variant="body2">شناسه: {selectedCategory.id}</Typography>
+                        {selectedCategory.description && (
+                          <Typography variant="body2" color="text.secondary">
+                            {selectedCategory.description}
+                          </Typography>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
                 </Stack>
               </CardContent>
             </Card>
@@ -540,6 +563,6 @@ export default function ProductDetailsPage() {
           )}
         </Box>
       </ThemeProvider>
-    </CacheProvider>
+    // </CacheProvider>
   );
 }

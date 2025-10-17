@@ -4,7 +4,7 @@ import type { Theme } from '@mui/material';
 import { toast } from 'sonner';
 import createCache from '@emotion/cache';
 import rtlPlugin from 'stylis-plugin-rtl';
-import { CacheProvider } from '@emotion/react';
+// import { CacheProvider } from '@emotion/react';
 import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 
@@ -204,7 +204,7 @@ export default function EditUsersPage() {
   };
 
   return (
-    <CacheProvider value={rtlCache}>
+    // <CacheProvider value={rtlCache}>
       <ThemeProvider theme={rtlTheme}>
         <Box dir="rtl" sx={{ p: { xs: 2, md: 3 } }}>
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
@@ -428,6 +428,6 @@ export default function EditUsersPage() {
           )}
         </Box>
       </ThemeProvider>
-    </CacheProvider>
+    // </CacheProvider>
   );
 }

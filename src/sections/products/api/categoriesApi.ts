@@ -48,13 +48,11 @@ export function GetCategoriesApi() {
 export async function addCategory(payload: {
   name: string;
   description?: string;
-  parentId?: number;
 }) {
   const url = endpoints.products.categories.add;
   const body = {
     name: payload.name,
     description: payload.description ?? null,
-    parentId: typeof payload.parentId === 'number' ? payload.parentId : 0,
   };
   const res = await axiosInstance.post(url, body, {
     headers: { 'Content-Type': 'application/json' },
